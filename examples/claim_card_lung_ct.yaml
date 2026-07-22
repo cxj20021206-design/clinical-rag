@@ -1,0 +1,18 @@
+# 示例 Clinical Claim Card (对应架构文档的 clinical_claim 结构)
+# 一篇声称"AI 辅助低剂量 CT 改善早期肺癌筛查"的 MedAI 论文。
+clinical_claim:
+  disease_or_condition: "lung cancer screening"
+  intended_use: "AI-assisted low-dose CT interpretation"
+  target_population: "high-risk adults eligible for lung cancer screening"
+  intended_user: "radiologist"
+  care_setting: "screening"
+  model_input: "low-dose chest CT"
+  model_output: "nodule detection and malignancy risk"
+  clinical_decision_affected: "recall / follow-up imaging / biopsy referral"
+  comparator: "unaided radiologist (standard of care)"
+  claimed_benefit: "higher early-stage detection, lower false positives"
+  claimed_harm_reduction: "reduced unnecessary invasive procedures"
+  evidence_stage: "C1"          # C0..C4 (回顾性开发/内部测试)
+  deployment_claim_level: "assistive, retrospective"
+  region: "US"
+  submission_date: "2024-05-01"  # predates 门控基准

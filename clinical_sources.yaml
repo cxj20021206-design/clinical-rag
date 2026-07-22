@@ -1,0 +1,644 @@
+# clinical-rag 源注册表 (source registry)
+# 把《MedAI 外部专业资料源清单 2026-07-21》编码成机器可路由的配置。
+# 外部源只定义论文"应该证明什么"，绝不用来替论文证明它"实际做到了什么"。
+schema_version: 1
+compiled: "2026-07-22"
+
+# ---- 图例 ----
+access_class_legend:
+  A: "开放许可 + 可机器获取 (API/XML/FTP/批量下载)"
+  B: "免费阅读，但复用/批量/跨地区/商业可能受限，需逐项核对许可"
+  C: "部分开放或需免费注册/签许可"
+source_role_legend:
+  normative: "规范标准：指南/临床路径/监管要求 —— 定义'应该要求什么'"
+  evidence_synthesis: "系统综述/HTA/证据报告"
+  regulatory: "药品/器械/SaMD 监管审评与要求"
+  registry: "临床试验注册与结果"
+  terminology: "术语/编码/互操作 (检索归一化，非临床推荐)"
+  epidemiology: "疾病负担/患病率/现实人群"
+  reporting_tool: "报告规范/偏倚/适用性工具 (路由用，非质量分)"
+  discovery: "文献发现与开放全文入口 (非证据等级本身)"
+
+# ---- 检索顺序 (固定；Claim Card 驱动) ----
+retrieval_order:
+  - clinical_claim_card          # 先抽取论文的 PICO/intended-use/证据阶段
+  - region_and_specialty_routing # 按国家 + 专科路由
+  - current_guideline_or_regulatory   # 现行指南/监管标准 (normative/regulatory)
+  - systematic_review_or_hta     # 系统综述 / HTA
+  - key_clinical_trials          # 关键注册试验
+  - lower_tier_supplement        # 低层级补充证据
+  - write_to_claim_evidence_graph  # 外部 requirement 与论文内部 evidence 分开写入
+
+# ---- 八个审查模块 → 首选源角色 (§3 路由表) ----
+module_routing:
+  clinical_question:        [normative, epidemiology, evidence_synthesis]
+  population_validity:      [normative, epidemiology, registry]
+  reference_standard:       [normative, regulatory, terminology]
+  comparator_baseline:      [normative, evidence_synthesis, regulatory]
+  endpoint_utility:         [normative, evidence_synthesis]   # + COMET/FDA-COA/GRADE/NICE-ESF
+  generalization:           [normative, registry, regulatory, reporting_tool]
+  safety_harm_equity:       [normative, regulatory]           # + WHO AI ethics + 不良事件库
+  workflow_deployment:      [reporting_tool, regulatory, normative]  # DECIDE-AI/NICE-ESF/GMLP/FHIR
+
+sources:
+  # ===== 2.1 临床指南 / 标准治疗 / 临床路径 (normative) =====
+  - id: who_guidelines
+    name: WHO Guidelines / IRIS
+    source_role: normative
+    tier: 1
+    region: [global]
+    clinical_domains: [all]
+    document_types: [guideline]
+    access_class: B
+    machine_access: [html, pdf, oai_pmh]   # IRIS 部分支持 OAI-PMH
+    license_review_required: true
+    license: "常见 CC BY-NC-SA 3.0 IGO，逐文档核对"
+    url: "https://iris.who.int/"
+    modules: [clinical_question, comparator, endpoint, safety_harm_equity]
+    notes: "第一优先；保存推荐原文/证据确定性/发布日期/适用国家"
+
+  - id: nice_guidance
+    name: NICE Guidance
+    source_role: normative
+    tier: 1
+    region: [UK]
+    clinical_domains: [all]
+    document_types: [guideline, hta, dht_evidence]
+    access_class: B
+    machine_access: [api, html, pdf]
+    license_review_required: true
+    license: "免费阅读+API；国际复用(非个人研究)可能需许可付费"
+    url: "https://www.nice.org.uk/guidance"
+    modules: [comparator, endpoint, generalization, workflow_deployment]
+
+  - id: uspstf
+    name: USPSTF Recommendations
+    source_role: normative
+    tier: 1
+    region: [US]
+    clinical_domains: [screening, prevention]
+    document_types: [recommendation]
+    access_class: B
+    machine_access: [html, pdf]
+    license_review_required: true
+    url: "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation-topics"
+    modules: [clinical_question, population_validity, endpoint_utility]
+    notes: "筛查类第一优先；不能外推到治疗问题"
+
+  - id: va_dod_cpg
+    name: VA/DoD Clinical Practice Guidelines
+    source_role: normative
+    tier: 1
+    region: [US]
+    clinical_domains: [chronic_disease, mental_health, rehabilitation]
+    document_types: [guideline]
+    access_class: B
+    machine_access: [pdf]
+    license_review_required: false
+    url: "https://www.healthquality.va.gov/"
+    modules: [comparator, endpoint_utility, population_validity]
+
+  - id: society_guidelines
+    name: 专业学会指南门户 (ACR / AHA-ACC / ESC / IDSA ...)
+    source_role: normative
+    tier: 1
+    region: [US, EU, varies]
+    clinical_domains: [radiology, cardiology, infectious_disease, varies]
+    document_types: [guideline, appropriateness_criteria]
+    access_class: B
+    machine_access: [html, pdf]
+    license_review_required: true
+    license: "多免费阅读；ACR 等复用需申请许可"
+    url: "https://www.acr.org/clinical-resources/clinical-tools-and-reference/appropriateness-criteria"
+    modules: [reference_standard, comparator, population_validity]
+    notes: "按 Claim Card 动态路由；不能预先把所有学会文件当同一证据等级"
+
+  # ===== 2.2 系统综述 / HTA (evidence_synthesis) =====
+  - id: ncbi_bookshelf
+    name: NCBI Bookshelf
+    source_role: evidence_synthesis
+    tier: 2
+    region: [global, US]
+    clinical_domains: [all]
+    document_types: [guideline, systematic_review, technical_report]
+    access_class: B
+    machine_access: [html, ftp, xml]
+    license_review_required: true
+    url: "https://www.ncbi.nlm.nih.gov/books/"
+    modules: [comparator, endpoint_utility, clinical_question]
+    notes: "优先接入；免费全文，版权逐项不同"
+
+  - id: ahrq_epc
+    name: AHRQ Effective Health Care / EPC Reports
+    source_role: evidence_synthesis
+    tier: 2
+    region: [US]
+    clinical_domains: [all]
+    document_types: [systematic_review, technical_brief, hta]
+    access_class: B
+    machine_access: [html, pdf]
+    license_review_required: false
+    url: "https://effectivehealthcare.ahrq.gov/"
+    modules: [comparator, endpoint_utility, generalization]
+
+  - id: iqwig
+    name: IQWiG Projects & Results
+    source_role: evidence_synthesis
+    tier: 2
+    region: [DE]
+    clinical_domains: [all]
+    document_types: [hta, benefit_assessment]
+    access_class: B
+    machine_access: [html, pdf]
+    license_review_required: true
+    url: "https://www.iqwig.de/en/projects/projects-results/"
+    modules: [endpoint_utility, comparator]
+    notes: "验证'是否有患者获益'；保留德国制度背景；英语覆盖不全"
+
+  - id: cochrane
+    name: Cochrane Library
+    source_role: evidence_synthesis
+    tier: 2
+    region: [global]
+    clinical_domains: [all]
+    document_types: [systematic_review]
+    access_class: C
+    machine_access: [html]
+    license_review_required: true
+    license: "摘要免费；综述常 12 月后免费阅读；非统一开放全文"
+    url: "https://www.cochrane.org/"
+    modules: [comparator, endpoint_utility]
+    notes: "高质量证据发现；仅明确许可的全文进批量 RAG"
+
+  - id: grade_book
+    name: GRADE Handbook (GRADEpro)
+    source_role: evidence_synthesis
+    tier: 2
+    region: [global]
+    clinical_domains: [methodology]
+    document_types: [methodology_framework]
+    access_class: B
+    machine_access: [html]
+    license_review_required: false
+    url: "https://book.gradepro.org/"
+    modules: [endpoint_utility]
+    notes: "方法学框架，非具体疾病证据"
+
+  # ===== 2.3 文献发现 / 开放全文 (discovery) =====
+  - id: pubmed_eutils
+    name: PubMed / NCBI E-utilities
+    source_role: discovery
+    tier: 5
+    region: [global]
+    clinical_domains: [all]
+    document_types: [metadata, abstract]
+    access_class: A
+    machine_access: [api]
+    license_review_required: false
+    url: "https://www.ncbi.nlm.nih.gov/home/develop/api/"
+    modules: []
+    notes: "检索入口，非证据等级；必须回到具体文献"
+
+  - id: pmc_oa
+    name: PubMed Central Open Access Subset
+    source_role: discovery
+    tier: 5
+    region: [global]
+    clinical_domains: [all]
+    document_types: [full_text]
+    access_class: A
+    machine_access: [api, oai, bioc, ftp]
+    license_review_required: true
+    url: "https://pmc.ncbi.nlm.nih.gov/tools/openftlist/"
+    modules: []
+    notes: "只用官方 API/OAI/BioC/FTP；勿抓普通 PMC 网页"
+
+  - id: europepmc
+    name: Europe PMC
+    source_role: discovery
+    tier: 5
+    region: [global]
+    clinical_domains: [all]
+    document_types: [metadata, full_text_xml, preprint]
+    access_class: A
+    machine_access: [api]
+    license_review_required: true
+    url: "https://europepmc.org/developers"
+    modules: []
+    notes: "外部证据发现层 + OA 全文入口"
+
+  - id: crossref
+    name: Crossref REST API
+    source_role: discovery
+    tier: 5
+    region: [global]
+    clinical_domains: [all]
+    document_types: [metadata]
+    access_class: A
+    machine_access: [api]
+    license_review_required: false
+    url: "https://www.crossref.org/documentation/retrieve-metadata/rest-api/"
+    modules: []
+    notes: "版本核验/去重；不判断医学事实"
+
+  # ===== 2.4 临床试验注册 (registry) =====
+  - id: clinicaltrials_gov
+    name: ClinicalTrials.gov API v2
+    source_role: registry
+    tier: 3
+    region: [US, global]
+    clinical_domains: [all]
+    document_types: [trial_registration, trial_results]
+    access_class: A
+    machine_access: [api]
+    license_review_required: false
+    url: "https://clinicaltrials.gov/data-api/api"
+    modules: [comparator_baseline, endpoint_utility, population_validity, generalization]
+    notes: "核对预注册/选择性报告/真实 comparator；注册≠疗效证明"
+
+  - id: who_ictrp
+    name: WHO ICTRP
+    source_role: registry
+    tier: 3
+    region: [global]
+    clinical_domains: [all]
+    document_types: [trial_registration]
+    access_class: B
+    machine_access: [html]
+    license_review_required: true
+    url: "https://www.who.int/tools/clinical-trials-registry-platform/the-ictrp-search-portal"
+    modules: [comparator_baseline, generalization]
+
+  # ===== 2.5 药品/器械/监管 (regulatory) =====
+  - id: openfda
+    name: openFDA / Drugs@FDA / FDA Digital Health Guidances
+    source_role: regulatory
+    tier: 3
+    region: [US]
+    clinical_domains: [all]
+    document_types: [label, approval, safety_signal, guidance]
+    access_class: A
+    machine_access: [api, download, pdf]
+    license_review_required: false
+    url: "https://open.fda.gov/"
+    modules: [reference_standard, safety_harm_equity, generalization]
+    notes: "监管语境/适应证/已知风险；自发不良事件≠因果"
+
+  - id: ema_epar
+    name: EMA Medicines / EPAR
+    source_role: regulatory
+    tier: 3
+    region: [EU]
+    clinical_domains: [all]
+    document_types: [assessment_report, product_info, risk_management]
+    access_class: B
+    machine_access: [html, pdf]
+    license_review_required: true
+    url: "https://www.ema.europa.eu/en/medicines"
+    modules: [comparator_baseline, safety_harm_equity]
+
+  - id: imdrf_samd
+    name: IMDRF SaMD Clinical Evaluation / GMLP
+    source_role: regulatory
+    tier: 2
+    region: [global]
+    clinical_domains: [ai_medical_device]
+    document_types: [guidance]
+    access_class: B
+    machine_access: [pdf]
+    license_review_required: false
+    url: "https://www.imdrf.org/documents/software-medical-device-samd-clinical-evaluation"
+    modules: [generalization, safety_harm_equity, workflow_deployment]
+    notes: "MedAI 监管/成熟度判断跨国基线"
+
+  - id: who_ai_ethics
+    name: WHO Ethics and Governance of AI for Health
+    source_role: regulatory
+    tier: 2
+    region: [global]
+    clinical_domains: [ai_medical_device]
+    document_types: [guidance]
+    access_class: B
+    machine_access: [pdf]
+    license_review_required: true
+    license: "CC BY-NC-SA 3.0 IGO"
+    url: "https://www.who.int/publications/i/item/9789240029200"
+    modules: [safety_harm_equity]
+
+  - id: mhra_ai_samd
+    name: MHRA Software and AI as a Medical Device
+    source_role: regulatory
+    tier: 2
+    region: [UK]
+    clinical_domains: [ai_medical_device]
+    document_types: [guidance]
+    access_class: A
+    machine_access: [html]
+    license_review_required: true
+    license: "通常 UK Open Government Licence，核对页面条款"
+    url: "https://www.gov.uk/government/publications/software-and-artificial-intelligence-ai-as-a-medical-device"
+    modules: [safety_harm_equity, workflow_deployment, generalization]
+
+  # ===== 2.6 报告规范 / 偏倚 / 适用性工具 (reporting_tool) =====
+  # 原则：报告完整 != 低偏倚 != 有临床效用。禁止"一张表审所有论文"。
+  - id: equator_aiml
+    name: EQUATOR AI/ML collection (路由入口)
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [all]
+    document_types: [reporting_guideline_index]
+    access_class: B
+    machine_access: [html]
+    license_review_required: false
+    url: "https://www.equator-network.org/reporting-guidelines-study-design/artificial-intelligence-machine-learning-studies/"
+    modules: [generalization, workflow_deployment]
+    applies_when: "按研究设计路由到合适规范；收录≠质量评分"
+
+  - id: tripod_ai
+    name: TRIPOD+AI
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [prediction_model]
+    document_types: [reporting_guideline]
+    access_class: B
+    machine_access: [html, pdf]
+    license_review_required: false
+    url: "https://www.bmj.com/content/385/bmj-2023-078378"
+    modules: [generalization]
+    applies_when: "预测模型开发/验证的报告完整性；非偏倚工具"
+
+  - id: probast_ai
+    name: PROBAST+AI
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [prediction_model]
+    document_types: [bias_tool]
+    access_class: B
+    machine_access: [html, pdf]
+    license_review_required: false
+    url: "https://www.bmj.com/content/388/bmj-2024-082505"
+    modules: [generalization]
+    applies_when: "先确认是个体诊断/预后预测模型"
+
+  - id: quadas_3
+    name: QUADAS-3 (2026 取代 QUADAS-2)
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [diagnostic_accuracy]
+    document_types: [bias_tool]
+    access_class: B
+    machine_access: [html]
+    license_review_required: false
+    url: "https://www.bristol.ac.uk/population-health-sciences/projects/quadas/quadas-3/quadas-3-tool/"
+    modules: [reference_standard, generalization]
+    applies_when: "诊断准确性研究；不能证明临床效用"
+
+  - id: rob2_robins_i
+    name: Cochrane RoB 2 / ROBINS-I
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [rct, non_randomized]
+    document_types: [bias_tool]
+    access_class: B
+    machine_access: [html]
+    license_review_required: false
+    url: "https://www.cochrane.org/learn/courses-and-resources/cochrane-methodology/risk-bias"
+    modules: [generalization]
+    applies_when: "随机/非随机干预研究；勿硬套纯模型开发"
+
+  - id: consort_spirit_ai
+    name: CONSORT-AI / SPIRIT-AI
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [rct]
+    document_types: [reporting_guideline]
+    access_class: B
+    machine_access: [html]
+    license_review_required: false
+    url: "https://www.equator-network.org/reporting-guidelines/consort-artificial-intelligence/"
+    modules: [endpoint_utility, workflow_deployment]
+    applies_when: "研究设计确为相应临床试验时"
+
+  - id: decide_ai
+    name: DECIDE-AI
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [decision_support]
+    document_types: [reporting_guideline]
+    access_class: B
+    machine_access: [html]
+    license_review_required: false
+    url: "https://www.equator-network.org/reporting-guidelines/reporting-guideline-for-the-early-stage-clinical-evaluation-of-decision-support-systems-driven-by-artificial-intelligence-decide-ai/"
+    modules: [workflow_deployment, safety_harm_equity]
+    applies_when: "早期真实临床环境评价；不适用纯离线回顾 benchmark"
+
+  - id: claim_2024
+    name: CLAIM 2024 (影像 AI 报告)
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [medical_imaging]
+    document_types: [reporting_guideline]
+    access_class: B
+    machine_access: [html]
+    license_review_required: false
+    url: "https://www.equator-network.org/reporting-guidelines-study-design/artificial-intelligence-machine-learning-studies/"
+    modules: [reference_standard, generalization]
+    applies_when: "影像 AI 报告；不替代 ACR/专科真实检查路径要求"
+
+  - id: nice_esf_dht
+    name: NICE Evidence Standards Framework for DHT
+    source_role: reporting_tool
+    tier: 2
+    region: [UK]
+    clinical_domains: [digital_health]
+    document_types: [evidence_framework]
+    access_class: B
+    machine_access: [pdf]
+    license_review_required: true
+    url: "https://www.nice.org.uk/guidance/ecd7/resources/evidence-standards-framework-for-digital-health-technologies-user-guide-pdf-11696158815685"
+    modules: [endpoint_utility, workflow_deployment]
+    applies_when: "英国决策环境；勿无标注全球化"
+
+  # ===== 2.7 结局 / 测量 / 术语 (terminology) =====
+  - id: comet
+    name: COMET Core Outcome Set Database
+    source_role: evidence_synthesis
+    tier: 2
+    region: [global]
+    clinical_domains: [all]
+    document_types: [core_outcome_set]
+    access_class: B
+    machine_access: [html]
+    license_review_required: false
+    url: "https://www.comet-initiative.org/Studies"
+    modules: [endpoint_utility]
+
+  - id: fda_coa
+    name: FDA Clinical Outcome Assessment Compendium
+    source_role: regulatory
+    tier: 3
+    region: [US]
+    clinical_domains: [all]
+    document_types: [outcome_assessment]
+    access_class: B
+    machine_access: [html, pdf]
+    license_review_required: false
+    url: "https://www.fda.gov/drugs/development-resources/clinical-outcome-assessment-compendium"
+    modules: [endpoint_utility]
+
+  - id: cosmin
+    name: COSMIN tools
+    source_role: reporting_tool
+    tier: 2
+    region: [global]
+    clinical_domains: [measurement]
+    document_types: [measurement_quality_tool]
+    access_class: B
+    machine_access: [html]
+    license_review_required: true
+    url: "https://www.cosmin.nl/tools/"
+    modules: [endpoint_utility]
+
+  - id: mesh
+    name: MeSH
+    source_role: terminology
+    tier: 5
+    region: [global]
+    clinical_domains: [all]
+    document_types: [terminology]
+    access_class: A
+    machine_access: [api, xml, rdf]
+    license_review_required: false
+    url: "https://www.nlm.nih.gov/databases/download/mesh.html"
+    modules: []
+    notes: "检索归一化，非诊断标准"
+
+  - id: icd11
+    name: ICD-11 API
+    source_role: terminology
+    tier: 5
+    region: [global]
+    clinical_domains: [all]
+    document_types: [classification]
+    access_class: C
+    machine_access: [api]
+    license_review_required: true
+    license: "免费注册 OAuth；CC BY-ND 3.0 IGO，改版不得续称 ICD-11"
+    url: "https://icd.who.int/icdapi"
+    modules: [reference_standard]
+
+  - id: loinc
+    name: LOINC
+    source_role: terminology
+    tier: 5
+    region: [global]
+    clinical_domains: [lab, vitals, observations]
+    document_types: [terminology]
+    access_class: C
+    machine_access: [download]
+    license_review_required: true
+    url: "https://loinc.org/downloads/"
+    modules: [reference_standard]
+
+  - id: hl7_fhir
+    name: HL7 FHIR
+    source_role: terminology
+    tier: 5
+    region: [global]
+    clinical_domains: [interoperability]
+    document_types: [standard]
+    access_class: A
+    machine_access: [html, download]
+    license_review_required: true
+    license: "规范 CC0；第三方术语另需许可"
+    url: "https://hl7.org/fhir/"
+    modules: [workflow_deployment]
+
+  - id: rxnorm
+    name: RxNorm
+    source_role: terminology
+    tier: 5
+    region: [US]
+    clinical_domains: [medication]
+    document_types: [terminology]
+    access_class: C
+    machine_access: [api, download]
+    license_review_required: true
+    url: "https://www.nlm.nih.gov/research/umls/rxnorm/docs/termsofservice.html"
+    modules: [reference_standard]
+
+  - id: snomed_ct
+    name: SNOMED CT
+    source_role: terminology
+    tier: 5
+    region: [member_countries]
+    clinical_domains: [all]
+    document_types: [terminology]
+    access_class: C
+    machine_access: [download]
+    license_review_required: true
+    license: "非全球无条件免费；成员国通常免费但需许可"
+    url: "https://www.snomed.org/get-snomed"
+    modules: [reference_standard]
+
+  # ===== 2.8 疾病负担 / 患病率 (epidemiology) =====
+  - id: who_gho
+    name: WHO Global Health Observatory (OData API)
+    source_role: epidemiology
+    tier: 3
+    region: [global]
+    clinical_domains: [all]
+    document_types: [statistics]
+    access_class: A
+    machine_access: [api]
+    license_review_required: false
+    url: "https://www.who.int/data/gho/info/gho-odata-api"
+    modules: [clinical_question, population_validity]
+    notes: "unmet need/地区背景；不替代目标医院本地流行病学"
+
+  - id: national_stats
+    name: 国家/地区官方统计系统
+    source_role: epidemiology
+    tier: 4
+    region: [varies]
+    clinical_domains: [all]
+    document_types: [statistics]
+    access_class: B
+    machine_access: [varies]
+    license_review_required: true
+    url: ""
+    modules: [population_validity, clinical_question]
+    notes: "按 Claim Card 国家+care setting 动态选，不建'全球平均患者'"
+
+# ---- 已延后的源 (2026-07-22 老师决定：国内源一般无 API/不易直接访问，先剔除) ----
+# 保留记录以便日后中国部署场景需要时再接入 (届时多为 html/pdf 手工策展)。
+deferred_sources:
+  - id: nhc_china
+    name: 国家卫生健康委员会 / 临床路径
+    reason: "无统一开放许可/稳定公共 API；html/pdf 手工"
+    url: "https://www.nhc.gov.cn/zwgkzt/lclj/list.shtml"
+  - id: nmpa_cde_cmde
+    name: NMPA / CDE / CMDE (中国药械监管)
+    reason: "无统一 API；html/pdf"
+    url: "https://www.cmde.org.cn/"
+  - id: chictr
+    name: 中国临床试验注册中心 ChiCTR
+    reason: "无公共 API；html。可经 WHO ICTRP 间接发现"
+    url: "https://www.chictr.org.cn/"
+
+# ---- 不作为核心外部 RAG 的来源 (§6 排除) ----
+exclusions:
+  - "付费临床工具 (UpToDate/DynaMed/BMJ Best Practice)：权威但不满足开放免费约束"
+  - "搜索引擎摘要 / 健康科普站 / 问答网站 / 医院营销页"
+  - "单篇观点/社论/预印本 (除非明确标为低层级背景)"
+  - "PubMed/Crossref/OpenAlex 命中记录本身 (发现层，非临床标准)"
+  - "未标版本/已撤回/被新指南取代的文档"
+  - "仅因'能免费下 PDF'就默认可批量抓取/向量化/再分发的内容"
