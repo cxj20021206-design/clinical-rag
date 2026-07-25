@@ -143,10 +143,109 @@ workflow_deployment  → reporting_tool, regulatory, normative
 
 ---
 
+### 3.5 41 个源的实况（最容易误解的一节）
+
+#### 先纠正三个常见误解
+
+> **误解 1：「系统在用 41 个源」**
+> ❌ 不是。`clinical_sources.yaml` 是一本**通讯录**——记录"世界上有这些权威源、
+> 各自什么许可、能不能机器访问"。**目前只有 11 个写了连接器**，其余 30 个是登记在案的待办。
+
+> **误解 2：「大部分源是 normative」**
+> ❌ `normative` 只有 **5 个，占 12%**，是最少的几类之一。数量最多的是 `reporting_tool`(10)。
+
+> **误解 3：「源角色 = 取数方式（三条腿）」**
+> ❌ 这是**两条互相独立的分类轴**，正交，不能互推：
+>
+> | 轴 | 问的问题 | 几类 |
+> |---|---|---|
+> | 源角色 `source_role` | 这个源**能说什么话**（话语权） | 8 类 |
+> | 取数方式（三条腿） | 这个源的内容**怎么弄进来** | 3 类 |
+>
+> 类比：`normative` 好比"这个人是院士"（身份）；第三条腿好比"他不用邮件、只能上门"（联系方式）。
+> 院士里有不用邮件的，普通研究员里也有。一个源同时属于某个角色**和**某条腿。
+
+#### 41 个源逐个实况（✅ = 已写连接器）
+
+```
+normative (5)  ← 话语权最高，数量最少
+  ✅ uspstf              [html,pdf]   USPSTF
+  —  who_guidelines      [html,pdf]   WHO 指南 / IRIS
+  —  nice_guidance       [api!]       NICE ← 有 API，但许可禁止 AI 用途，不可行
+  —  va_dod_cpg          [pdf]        VA/DoD
+  —  society_guidelines  [html,pdf]   学会指南 (ACR/AHA-ACC/ESC/IDSA...)
+
+reporting_tool (10)  ← 数量最多
+  ✅ tripod_ai   ✅ probast_ai   ✅ decide_ai   ✅ consort_spirit_ai
+  ✅ quadas_3    ✅ claim_2024
+  —  equator_aiml   —  rob2_robins_i   —  nice_esf_dht   —  cosmin
+
+regulatory (6)          ✅ openfda | — ema_epar, imdrf_samd, who_ai_ethics, mhra_ai_samd, fda_coa
+evidence_synthesis (6)  一个都没接：cochrane, ahrq_epc, iqwig, grade_book, comet, ncbi_bookshelf
+terminology (6)         一个都没接：mesh, icd11, loinc, snomed_ct, rxnorm, hl7_fhir
+discovery (4)           ✅ europepmc | — pubmed_eutils, pmc_oa, crossref
+registry (2)            ✅ clinicaltrials_gov | — who_ictrp
+epidemiology (2)        ✅ who_gho | — national_stats
+```
+
+**已接入 11 / 41。**
+
+#### 为什么大部分源要人工策展？——因为没有 API，不是因为它们是 normative
+
+统计 `machine_access` 字段：
+
+```
+有 api / xml / ftp 通道的源：13 个 (32%)
+只有 html / pdf / manual 的：28 个 (68%)   ← 这才是要人工策展的原因
+```
+
+#### 为什么 normative 只有 5 个，却说它是最大缺口？
+
+**这是质量问题不是数量问题。** 只有 `normative` 能说出"应该做 X，B 级推荐，中等证据确定性"
+这种可直接当审稿依据的话；其余 36 个源加起来也替代不了。而这 5 个里：
+
+| 源 | 状态 |
+|---|---|
+| NICE | ❌ 有 API，但许可**明令禁止 AI 用途**，法律上不可行 |
+| USPSTF | ✅ 已做——但职权只限**预防服务**，脓毒症一类治疗问题它管不着 |
+| WHO / VA-DoD / 学会指南 | 🕳 未做 |
+
+结论：**急重症类论文（脓毒症、ICU 预警）目前一个可用的规范源都没有。**
+5 个源里能用的只有 1 个，这 1 个还有职权边界。
+
+---
+
 ## 4. 连接器：三条腿
 
 "连接器"= 去某个源取数据的那段代码。关键在于 **41 个源不是同一种东西**，
 取数方式分三类，内部称"三条腿"。这是最容易混淆的地方。
+
+### 三条腿的划分标准：两个是/否问题
+
+腿的划分**不是**按角色，而是按下面两个问题的答案：
+
+```
+                   │  内容随论文变化？
+                   │      否                    │      是
+───────────────────┼────────────────────────────┼──────────────────────────
+  有 API ?    是   │  术语表 (MeSH/LOINC/SNOMED) │  🦵腿1 API 直连
+                   │  下载一次入库即可            │  ClinicalTrials / EuropePMC
+                   │  （还没做）                  │  openFDA / WHO GHO
+───────────────────┼────────────────────────────┼──────────────────────────
+             否    │  🦵腿2 报告规范策展          │  🦵腿3 指南策展
+                   │  TRIPOD / PROBAST / ...     │  USPSTF / WHO / 学会指南
+                   │  抄一次永久用                │  ★最难★
+```
+
+**腿 2 和腿 3 都是"人工抄进来"，区别在右上角那个问题——内容随不随论文变：**
+
+- **腿 2**：TRIPOD+AI 就是固定 52 条。审肺癌论文用这 52 条，审脓毒症论文还是这 52 条。
+  抄完就结束，剩下的难点只有"该不该启用"（适用性门控）。
+- **腿 3**：临床指南有**几千份**。审肺癌筛查要用 USPSTF 肺癌那条，审脓毒症要用 ESICM 脓毒症指南
+  ——**用哪条取决于论文**。所以抄进来只是第一步，还得建一套"按病种+场景找出该用哪条"的检索门控。
+
+这就是为什么 USPSTF 一个源要写三个文件（取数 / 摄入 / 门控），
+而 7 份报告规范清单共用一个 `curated_reporting.py`。
 
 ### 🦵 腿 1：API 直连（4 个，✅ 已建）
 
@@ -296,36 +395,97 @@ python3 retrieve.py --claim examples/claim_card_lung_ct.yaml --per-source 3
 # 指定模块： --modules comparator_baseline endpoint_utility
 ```
 
-`retrieve.py` 内部发生了什么：
+先给一个贯穿全程的比喻：
+
+> **8 个审查模块** = 8 个来提问的人
+> **41 个源** = 一本通讯录
+> **连接器** = 通讯录里你实际打得通的那 11 个号码
+
+### ① 读卡
+
+`claim_to_query()` 把 yaml 拍成 `query_context`：
+
+- 前 6 键（condition / intervention / population / outcome / setting / region）
+  → 给 API 连接器做**查询翻译**
+- 后 4 键（evidence_stage / model_input / model_output / deployment_claim_level）
+  → 给策展层做**适用性门控**（API 连接器忽略即可）
+- `_card` 塞原卡，下划线前缀 = 进程内传递，不落盘
+
+### ② 路由 —— 排班表：每个提问的人该找谁
+
+每个模块查 `module_routing` 拿到所需角色 → 捞出这些角色下的源 → **只保留有连接器的**。
+肺癌卡的真实结果：
 
 ```
-① 读卡    claim_to_query() 把 yaml 拍成 query_context
-          前 6 键 (condition/intervention/population/outcome/setting/region)
-            → 给 API 连接器做查询翻译
-          后 4 键 (evidence_stage/model_input/model_output/deployment_claim_level)
-            → 给策展层做适用性门控（API 连接器忽略即可）
-          `_card` 塞原卡，下划线前缀 = 不落盘
-
-② 路由    对 8 个模块各查 module_routing 得到所需角色
-          → 筛出这些角色下**有连接器**的源
-
-③ 取数    每个连接器只调一次，结果进 cache
-          （不是每模块调一次——否则 Europe PMC 要被调 8 遍）
-          单个连接器抛异常只打 [warn] 并返回空，不拖垮整轮
-
-④ 分配    结果散到相关模块：
-          · API 记录 modules 为空 → 按源角色散射到所有相关模块
-          · 策展条目自带 modules 声明 → 只落到声明的模块（精确投放）
-
-⑤ 报缺口  module_routing 点名了、但一个带连接器的源都没有的角色
-          → 打印 "⚠️ 无连接器角色(待策展)"，并顺带报出发现层检到的候选指南篇数
-          这是**显式缺口**，不是静默失败
-
-⑥ 写盘    去重键 = (source_id, canonical_url, section_page_table)
-          必须带第三项——TRIPOD 的 52 条共用同一 canonical_url，
-          只按 (source_id, url) 去重会把整份清单塌成 1 条
-          原子写 (temp + os.replace) 到 store/*.jsonl，并跑一遍 schema 校验
+[clinical_question]   角色 normative/epidemiology/evidence_synthesis
+                      相关源 20 个 → 实际能打通  6 个
+[generalization]      角色 normative/registry/regulatory/reporting_tool
+                      相关源 28 个 → 实际能打通 10 个
 ```
+
+8 个模块加起来是 **65 个「模块×源」组合**。
+
+### ③ 取数 —— 去重打电话（cache 在这一步）
+
+照着 65 个组合傻打的话，`europepmc` 要被调 **8 次**（8 个模块各一次）。
+
+**但这 8 次问的是同一个问题。** 因为连接器的输入是 `query_context`，它完全来自 Claim Card，
+**跟模块无关**——同一个源在 8 个模块下的返回一模一样。
+
+所以先把 65 个组合**去重成 11 个源**，每个只调一次，结果进 `cache`：
+
+```
+65 次网络调用  →  11 次
+```
+
+这不只是省时间，还避免被 API 限流。单个连接器抛异常只打 `[warn]` 并返回空，不拖垮整轮。
+
+### ④ 分配 —— 把结果发给提问的人（最容易看不懂的一步）
+
+结果发给哪些模块？**记录分两类，处理方式相反。**
+
+**A 类：API 记录，`modules` 是空的 → 粗放散射**
+
+europepmc 检回一篇《中国肺癌筛查指南 2023》。问题是——这是**一整篇文档**，
+我们不知道它具体在讲人群、终点、还是对照组。不知道就不能装作知道。
+所以凡是把 europepmc 算作相关源的模块，都发一份：
+
+```
+europepmc 那 5 条 → 8 个模块全都收到
+```
+
+**B 类：策展条目，`modules` 有明确声明 → 精准投放**
+
+TRIPOD+AI 第 12 条在 yaml 里被人工标注过：
+
+```yaml
+- id: "12"
+  text: "描述外部验证数据的来源与时间范围..."
+  modules: [generalization]      # ← 这条讲的就是外部验证
+```
+
+它只发给 `generalization`，另外 7 个模块根本看不到。实测 TRIPOD 52 条的落点分布：
+
+```
+30 条 → generalization      13 条 → population_validity
+ 6 条 → clinical_question    5 条 → reference_standard   ...
+```
+
+**为什么要分两类？** 一句话：**能精确就精确，不能精确就别装精确。**
+API 检回的是整篇文献，硬给它指定模块等于瞎猜；策展条目是人逐条读过的，能标就标准。
+这与"缺口必须显式"是同一条原则的两面——**不确定的东西宁可粗放，不可假装精确。**
+
+### ⑤ 报缺口
+
+`module_routing` 点名了、但一个带连接器的源都没有的角色 → 打印
+`⚠️ 无连接器角色(待策展)`，并顺带报出发现层检到的候选指南篇数。
+这是**显式缺口**，不是静默失败。
+
+### ⑥ 写盘
+
+去重键 = `(source_id, canonical_url, section_page_table)`。**必须带第三项**——
+TRIPOD 的 52 条共用同一个 `canonical_url`，只按 `(source_id, url)` 去重会把整份清单塌成 1 条。
+原子写（temp + `os.replace`）到 `store/*.jsonl`，并跑一遍 schema 校验。
 
 ### 输出长什么样
 
@@ -340,6 +500,28 @@ tripod_ai 52 | probast_ai 34 | europepmc 5 | clinicaltrials_gov 5 | quadas_3 4 |
 
 这个分布直接反映系统现状：**策展层贡献 90 条（86%），API 层仅 14 条。**
 这符合设计预期——固定清单本就是成批的硬要求，API 层只该给少量精准的关键证据。
+
+> 这份 store 是 USPSTF 摄入**之前**跑的，所以没有 uspstf 记录；现在重跑会多一类。
+
+### 一个"对不上"的数字（不是 bug）
+
+CLI 上 8 个模块的命中数：
+
+| 模块 | 命中 | 构成 |
+|---|---|---|
+| clinical_question | 11 | europepmc 5, tripod 6 |
+| population_validity | 34 | europepmc 5, tripod 13, ct.gov 5, probast 10, quadas 1 |
+| reference_standard | 30 | europepmc 5, openfda 4, tripod 5, probast 14, quadas 2 |
+| comparator_baseline | 15 | europepmc 5, ct.gov 5, openfda 4, tripod 1 |
+| endpoint_utility | 21 | europepmc 5, ct.gov 5, tripod 5, probast 5, quadas 1 |
+| generalization | 64 | europepmc 5, ct.gov 5, tripod 30, probast 18, openfda 4, quadas 2 |
+| safety_harm_equity | 24 | europepmc 5, tripod 11, openfda 4, probast 4 |
+| workflow_deployment | 18 | europepmc 5, tripod 7, probast 2, openfda 4 |
+| **合计** | **217** | |
+
+但文件里只有 **104 行**。原因是第 ④ 步 A 类记录的散射——**同一条记录出现在多个模块的清单里**
+（europepmc 那 5 条，一条就被数了 8 次）。第 ⑥ 步写盘前去重，217 → 104。
+分模块计数是"视角"，落盘条数才是"实体"。
 
 ### 两张示例卡是刻意设计的门控回归测试
 
@@ -407,8 +589,10 @@ python3 retrieve.py --claim examples/claim_card_sepsis_c3.yaml  # C3 病房
 | 源角色 (source_role) | 一个源"能说什么话"，决定话语权重 |
 | 审查模块 | 审稿的 8 个方面 |
 | module_routing | 模块 ↔ 角色的映射表，架构心脏 |
-| 连接器 (connector) | 去某个源取数的代码 |
-| 三条腿 | API 直连 / 报告规范策展 / 指南策展 |
+| 连接器 (connector) | 去某个源取数的代码。41 个源里目前只有 11 个有 |
+| 三条腿 | API 直连 / 报告规范策展 / 指南策展。划分标准是"有无 API × 内容是否随论文变"，**与源角色正交** |
+| 策展摄入 (curated ingestion) | 源没有 API，人工把内容抄进本地 yaml。41 个源里 68% 只能这样 |
+| `modules` 字段 | 记录自己声明服务哪些模块。空 = 按源角色散射（API 记录）；非空 = 精准投放（策展条目） |
 | 适用性门控 | 判断某份清单该不该对这篇论文启用 |
 | predates | 该标准是否早于论文投稿日，硬门控 |
 | ExternalStandard | 统一输出记录格式 |
