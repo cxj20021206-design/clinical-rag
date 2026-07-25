@@ -87,14 +87,18 @@ evidence_stage(C0-C4) / deployment_claim_level / region / submission_date
 
 | 连接器 | 源角色 | 喂哪些模块 | predates |
 |---|---|---|---|
-| clinicaltrials.py (CT.gov v2) | registry | comparator/endpoint/population/generalization | ✓ 按试验首次公示日 |
-| europepmc.py (Europe PMC) | discovery | 全模块补充(找指南/系统综述/文献) | ✓ **前置为检索条件**，见 §6a |
-| who_gho.py (WHO GHO OData) | epidemiology | clinical_question/population | 时间序列，标 unknown |
-| openfda.py (openFDA drug label) | regulatory | reference_standard/safety/generalization | ✓ 按 effective_time |
+| clinicaltrials.py (CT.gov v2) | registry | comparator/endpoint/population/generalization | ✓ **前置为检索条件** |
+| europepmc.py (Europe PMC) | discovery | 全模块补充(找指南/系统综述/文献) | ✓ **前置为检索条件** |
+| who_gho.py (WHO GHO OData) | epidemiology | clinical_question/population | 按指标最新数据年份 |
+| openfda.py (openFDA **器械**库) | regulatory | reference_standard/safety/generalization | ✓ 510(k) 按 decision_date |
+
+**四个连接器均已于 2026-07-25 重写降噪，见 §6a。**
 
 注册表里另有 4 个无 key Class-A 源可快速加连接器：`pubmed_eutils / pmc_oa / crossref / mesh`。
 
-## 6a. Europe PMC 检索质量重写（2026-07-25）
+## 6a. API 腿检索质量重写（2026-07-25）
+
+### 6a.1 Europe PMC
 
 **问题**：旧实现把 Claim Card 的病种和干预拼成一个裸词串、`sort=P_PDATE_D desc` 按发表日倒序。
 肺癌筛查卡实测 4 条命中里 2 条完全无关（*放疗后放射性肺炎*、*肝癌双特异性抗体*——后者靠单个
@@ -141,6 +145,72 @@ evidence_stage(C0-C4) / deployment_claim_level / region / submission_date
 **顺带修**：`schema.py: to_dict()` 现在剥掉 `query_context` 里下划线前缀的键。
 `_card`（原卡）本意只在进程内传递（`retrieve.py` 注释已如此声明），实际却随每条记录落盘，
 等于每条记录都带一份完整 Claim Card 副本。
+
+### 6a.2 ClinicalTrials.gov
+
+**问题**：不做日期约束，肺癌卡检回的试验首次公示于 2025-12 而论文 2024-05 投稿 →
+`predates=false`，按铁律不能用来要求作者，那次检索对"作者当时该做什么"贡献为零；
+且把 `intended_use` 长句原样丢给 `query.intr`（"AI early warning system for sepsis onset"）
+→ **0 命中**，降级后只按病种查，返回一堆与 AI 无关的普通脓毒症试验。
+
+**改动**：① `filter.advanced=AREA[StudyFirstPostDate]RANGE[MIN,投稿日]` 把 predates 前置；
+② 干预检索式改为 **(AI 词) AND (功能词)**——AI 词是注册库里的通用说法
+（`"artificial intelligence" OR "machine learning" OR "deep learning" OR "computer-aided"…`），
+功能词从 `intervention`/`model_output` 抽取并剔掉病种词与 AI 词本身；③ 逐档放松
+（AND → OR → 只按病种）；④ 投稿后另开小桶并显式标注。
+
+**效果**：脓毒症卡从"经胸超声心动图/C1 酯酶抑制剂/血气分析仪"变成
+**Early Warning System for Clinical Deterioration**（终点：24 小时内转 ICU 或意外死亡）、
+**Early Prediction of Sepsis**、**An Algorithm Driven Sepsis Prediction Biomarker**；
+肺癌卡拿到 **Evaluation of Lung Nodule Detection With Artificial Intelligence**、
+上海早期肺癌筛查试验（终点写明"LDCT 与 LDCT+计算机辅助的敏感度"）。两卡主检索 predates 全 true。
+
+### 6a.3 openFDA —— 从药品库改接器械库
+
+**问题**：只连了 `drug/label`。脓毒症预警 AI 那张卡实测检回
+**Silver Sulfadiazine（磺胺嘧啶银，二三度烧伤创面外用抗菌乳膏）**，只因标签里出现
+`wound sepsis`。审的是医疗 AI 软件，该查器械库。
+
+**改动**：改为按价值查三个端点——
+
+1. `device/classification`：FDA 对每类器械的**法定预期用途**定义。
+   例 "Lung Computed Tomography System, Computer-Aided Detection"(Class II, 21 CFR 892.2050)
+   定义为 "To assist radiologists in the review of … and highlight potential nodules
+   **that the radiologist should review**"。这句话直接支撑"本文声称可独立出报告，
+   超出该类产品监管定位"这种意见。
+2. `device/510k`：**按上一步拿到的 `product_code` 回查**——这是 FDA 自己的数据模型，
+   分类给品类、510(k) 给该品类下已获批的具体产品。`PIB` → IDx-DR / EyeArt / iPredict-DR；
+   `OEB` → syngo.CT Lung CAD / AVIEW Lung Nodule CAD。按器械名瞎猜则会把 "diabetic"
+   检成"糖尿病针头废弃盒"。`decision_date` 作 predates 检索条件。
+3. `drug/label`：**仅当卡片明确涉及用药决策时**才查，排最后。
+
+**排序**：病种词命中在 `device_name` 里权重加倍；泛化医学词（cancer/screening/risk）降到 0.25——
+否则 "lung cancer screening" 里的 cancer 会让"遗传性肿瘤易感基因测序"压过"肺部 CT 计算机辅助检测"。
+再按**功能**（检出/分诊/风险评估）与**模态**（CT/眼底…）加分，否则"电场肿瘤治疗仪(非小细胞肺癌)"
+会压过肺部 CAD——两者都带 lung+cancer，但前者是治疗器械。
+**不用池内 IDF**：查询词本身会污染池子（拿 lung 查就灌进一堆 lung 条目，反把 lung 权重压低），是反的。
+
+**ML 术语不得作为病种词**：`NON_CLINICAL` 拦掉 learning/deep/benchmark 等，否则一篇
+"representation learning benchmark" 论文会被配上 "Deep Learning Image Reconstruction" 的器械先例。
+病种词被滤空 → 返回空列表（纯方法学论文本来就没有对应监管品类）。
+
+### 6a.4 WHO GHO
+
+**问题**（三个硬伤，结果基本不可用）：① `kw = cond.split()[0]` **只取病种第一个词**——
+"lung cancer screening" 只查 "lung"，而 GHO 里**一条含 lung 的指标都没有** → 零命中；
+② **不校验指标是否真有数据**——"sepsis" 唯一命中 `WHS2_515`（5 岁以下儿童死因分布-新生儿脓毒症），
+该指标**一行数据都没有**，系统却把它当外部证据输出，而且卡片人群是**成人住院病人**；
+③ **只拿指标名不拿数值**，最多说"WHO 有这么个指标"。
+
+**改动**：全部病种词依次尝试（长词优先）→ **判别词过滤**（剔掉泛化词后必须命中具体词，
+否则 "cancer" 会命中 36 条乳腺/宫颈癌指标）→ **人群相符性检查**（儿童指标 vs 成人卡片直接拦下）
+→ **拉取真实数值，无数据的指标丢弃** → 按卡片 region 映射 ISO3 挑本地数据点，
+predates 按最新数据年份算。
+
+**效果**：肺癌卡、成人脓毒症卡现在都返回 **0 条**——这是正确答案，GHO 对这两个题目
+确实没有可用指标。糖网卡返回 `NCD_CCS_diab_retin`（"公立体系中糖网筛查的可及性"，USA 2021: Yes），
+糖尿病卡返回 3 条带真实数值的指标。**`epidemiology` 角色对专科病种覆盖很薄，这是数据源本身的
+局限，如实返回空比编出覆盖更重要。**
 
 ## 6b. 已实现（策展摄入这条腿）：报告规范清单
 
@@ -199,8 +269,9 @@ PROBAST+AI(2025-03-24) → `false`。后者可用于"今天能否部署"的评�
    §6b 的 yaml 结构（provenance + applicability + items + completeness）可直接复用为指南条目的载体。
 1b. **补齐两份付费清单**：CLAIM 2024 条目表（影像 AI，优先）、QUADAS-3 信号问题原文。
 2. **更多连接器**：Europe PMC 全文(OA)、openFDA 器械 510k/PMA、PubMed E-utils、术语(MeSH/ICD-11)。
-3. ~~**检索质量**：Europe PMC 关键词发现噪声偏高~~ —— ✅ 2026-07-25 完成，见 §6a。
-   剩余：CT.gov / openFDA 两个连接器尚未做同等的相关度与 predates 前置处理。
+3. ~~**检索质量**~~ —— ✅ 2026-07-25 完成，**四个 API 连接器全部重写**，见 §6a。
+   剩余：openFDA 器械分类排序在同分时仍会把邻近品类（如肺纤维化影像软件）排到肺部 CAD 之前；
+   `device/pma` 与不良事件端点未接。
 4. **对接内部核验**：定义 Claim–Evidence Graph 的落盘格式，把外部 requirement 与内部 evidence 拼起来。
 5. **Claim Card 自动抽取器**（上游）：论文 → 卡 + C0–C4 分级 + N/A 门控。
 

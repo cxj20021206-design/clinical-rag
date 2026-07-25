@@ -38,8 +38,8 @@ connectors/
   base.py               连接器接口
   clinicaltrials.py     ClinicalTrials.gov v2   (registry；comparator/endpoint/population)
   europepmc.py          Europe PMC              (discovery；分层检索指南/系统综述/文献，全模块补充)
-  who_gho.py            WHO GHO OData           (epidemiology；疾病负担/unmet need)
-  openfda.py            openFDA                 (regulatory；药品标签适应证/警示)
+  who_gho.py            WHO GHO OData           (epidemiology；疾病负担；带真实数值+人群校验)
+  openfda.py            openFDA 器械库          (regulatory；法定预期用途 + 510(k) 获批先例)
   curated_reporting.py  策展摄入层 (reporting_tool；适用性门控 + 条目→模块精确投放)
 curated/reporting_tools/  人工策展的报告规范清单 (yaml，带 provenance/许可/完整性标注)
 examples/               示例 Clinical Claim Card
@@ -49,7 +49,8 @@ docs/DESIGN.md          完整设计文档
 
 ## 三条腿（刻意区分）
 1. **干净 API 直连**（背景/发现证据，✅ 已建）：CT.gov / Europe PMC / WHO GHO / openFDA（无 key）。
-   Europe PMC 已于 2026-07-25 重写降噪（相关度排序 + 结构化 PICO 查询 + 出版类型分层 + predates 前置，见 DESIGN §6a）。
+   **四个连接器均已于 2026-07-25 重写降噪**（相关度/结构化查询、predates 前置、openFDA 改接器械库、
+   WHO GHO 补数值与人群校验，见 DESIGN §6a）。
    注册表里另有 4 个无 key Class-A 可加：pubmed_eutils / pmc_oa / crossref / mesh。
 2. **报告规范清单策展摄入**（✅ 已建，2026-07-24）：内容固定、与疾病无关 → 不需检索，一次录入永久可用。
    见下节。
@@ -85,13 +86,21 @@ docs/DESIGN.md          完整设计文档
   PROBAST+AI(2025-03-24) 晚于投稿 → `predates=false`，不得据此指责作者。
 - ✅ 门控双向验证：C1 影像卡启用 CLAIM/QUADAS-3 拦截 DECIDE-AI；C3 病房卡启用 DECIDE-AI 拦截 CLAIM/QUADAS-3；
   CONSORT/SPIRIT-AI 两卡均拦截（仅 C4）。
-- ✅ **Europe PMC 降噪（2026-07-25）**：旧实现按发表日倒序 + 裸词串，肺癌卡 4 条里 2 条完全无关
-  （放射性肺炎、肝癌抗体）、predates 全为 false、全部 tier5。重写后两张卡的命中全部切题，
-  主检索 predates 全为 true，并按证据等级分出 Tier1 指南 / Tier2 综述 / Tier5 文献。详见 DESIGN §6a。
+- ✅ **API 腿四连接器全部降噪（2026-07-25）**，详见 DESIGN §6a：
+  - Europe PMC：日期倒序+裸词串 → 相关度+结构化 PICO+出版类型分层。肺癌卡原 4 条里 2 条完全无关
+    （放射性肺炎、肝癌抗体）、predates 全 false、全 tier5；现全部切题并分出 Tier1 指南/Tier2 综述。
+  - ClinicalTrials.gov：补 predates 前置；干预检索改 (AI词) AND (功能词)。脓毒症卡从
+    "经胸超声/血气分析仪"变成 Early Warning System for Clinical Deterioration、Early Prediction of Sepsis。
+  - openFDA：**从药品库改接器械库**。原来给脓毒症预警 AI 检回"磺胺嘧啶银烧伤乳膏"；
+    现在给出 FDA 法定预期用途定义 + 按 product_code 回查的获批先例（IDx-DR / syngo.CT Lung CAD）。
+  - WHO GHO：原来只取病种首词、且输出了**一行数据都没有**的空指标（还是儿童人群配成人卡片）；
+    现在带真实数值 + 人群相符性校验，查不到就如实返回空。
 - 🕳 已知缺口（显式，不静默）：`normative` 角色（WHO/NICE/USPSTF/学会指南，8 模块里 7 个的首选源）
   仍无任何**规范条目**连接器——发现层现在能检出候选指南（中国肺癌筛查指南、ESICM 成人脓毒症 CPG 等）
   并在路由输出里报数，但只有题录+摘要，须策展摄入全文后方可作为规范条目引用；
   CLAIM 2024 条目、QUADAS-3 信号问题在付费全文中未摄入。
+- 🕳 `epidemiology` 角色（WHO GHO）对专科病种覆盖很薄——肺癌、成人脓毒症在 GHO 里都没有可用指标。
+  这是数据源本身的局限，连接器如实返回空而非编出覆盖。
 - ⏭ 待建（见 DESIGN.md §7）：规范指南策展摄入层（现已有发现层自动生成的待摄入清单）、
-  CT.gov/openFDA 的同等降噪处理、更多无 key 连接器、Claim Card 自动抽取器(上游/内部)、
+  更多无 key 连接器（PubMed/PMC 全文/术语/openFDA PMA）、Claim Card 自动抽取器(上游/内部)、
   与内部原文核验对接成 Claim–Evidence Graph。

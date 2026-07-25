@@ -26,7 +26,7 @@ predates=false（对投稿当时的评价零贡献）。四点改动：
 from __future__ import annotations
 import re
 import requests
-from base import Connector, UA
+from base import Connector, UA, clean_text, keywords, expand_plural
 from schema import ExternalStandard, compute_predates
 
 API = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
@@ -46,63 +46,13 @@ STRATA = [
     ("literature", None, "literature", 5, 0.25),
 ]
 
-# 干预词的停用词：功能词 + 空泛技术/临床词。留在 OR 子句里会让约束近乎失效。
-_STOP = {
-    "the", "a", "an", "of", "for", "and", "or", "in", "on", "with", "to", "by",
-    "from", "at", "as", "via", "using", "use", "used", "based", "its", "their",
-    "this", "that", "these", "those", "is", "are", "be",
-    "system", "systems", "tool", "tools", "method", "methods", "approach",
-    "model", "models", "interpretation", "assessment", "analysis", "evaluation",
-    "support", "clinical", "patient", "patients", "care", "study", "studies",
-    "new", "novel", "level", "onset",
-    # 人群/场景里的空泛词——留着会让人群约束近乎失效
-    "general", "medical", "medicine", "health", "healthcare", "setting", "settings",
-}
-
-
-def _expand_plural(terms: list[str]) -> list[str]:
-    """adult ↔ adults：卡里写单数、文献写复数（或反之）不该漏掉。"""
-    out = list(terms)
-    for t in terms:
-        alt = t[:-1] if t.endswith("s") else t + "s"
-        if len(alt) >= 3 and alt not in out:
-            out.append(alt)
-    return out
+def _phrase(s: str) -> str | None:
+    s = clean_text(s)
+    return f'TITLE_ABS:"{s}"' if s else None
 
 
 def _or_clause(terms: list[str]) -> str | None:
     return "(" + " OR ".join(f'TITLE_ABS:"{t}"' for t in terms) + ")" if terms else None
-
-
-def _clean(s: str) -> str:
-    """去掉会破坏 Lucene 查询的字符。"""
-    return re.sub(r'["\\:()\[\]{}^~?*]', " ", str(s or "")).strip()
-
-
-def _phrase(s: str) -> str | None:
-    s = _clean(s)
-    return f'TITLE_ABS:"{s}"' if s else None
-
-
-def _terms(*texts: str, exclude: set[str] | None = None,
-           max_terms: int = 8) -> list[str]:
-    """从自由文本里抽软约束词（保留连字符：low-dose / ai-assisted）。
-
-    `exclude` 传病种短语里已有的词——否则会出现 病种="lung cancer screening" 而
-    人群约束是 (lung OR cancer OR screening) 这种情况：凡命中病种的必然命中人群，
-    约束等于没加。
-    """
-    exclude = exclude or set()
-    out: list[str] = []
-    for t in texts:
-        for tok in _clean(t).lower().split():
-            tok = tok.strip(".,;/")
-            if len(tok) < 2 or tok in _STOP or tok in exclude or tok in out:
-                continue
-            out.append(tok)
-            if len(out) >= max_terms:
-                return out
-    return out
 
 
 def _doctype_and_tier(pubtypes: str, default_type: str, default_tier: int):
@@ -158,17 +108,17 @@ class EuropePMCConnector(Connector):
         """收紧程度阶梯，从最严到最松。逐层降级，直到某档有命中。"""
         cond = query_context.get("condition") or query_context.get("population", "")
         cond_phrase = _phrase(cond)
-        cond_tokens = set(_clean(cond).lower().split())
+        cond_tokens = set(clean_text(cond).lower().split())
 
         # 干预软约束：干预 + 模型输入/输出
-        soft = _or_clause(_terms(query_context.get("intervention", ""),
+        soft = _or_clause(keywords(query_context.get("intervention", ""),
                                  query_context.get("model_input", ""),
                                  query_context.get("model_output", ""),
                                  exclude=cond_tokens))
         # 人群约束：实测能把成人脓毒症卡的儿科指南、肺癌卡的地区性共识挤掉，
         # 换成 ESICM 成人脓毒症 CPG / ACS 肺癌筛查指南。
-        pop = _or_clause(_expand_plural(
-            _terms(query_context.get("population", ""),
+        pop = _or_clause(expand_plural(
+            keywords(query_context.get("population", ""),
                    query_context.get("setting", ""),
                    exclude=cond_tokens, max_terms=5)))
 
@@ -184,7 +134,7 @@ class EuropePMCConnector(Connector):
         # 兜底：病种词**全部 AND**（不是旧的松散裸词串）。短语档落空多半是因为卡里
         # 病种写得不规范（如 'sepsis (severe) "shock" [ICU]'），逐词 AND 仍锁得住主题；
         # 换成裸词串会检回"鼻窦炎指南"这种东西——宁可空手也不给审稿模型喂垃圾。
-        toks = _terms(cond, max_terms=6)
+        toks = keywords(cond, max_terms=6)
         if toks:
             core = " AND ".join(f'TITLE_ABS:"{t}"' for t in toks)
             if core not in {c for _, c in rungs}:
