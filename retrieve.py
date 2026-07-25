@@ -158,8 +158,15 @@ def main():
         by_src = defaultdict(int)
         for r in recs:
             by_src[r.source_id] += 1
-        print(f"\n[{module}]  命中 {len(recs)} 条 {dict(by_src)}" +
-              (f"\n   ⚠️无连接器角色(待策展): {gap}" if gap else ""))
+        # normative 仍是缺口（发现层只有题录+摘要，拿不到条文原文），但发现层检出的
+        # 指南/共识可直接当作"待策展摄入"的工作清单，所以顺带报数。
+        cand = [r for r in recs if r.document_type in ("guideline", "consensus")]
+        gap_line = ""
+        if gap:
+            gap_line = f"\n   ⚠️无连接器角色(待策展): {gap}"
+            if "normative" in gap and cand:
+                gap_line += f" — 发现层已检出 {len(cand)} 篇候选指南/共识可供策展"
+        print(f"\n[{module}]  命中 {len(recs)} 条 {dict(by_src)}" + gap_line)
         for r in recs[:3]:
             pre = r.predates_paper_submission
             flag = "" if pre == "true" else f"  <predates={pre}>"

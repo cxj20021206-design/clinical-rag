@@ -88,11 +88,59 @@ evidence_stage(C0-C4) / deployment_claim_level / region / submission_date
 | 连接器 | 源角色 | 喂哪些模块 | predates |
 |---|---|---|---|
 | clinicaltrials.py (CT.gov v2) | registry | comparator/endpoint/population/generalization | ✓ 按试验首次公示日 |
-| europepmc.py (Europe PMC) | discovery | 全模块补充(找系统综述/指南/文献) | ✓ 按首次发表日 |
+| europepmc.py (Europe PMC) | discovery | 全模块补充(找指南/系统综述/文献) | ✓ **前置为检索条件**，见 §6a |
 | who_gho.py (WHO GHO OData) | epidemiology | clinical_question/population | 时间序列，标 unknown |
 | openfda.py (openFDA drug label) | regulatory | reference_standard/safety/generalization | ✓ 按 effective_time |
 
 注册表里另有 4 个无 key Class-A 源可快速加连接器：`pubmed_eutils / pmc_oa / crossref / mesh`。
+
+## 6a. Europe PMC 检索质量重写（2026-07-25）
+
+**问题**：旧实现把 Claim Card 的病种和干预拼成一个裸词串、`sort=P_PDATE_D desc` 按发表日倒序。
+肺癌筛查卡实测 4 条命中里 2 条完全无关（*放疗后放射性肺炎*、*肝癌双特异性抗体*——后者靠单个
+`cancer` 词进来的），且 **4 条 predates 全为 false**（论文 2024-05 投稿，命中全是 2025-12 之后
+发表的），对"作者投稿当时该做什么"的评价贡献为零。而 Europe PMC 是 `discovery` 角色、对全部
+8 个模块散射，噪声被放大 8 倍。
+
+**四点改动**（`connectors/europepmc.py`）：
+
+1. **按相关度排序**——去掉 `sort` 参数。旧的日期倒序拿到的是"最新的沾边文献"而非"最相关的"，
+   这是噪声元凶，也是 predates 全 false 的直接原因。
+2. **结构化查询取代裸词串**：病种作强制短语 `TITLE_ABS:"..."`；干预/模型输入输出词作 OR 软约束；
+   **人群/场景作第二个 AND 约束**。人群约束实测把成人脓毒症卡的儿科指南、肺癌卡的地区性共识
+   挤掉，换成 ESICM 成人脓毒症 CPG 与 ACS/中国肺癌筛查指南。
+   人群词会**剔除病种短语里已有的词**——否则 病种=`"lung cancer screening"` 而人群约束是
+   `(lung OR cancer OR screening)`，凡命中病种必然命中人群，约束等于没加。
+3. **出版类型分层 + 证据等级**：指南/共识 → 系统综述/meta → 普通文献，三层按配额（5:2.5:2.5）
+   依次填充，未填满的配额顺延给下一层；据此定 `document_type` 与 `tier`（Tier1 指南 /
+   Tier2 共识·系统综述 / Tier5 普通文献）。旧实现注释写着"优先系统综述/指南"但查询里根本没有
+   `PUB_TYPE` 条件，`_doctype()` 因此**永远返回 literature**，实测 4 条全是 tier 5。
+4. **predates 前置成检索条件**：主检索限定 `FIRST_PDATE <= 投稿日`；投稿后的另开一小桶
+   （<= `limit//4`），且**只收指南/综述**——投稿后才出的普通文献既不能用来要求作者、也不构成
+   规范，纯噪声；指南/综述则可用于"今天能否部署"评价，记录 `notes` 里显式标注不得据此指责作者。
+
+**降级阶梯**：`病种短语+干预+人群 → 去人群 → 去干预 → 只要病种短语 → 病种词全部 AND`。
+阶梯**按出版类型层各走各的**——指南远比普通文献稀少，全局用同一档严格度会把指南层饿死。
+最后一档是病种词逐词 AND，**不是**旧的松散裸词串：卡里病种写得不规范时（如
+`sepsis (severe) "shock" [ICU]`）裸词串会检回"鼻窦炎指南"这种东西，逐词 AND 仍锁得住主题。
+全部落空则返回空列表——**宁可空手，也不给审稿模型喂不相干文献**。
+
+**效果**（两张示例卡，per_source=4）：
+
+| | 旧 | 新 |
+|---|---|---|
+| 肺癌筛查卡 | 2/4 完全无关；predates 全 false；全部 tier5/literature | 4 条 predates=true（中国肺癌筛查指南 T1、Update on Lung Cancer Screening Guideline T1、CT 影像组学结节恶性度系统综述 T2、文献 T5）+ 1 条投稿后指南另桶 |
+| 脓毒症 C3 卡 | — | ESICM 2025 成人脓毒症 CPG T1、德国 S3 脓毒症指南 T1、脓毒症预警系统对死亡率影响的系统综述 T2、文献 T5 + 投稿后 AI 早期预警系统综述另桶 |
+
+**副产物：normative 缺口有工作清单了。** 发现层只有题录+摘要、拿不到条文原文，因此这些指南命中
+**仍是 `source_role=discovery`**，`recommendation_or_requirement` 留空，`notes` 标"候选 normative
+文档，须策展摄入全文后方可作为规范条目引用"——不得冒充规范条目。但 `retrieve.py` 现在会在
+"待策展"提示后报出候选数（如"发现层已检出 3 篇候选指南/共识可供策展"），
+下一步的指南策展摄入层因此有了**自动生成的待摄入清单**，不必人工凭空找指南。
+
+**顺带修**：`schema.py: to_dict()` 现在剥掉 `query_context` 里下划线前缀的键。
+`_card`（原卡）本意只在进程内传递（`retrieve.py` 注释已如此声明），实际却随每条记录落盘，
+等于每条记录都带一份完整 Claim Card 副本。
 
 ## 6b. 已实现（策展摄入这条腿）：报告规范清单
 
@@ -151,7 +199,8 @@ PROBAST+AI(2025-03-24) → `false`。后者可用于"今天能否部署"的评�
    §6b 的 yaml 结构（provenance + applicability + items + completeness）可直接复用为指南条目的载体。
 1b. **补齐两份付费清单**：CLAIM 2024 条目表（影像 AI，优先）、QUADAS-3 信号问题原文。
 2. **更多连接器**：Europe PMC 全文(OA)、openFDA 器械 510k/PMA、PubMed E-utils、术语(MeSH/ICD-11)。
-3. **检索质量**：Europe PMC 目前是关键词发现，噪声偏高 → 加 PICO 结构化查询 + 出版类型/证据等级过滤。
+3. ~~**检索质量**：Europe PMC 关键词发现噪声偏高~~ —— ✅ 2026-07-25 完成，见 §6a。
+   剩余：CT.gov / openFDA 两个连接器尚未做同等的相关度与 predates 前置处理。
 4. **对接内部核验**：定义 Claim–Evidence Graph 的落盘格式，把外部 requirement 与内部 evidence 拼起来。
 5. **Claim Card 自动抽取器**（上游）：论文 → 卡 + C0–C4 分级 + N/A 门控。
 

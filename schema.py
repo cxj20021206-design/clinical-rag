@@ -90,7 +90,13 @@ class ExternalStandard:
         return errs
 
     def to_dict(self) -> dict:
-        return asdict(self)
+        d = asdict(self)
+        # query_context 里下划线前缀的键（如 `_card` 原卡）只在进程内传递，不落盘——
+        # 否则每条记录都带一份完整 Claim Card 副本。
+        qc = d.get("query_context")
+        if isinstance(qc, dict):
+            d["query_context"] = {k: v for k, v in qc.items() if not k.startswith("_")}
+        return d
 
 
 def compute_predates(pub_date: Optional[str], submission_date: Optional[str]) -> str:

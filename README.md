@@ -37,7 +37,7 @@ retrieve.py             路由层：Claim Card → 模块路由 → 连接器(�
 connectors/
   base.py               连接器接口
   clinicaltrials.py     ClinicalTrials.gov v2   (registry；comparator/endpoint/population)
-  europepmc.py          Europe PMC              (discovery；找系统综述/指南/文献，全模块补充)
+  europepmc.py          Europe PMC              (discovery；分层检索指南/系统综述/文献，全模块补充)
   who_gho.py            WHO GHO OData           (epidemiology；疾病负担/unmet need)
   openfda.py            openFDA                 (regulatory；药品标签适应证/警示)
   curated_reporting.py  策展摄入层 (reporting_tool；适用性门控 + 条目→模块精确投放)
@@ -49,6 +49,7 @@ docs/DESIGN.md          完整设计文档
 
 ## 三条腿（刻意区分）
 1. **干净 API 直连**（背景/发现证据，✅ 已建）：CT.gov / Europe PMC / WHO GHO / openFDA（无 key）。
+   Europe PMC 已于 2026-07-25 重写降噪（相关度排序 + 结构化 PICO 查询 + 出版类型分层 + predates 前置，见 DESIGN §6a）。
    注册表里另有 4 个无 key Class-A 可加：pubmed_eutils / pmc_oa / crossref / mesh。
 2. **报告规范清单策展摄入**（✅ 已建，2026-07-24）：内容固定、与疾病无关 → 不需检索，一次录入永久可用。
    见下节。
@@ -77,14 +78,20 @@ docs/DESIGN.md          完整设计文档
 "论文为 C1，CONSORT-AI 适用于 C4，套用属越级要求"。这是 C0–C4 分级的执行点——
 防止系统对一篇回顾性研究提出"你没做随机对照试验"。
 
-## 状态（2026-07-24）
+## 状态（2026-07-25）
 - ✅ 端到端跑通：注册表 / schema / 原子写 / 4 个 API 连接器 / **报告规范策展层** / predates 门控 /
   路由层 / 2 张示例 Claim Card。
 - ✅ 实测（C1 肺癌 CT 卡）：98 条去重记录、schema 零错误；TRIPOD+AI(2024-04-16) 早于投稿 → `predates=true`，
   PROBAST+AI(2025-03-24) 晚于投稿 → `predates=false`，不得据此指责作者。
 - ✅ 门控双向验证：C1 影像卡启用 CLAIM/QUADAS-3 拦截 DECIDE-AI；C3 病房卡启用 DECIDE-AI 拦截 CLAIM/QUADAS-3；
   CONSORT/SPIRIT-AI 两卡均拦截（仅 C4）。
+- ✅ **Europe PMC 降噪（2026-07-25）**：旧实现按发表日倒序 + 裸词串，肺癌卡 4 条里 2 条完全无关
+  （放射性肺炎、肝癌抗体）、predates 全为 false、全部 tier5。重写后两张卡的命中全部切题，
+  主检索 predates 全为 true，并按证据等级分出 Tier1 指南 / Tier2 综述 / Tier5 文献。详见 DESIGN §6a。
 - 🕳 已知缺口（显式，不静默）：`normative` 角色（WHO/NICE/USPSTF/学会指南，8 模块里 7 个的首选源）
-  仍无任何连接器；CLAIM 2024 条目、QUADAS-3 信号问题在付费全文中未摄入。
-- ⏭ 待建（见 DESIGN.md §7）：规范指南策展摄入层、Europe PMC 降噪(PICO+证据等级过滤)、更多无 key 连接器、
-  Claim Card 自动抽取器(上游/内部)、与内部原文核验对接成 Claim–Evidence Graph。
+  仍无任何**规范条目**连接器——发现层现在能检出候选指南（中国肺癌筛查指南、ESICM 成人脓毒症 CPG 等）
+  并在路由输出里报数，但只有题录+摘要，须策展摄入全文后方可作为规范条目引用；
+  CLAIM 2024 条目、QUADAS-3 信号问题在付费全文中未摄入。
+- ⏭ 待建（见 DESIGN.md §7）：规范指南策展摄入层（现已有发现层自动生成的待摄入清单）、
+  CT.gov/openFDA 的同等降噪处理、更多无 key 连接器、Claim Card 自动抽取器(上游/内部)、
+  与内部原文核验对接成 Claim–Evidence Graph。
