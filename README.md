@@ -4,7 +4,10 @@
 从分层的权威临床源检索"现实医学世界的标准"，返回带完整 provenance 的 `external_standard` 记录，
 写入 Claim–Evidence Graph 的**外部侧**。
 
+> **第一次看这个项目？先读 [`docs/ARCHITECTURE_GUIDE.md`](docs/ARCHITECTURE_GUIDE.md)**——
+> 零基础入门导读，讲清"输入什么 → 中间发生了什么 → 输出什么 → 为什么这么设计"。
 > 设计与决策的完整说明见 [`docs/DESIGN.md`](docs/DESIGN.md)。
+> 同类工作调研（NICE RAG / CPG-on-FHIR / LLM 评委局限）见 [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md)。
 
 ## 铁律
 - 外部源只定义论文**应该证明什么**；**绝不**替论文证明它"实际做到了什么"（那是内部原文核验，属另一子系统）。
@@ -15,6 +18,8 @@
 ## 快速开始
 ```bash
 cd /work/hdd/bgkq/xchen48/clinical-rag
+# 首次使用：摄入 USPSTF 指南语料（约 4 分钟，产物 curated/guidelines/uspstf.yaml 已入库，通常无需重跑）
+# python3 connectors/uspstf_ingest.py
 python3 retrieve.py --claim examples/claim_card_lung_ct.yaml --per-source 3
 # 输出：① 报告规范清单适用性判定(启用了哪些、没启用的理由)
 #       ② 按 8 个审查模块分组的外部标准 + 无连接器角色(待策展)提示
@@ -41,7 +46,11 @@ connectors/
   who_gho.py            WHO GHO OData           (epidemiology；疾病负担；带真实数值+人群校验)
   openfda.py            openFDA 器械库          (regulatory；法定预期用途 + 510(k) 获批先例)
   curated_reporting.py  策展摄入层 (reporting_tool；适用性门控 + 条目→模块精确投放)
+  uspstf_fetch.py       USPSTF 取数层 (索引分页 + Population|Recommendation|Grade 表解析)
+  uspstf_ingest.py      USPSTF 一次性摄入 → curated/guidelines/uspstf.yaml
+  uspstf.py             USPSTF 连接器 (normative；场景门控 + 病种门控)
 curated/reporting_tools/  人工策展的报告规范清单 (yaml，带 provenance/许可/完整性标注)
+curated/guidelines/       策展摄入的临床指南 (normative)；现有 uspstf.yaml
 examples/               示例 Clinical Claim Card
 store/                  检索记录缓存(jsonl，带日期 + query_context)
 docs/DESIGN.md          完整设计文档
@@ -54,8 +63,13 @@ docs/DESIGN.md          完整设计文档
    注册表里另有 4 个无 key Class-A 可加：pubmed_eutils / pmc_oa / crossref / mesh。
 2. **报告规范清单策展摄入**（✅ 已建，2026-07-24）：内容固定、与疾病无关 → 不需检索，一次录入永久可用。
    见下节。
-3. **规范指南策展摄入**（最高价值、最不 API 化，⏭ 待建）：WHO/NICE/USPSTF/学会指南多为 Class B PDF、
-   许可敏感 → 按 Claim Card 小批策展摄入，不做通用爬虫。路由时 `normative` 角色仍被标为"待策展"缺口。
+3. **规范指南策展摄入**（最高价值、最不 API 化，🟡 已起步 2026-07-25）：
+   **USPSTF 已摄入**（108 条主题：90 条现行推荐 / 142 条推荐条目，18 条已停用或转交）——
+   `normative` 角色首次有了连接器。选它而非 NICE 的原因：NICE 条款明令「在 NICE 内容上使用 AI
+   须另行取得许可」且国际使用收费，**不可行**；USPSTF 为美国政府作品，无改动前提下允许复制再分发，
+   版权声明未涉及 AI 用途。详见 [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md) §2。
+   **仍待策展**：WHO（CC BY-NC-SA 3.0 IGO）、学会指南（按 Claim Card 动态、每家许可不同）、
+   VA/DoD（纯 PDF，但许可无障碍）。
 
 ## 报告规范清单策展层（`curated/reporting_tools/`）
 
@@ -95,9 +109,19 @@ docs/DESIGN.md          完整设计文档
     现在给出 FDA 法定预期用途定义 + 按 product_code 回查的获批先例（IDx-DR / syngo.CT Lung CAD）。
   - WHO GHO：原来只取病种首词、且输出了**一行数据都没有**的空指标（还是儿童人群配成人卡片）；
     现在带真实数值 + 人群相符性校验，查不到就如实返回空。
-- 🕳 已知缺口（显式，不静默）：`normative` 角色（WHO/NICE/USPSTF/学会指南，8 模块里 7 个的首选源）
-  仍无任何**规范条目**连接器——发现层现在能检出候选指南（中国肺癌筛查指南、ESICM 成人脓毒症 CPG 等）
-  并在路由输出里报数，但只有题录+摘要，须策展摄入全文后方可作为规范条目引用；
+- ✅ **`normative` 首个连接器落地（2026-07-25）**：USPSTF 全量摄入 108 条主题
+  （90 条现行推荐 / 142 条推荐条目 / 18 条 Inactive·Referred 如实记入 `retired_topics`，
+  解析失败 0 → `completeness: full`）。
+  - 人群—推荐—等级由页面 `Population|Recommendation|Grade` 表**绑定**，不靠正则扫句子——
+    前列腺癌 C 级那条不以 "The USPSTF recommends" 开头，正则会整条漏掉；绑错推荐强度比不给更糟。
+  - **`recommendation_strength` / `evidence_certainty` 首次有值**（此前 0/104）。实测肺癌卡：
+    Grade=B、certainty=moderate、发布 2021-03-09 早于投稿 2024-05-01 → `predates=true`，可据此要求作者。
+  - 门控双向验证：肺癌筛查卡 ✅ 命中 `Lung Cancer: Screening`（判别词仅 `lung`——泛化词
+    cancer/screening 不计入准入，否则会误配到乳腺癌/结直肠癌筛查）；脓毒症 C3 卡 ⛔ 被场景门控拦下
+    （"USPSTF 职权仅限预防服务，套用属越权外推"），这是 `uspstf.notes: 不能外推到治疗问题` 的执行点。
+- 🕳 已知缺口（显式，不静默）：`normative` 仍缺 WHO / 学会指南 / VA-DoD（NICE 因许可禁令不可行）——
+  脓毒症一类急重症问题目前**没有任何**可用指南源；发现层能检出候选（中国肺癌筛查指南、
+  ESICM 成人脓毒症 CPG 等）并在路由输出报数，但只有题录+摘要，须策展摄入全文方可作规范条目引用；
   CLAIM 2024 条目、QUADAS-3 信号问题在付费全文中未摄入。
 - 🕳 `epidemiology` 角色（WHO GHO）对专科病种覆盖很薄——肺癌、成人脓毒症在 GHO 里都没有可用指标。
   这是数据源本身的局限，连接器如实返回空而非编出覆盖。
