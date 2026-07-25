@@ -1,0 +1,72 @@
+# 策展摄入：CONSORT-AI（含 AI 成分的临床试验"结果报告"扩展）
+# 条目逐字取自 CC BY 全文 Table 1，仅摄入 AI 专属扩展/细化条目。
+source_id: consort_spirit_ai
+variant: CONSORT-AI
+name: CONSORT-AI extension
+issuing_body: CONSORT-AI and SPIRIT-AI Steering Group (EQUATOR Network)
+document_type: reporting_guideline
+source_role: reporting_tool
+tier: 2
+region: global
+
+provenance:
+  citation: >-
+    Liu X, Cruz Rivera S, Moher D, Calvert MJ, Denniston AK; SPIRIT-AI and CONSORT-AI Working
+    Group. Reporting guidelines for clinical trial reports for interventions involving
+    artificial intelligence: the CONSORT-AI Extension. BMJ. 2020;370:m3164.
+  doi: 10.1136/bmj.m3164
+  pmid: "32909959"
+  pmcid: PMC7490784
+  canonical_url: https://doi.org/10.1136/bmj.m3164
+  publication_date: "2020-09-09"
+  license: CC BY 4.0
+  license_note: 开放许可，须署名。同期于 Nature Medicine 与 Lancet Digital Health 发表姊妹版本。
+  ingested_from: Europe PMC fullTextXML (PMC7490784) Table 1
+  ingested_date: "2026-07-24"
+  verbatim: true
+  completeness: partial
+  completeness_note: >-
+    仅摄入 14 条 AI 专属扩展/细化条目。CONSORT 2010 的通用试验报告条目（随机化、盲法、
+    样本量、参与者流程等）刻意未摄入——它们属通用试验方法学，不是 AI 特有要求，
+    且对 MedAI 论文审稿的增量价值低。需要时再补。
+
+applicability:
+  study_designs: [randomised_controlled_trial]
+  evidence_stages: [C4]
+  modalities: [any]
+  applies_when: >-
+    论文报告的确实是一项已完成的、含 AI 干预成分的随机对照试验（结果报告）。
+  not_applicable_when: >-
+    回顾性开发/验证研究、静默部署研究、早期临床评价（C0-C3）。
+    对这类论文提 "你没做 RCT" 属于越级要求，明确不得据此扣分。
+  note: 试验方案（protocol）请用 SPIRIT-AI，本清单针对已完成试验的结果报告。
+
+items:
+  - {id: "1a,b (i)", section: Title and abstract, base_item: "1a/1b", kind: elaboration, modules: [clinical_question],
+     text: "Indicate that the intervention involves artificial intelligence/machine learning in the title and/or abstract and specify the type of model."}
+  - {id: "1b (ii)", section: Title and abstract, base_item: "1b", kind: elaboration, modules: [clinical_question],
+     text: "State the intended use of the AI intervention within the trial in the title and/or abstract."}
+  - {id: "2a (i)", section: Background and objectives, base_item: "2a", kind: extension, modules: [clinical_question, workflow_deployment],
+     text: "Explain the intended use of the AI intervention in the context of the clinical pathway, including its purpose and its intended users (e.g. healthcare professionals, patients, public)."}
+  - {id: "4a (i)", section: Participants, base_item: "4a", kind: elaboration, modules: [population_validity],
+     text: "State the inclusion and exclusion criteria at the level of participants."}
+  - {id: "4a (ii)", section: Participants, base_item: "4a", kind: extension, modules: [population_validity, generalization],
+     text: "State the inclusion and exclusion criteria at the level of the input data."}
+  - {id: "4b", section: Participants, base_item: "4b", kind: extension, modules: [workflow_deployment, generalization],
+     text: "Describe how the AI intervention was integrated into the trial setting, including any onsite or offsite requirements."}
+  - {id: "5 (i)", section: Interventions, base_item: "5", kind: extension, modules: [generalization],
+     text: "State which version of the AI algorithm was used."}
+  - {id: "5 (ii)", section: Interventions, base_item: "5", kind: extension, modules: [reference_standard, generalization],
+     text: "Describe how the input data were acquired and selected for the AI intervention."}
+  - {id: "5 (iii)", section: Interventions, base_item: "5", kind: extension, modules: [workflow_deployment, safety_harm_equity],
+     text: "Describe how poor quality or unavailable input data were assessed and handled."}
+  - {id: "5 (iv)", section: Interventions, base_item: "5", kind: extension, modules: [workflow_deployment],
+     text: "Specify whether there was human-AI interaction in the handling of the input data, and what level of expertise was required of users."}
+  - {id: "5 (v)", section: Interventions, base_item: "5", kind: extension, modules: [endpoint_utility, workflow_deployment],
+     text: "Specify the output of the AI intervention"}
+  - {id: "5 (vi)", section: Interventions, base_item: "5", kind: extension, modules: [workflow_deployment, endpoint_utility],
+     text: "Explain how the AI intervention's outputs contributed to decision-making or other elements of clinical practice."}
+  - {id: "19", section: Harms, base_item: "19", kind: extension, modules: [safety_harm_equity],
+     text: "Describe results of any analysis of performance errors and how errors were identified, where applicable. If no such analysis was planned or done, justify why not."}
+  - {id: "25", section: Funding, base_item: "25", kind: extension, modules: [generalization, workflow_deployment],
+     text: "State whether and how the AI intervention and/or its code can be accessed, including any restrictions to access or re-use."}

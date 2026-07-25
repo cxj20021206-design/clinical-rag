@@ -1,0 +1,18 @@
+# 示例 Clinical Claim Card —— C3 前瞻部署（与 C1 肺癌 CT 卡对照，用于验证适用性门控）
+# 一篇声称"AI 脓毒症早期预警系统已在真实病房前瞻运行"的论文。
+clinical_claim:
+  disease_or_condition: "sepsis"
+  intended_use: "AI early warning system for sepsis onset"
+  target_population: "adult inpatients on general medical wards"
+  intended_user: "ward nurses and physicians"
+  care_setting: "inpatient ward"
+  model_input: "EHR vital signs, laboratory results, nursing observations"
+  model_output: "sepsis onset risk score with alert threshold"
+  clinical_decision_affected: "escalation of care / initiation of sepsis bundle"
+  comparator: "NEWS2 standard early warning score"
+  claimed_benefit: "earlier recognition, shorter time to antibiotics, lower mortality"
+  claimed_harm_reduction: "fewer missed deteriorations"
+  evidence_stage: "C3"          # 前瞻/静默部署验证
+  deployment_claim_level: "prospective silent-then-live deployment in two hospitals"
+  region: "US"
+  submission_date: "2025-09-15"

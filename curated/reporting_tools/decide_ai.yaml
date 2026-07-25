@@ -1,0 +1,119 @@
+# 策展摄入：DECIDE-AI（AI 决策支持系统"早期真实临床评价"报告规范）
+# 条目逐字取自 CC BY-NC 全文 Table 2。
+source_id: decide_ai
+name: DECIDE-AI
+issuing_body: DECIDE-AI Steering Group (EQUATOR Network)
+document_type: reporting_guideline
+source_role: reporting_tool
+tier: 2
+region: global
+
+provenance:
+  citation: >-
+    Vasey B, Nagendran M, Campbell B, et al. Reporting guideline for the early stage clinical
+    evaluation of decision support systems driven by artificial intelligence: DECIDE-AI.
+    BMJ. 2022;377:e070904.
+  doi: 10.1136/bmj-2022-070904
+  pmid: "35584845"
+  pmcid: PMC9116198
+  canonical_url: https://doi.org/10.1136/bmj-2022-070904
+  publication_date: "2022-05-18"
+  license: CC BY-NC 4.0
+  license_note: 非商业性使用许可；学术研究用途符合条款。同期于 Nature Medicine 发表姊妹版本。
+  ingested_from: Europe PMC fullTextXML (PMC9116198) Table 2
+  ingested_date: "2026-07-24"
+  verbatim: true
+  completeness: full
+  completeness_note: >-
+    17 条 AI 专属条目（1-17）+ 10 条通用条目（I-X）全部摄入；含 a/b/c 子条目后展开为 38 条。
+
+applicability:
+  study_designs: [early_clinical_evaluation, prospective_deployment, human_factors_study]
+  evidence_stages: [C3, C4]
+  modalities: [any]
+  applies_when: >-
+    AI 决策支持系统在真实临床环境中的早期评价（含安全性、人因工程、人机协作）。
+  not_applicable_when: >-
+    纯离线回顾性基准测试 / 仅在历史数据集上验证的研究（C0-C2）。
+    对这类论文提 "你没做人因评价" 属于越级要求，不得据此扣分。
+  note: >-
+    DECIDE-AI 覆盖的是 "模型已离线验证完、刚进入真实临床" 这一阶段，位于 TRIPOD+AI 之后、
+    CONSORT-AI 之前。若论文自称已在真实工作流中使用，本清单才生效。
+
+items:
+  - {id: "1",  section: Title, theme: Title, kind: ai_specific, modules: [clinical_question],
+     text: "Identify the study as early clinical evaluation of a decision support system based on AI or machine learning, specifying the problem addressed"}
+  - {id: "I",  section: Abstract, theme: Abstract, kind: generic, modules: [clinical_question, workflow_deployment],
+     text: "Provide a structured summary of the study. Consider including: intended use of the AI system, type of underlying algorithm, study setting, number of patients and users included, primary and secondary outcomes, key safety endpoints, human factors evaluated, main results, conclusions"}
+  - {id: "2a", section: Introduction, theme: Intended use, kind: ai_specific, modules: [clinical_question, comparator_baseline, population_validity],
+     text: "Describe the targeted medical condition(s) and problem(s), including the current standard practice, and the intended patient population(s)"}
+  - {id: "2b", section: Introduction, theme: Intended use, kind: ai_specific, modules: [clinical_question, workflow_deployment, endpoint_utility],
+     text: "Describe the intended users of the AI system, its planned integration in the care pathway, and the potential impact, including patient outcomes, it is intended to have"}
+  - {id: "II", section: Introduction, theme: Objectives, kind: generic, modules: [clinical_question],
+     text: "State the study objectives"}
+  - {id: "III", section: Methods, theme: Research governance, kind: generic, modules: [generalization, safety_harm_equity],
+     text: "Provide a reference to any study protocol, study registration number, and ethics approval"}
+  - {id: "3a", section: Methods, theme: Participants, kind: ai_specific, modules: [population_validity],
+     text: "Describe how patients were recruited, stating the inclusion and exclusion criteria at both patient and data level, and how the number of recruited patients was decided"}
+  - {id: "3b", section: Methods, theme: Participants, kind: ai_specific, modules: [population_validity, workflow_deployment],
+     text: "Describe how users were recruited, stating the inclusion and exclusion criteria, and how the intended number of recruited users was decided"}
+  - {id: "3c", section: Methods, theme: Participants, kind: ai_specific, modules: [workflow_deployment],
+     text: "Describe steps taken to familiarise the users with the AI system, including any training received prior to the study"}
+  - {id: "4a", section: Methods, theme: AI system, kind: ai_specific, modules: [generalization, population_validity],
+     text: "Briefly describe the AI system, specifying its version and type of underlying algorithm used. Describe, or provide a direct reference to, the characteristics of the patient population on which the algorithm was trained and its performance in preclinical development/validation studies"}
+  - {id: "4b", section: Methods, theme: AI system, kind: ai_specific, modules: [workflow_deployment, reference_standard],
+     text: "Identify the data used as inputs. Describe how the data were acquired, the process needed to enter the input data, the pre-processing applied, and how missing/low-quality data were handled"}
+  - {id: "4c", section: Methods, theme: AI system, kind: ai_specific, modules: [workflow_deployment, endpoint_utility],
+     text: "Describe the AI system outputs and how they were presented to the users (an image may be useful)"}
+  - {id: "5a", section: Methods, theme: Implementation, kind: ai_specific, modules: [workflow_deployment, generalization],
+     text: "Describe the settings in which the AI system was evaluated"}
+  - {id: "5b", section: Methods, theme: Implementation, kind: ai_specific, modules: [workflow_deployment],
+     text: "Describe the clinical workflow/care pathway in which the AI system was evaluated, the timing of its use, and how the final supported decision was reached and by whom"}
+  - {id: "IV", section: Methods, theme: Outcomes, kind: generic, modules: [endpoint_utility],
+     text: "Specify the primary and secondary outcomes measured"}
+  - {id: "6a", section: Methods, theme: Safety and errors, kind: ai_specific, modules: [safety_harm_equity],
+     text: "Provide a description of how significant errors/malfunctions were defined and identified"}
+  - {id: "6b", section: Methods, theme: Safety and errors, kind: ai_specific, modules: [safety_harm_equity],
+     text: "Describe how any risks to patient safety or instances of harm were identified, analysed, and minimised"}
+  - {id: "7",  section: Methods, theme: Human factors, kind: ai_specific, modules: [workflow_deployment],
+     text: "Describe the human factors tools, methods or frameworks used, the use cases considered, and the users involved"}
+  - {id: "V",  section: Methods, theme: Analysis, kind: generic, modules: [endpoint_utility, generalization],
+     text: "Describe the statistical methods by which the primary and secondary outcomes were analysed, as well as any prespecified additional analyses, including subgroup analyses and their rationale"}
+  - {id: "8",  section: Methods, theme: Ethics, kind: ai_specific, modules: [safety_harm_equity],
+     text: "Describe whether specific methodologies were utilised to fulfil an ethics-related goal (such as algorithmic fairness) and their rationale"}
+  - {id: "VI", section: Methods, theme: Patient involvement, kind: generic, modules: [clinical_question, safety_harm_equity],
+     text: "State how patients were involved in any aspect of: the development of the research question, the study design, and the conduct of the study"}
+  - {id: "9a", section: Results, theme: Participants, kind: ai_specific, modules: [population_validity],
+     text: "Describe the baseline characteristics of the patients included in the study, and report on input data missingness"}
+  - {id: "9b", section: Results, theme: Participants, kind: ai_specific, modules: [population_validity, workflow_deployment],
+     text: "Describe the baseline characteristics of the users included in the study"}
+  - {id: "10a", section: Results, theme: Implementation, kind: ai_specific, modules: [workflow_deployment],
+     text: "Report on the user exposure to the AI system, on the number of instances the AI system was used, and on the users' adherence to the intended implementation"}
+  - {id: "10b", section: Results, theme: Implementation, kind: ai_specific, modules: [workflow_deployment],
+     text: "Report any significant changes to the clinical workflow or care pathway caused by the AI system"}
+  - {id: "VII", section: Results, theme: Main results, kind: generic, modules: [endpoint_utility, comparator_baseline],
+     text: "Report on the prespecified outcomes, including outcomes for any comparison group if applicable"}
+  - {id: "VIII", section: Results, theme: Subgroups analysis, kind: generic, modules: [safety_harm_equity, generalization],
+     text: "Report on the differences in the main outcomes according to the prespecified subgroups"}
+  - {id: "11", section: Results, theme: Modifications, kind: ai_specific, modules: [generalization, safety_harm_equity],
+     text: "Report any changes made to the AI system or its hardware platform during the study. Report the timing of these modifications, the rationale for each, and any changes in outcomes observed after each of them"}
+  - {id: "12", section: Results, theme: Human-computer agreement, kind: ai_specific, modules: [workflow_deployment],
+     text: "Report on the user agreement with the AI system. Describe any instances of and reasons for user variation from the AI system's recommendations and, if applicable, users changing their mind based on the AI system's recommendations"}
+  - {id: "13a", section: Results, theme: Safety and errors, kind: ai_specific, modules: [safety_harm_equity],
+     text: "List any significant errors/malfunctions related to: AI system recommendations, supporting software/hardware, or users. Include details of: (i) rate of occurrence, (ii) apparent causes, (iii) whether they could be corrected, and (iv) any significant potential impacts on patient care"}
+  - {id: "13b", section: Results, theme: Safety and errors, kind: ai_specific, modules: [safety_harm_equity],
+     text: "Report on any risks to patient safety or observed instances of harm (including indirect harm) identified during the study"}
+  - {id: "14a", section: Results, theme: Human factors, kind: ai_specific, modules: [workflow_deployment],
+     text: "Report on the usability evaluation, according to recognised standards or frameworks"}
+  - {id: "14b", section: Results, theme: Human factors, kind: ai_specific, modules: [workflow_deployment],
+     text: "Report on the user learning curves evaluation"}
+  - {id: "15", section: Discussion, theme: Support for intended use, kind: ai_specific, modules: [endpoint_utility, clinical_question],
+     text: "Discuss whether the results obtained support the intended use of the AI system in clinical settings"}
+  - {id: "16", section: Discussion, theme: Safety and errors, kind: ai_specific, modules: [safety_harm_equity],
+     text: "Discuss what the results indicate about the safety profile of the AI system. Discuss any observed errors/malfunctions and instances of harm, their implications for patient care, and whether/how they can be mitigated"}
+  - {id: "IX", section: Discussion, theme: Strengths and limitations, kind: generic, modules: [generalization],
+     text: "Discuss the strengths and limitations of the study"}
+  - {id: "17", section: Statements, theme: Data availability, kind: ai_specific, modules: [generalization],
+     text: "Disclose if and how data and relevant code are available"}
+  - {id: "X",  section: Statements, theme: Conflicts of interest, kind: generic, modules: [generalization],
+     text: "Disclose any relevant conflicts of interest, including the source of funding for the study, the role of funders, any other roles played by commercial companies, and personal conflicts of interest for each author"}

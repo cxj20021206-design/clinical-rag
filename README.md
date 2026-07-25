@@ -16,9 +16,17 @@
 ```bash
 cd /work/hdd/bgkq/xchen48/clinical-rag
 python3 retrieve.py --claim examples/claim_card_lung_ct.yaml --per-source 3
-# 输出：按 8 个审查模块分组的外部标准 + 无连接器角色(待策展)提示；结果写 store/retrieved.jsonl
+# 输出：① 报告规范清单适用性判定(启用了哪些、没启用的理由)
+#       ② 按 8 个审查模块分组的外部标准 + 无连接器角色(待策展)提示
+#       结果写 store/retrieved.jsonl
 ```
 指定模块：`--modules comparator_baseline endpoint_utility`
+
+两张示例卡刻意用来验证适用性门控**双向**都正确：
+```bash
+python3 retrieve.py --claim examples/claim_card_lung_ct.yaml    # C1 影像 → CLAIM/QUADAS-3 启用，DECIDE-AI 拦截
+python3 retrieve.py --claim examples/claim_card_sepsis_c3.yaml  # C3 病房 → DECIDE-AI 启用，CLAIM/QUADAS-3 拦截
+```
 
 ## 结构
 ```
@@ -32,20 +40,51 @@ connectors/
   europepmc.py          Europe PMC              (discovery；找系统综述/指南/文献，全模块补充)
   who_gho.py            WHO GHO OData           (epidemiology；疾病负担/unmet need)
   openfda.py            openFDA                 (regulatory；药品标签适应证/警示)
+  curated_reporting.py  策展摄入层 (reporting_tool；适用性门控 + 条目→模块精确投放)
+curated/reporting_tools/  人工策展的报告规范清单 (yaml，带 provenance/许可/完整性标注)
 examples/               示例 Clinical Claim Card
 store/                  检索记录缓存(jsonl，带日期 + query_context)
 docs/DESIGN.md          完整设计文档
 ```
 
-## 两条腿（刻意区分）
+## 三条腿（刻意区分）
 1. **干净 API 直连**（背景/发现证据，✅ 已建）：CT.gov / Europe PMC / WHO GHO / openFDA（无 key）。
    注册表里另有 4 个无 key Class-A 可加：pubmed_eutils / pmc_oa / crossref / mesh。
-2. **规范指南策展摄入**（最高价值、最不 API 化，⏭ 待建）：WHO/NICE/USPSTF/学会指南多为 Class B PDF、
-   许可敏感 → 按 Claim Card 小批策展摄入，不做通用爬虫。路由时这些角色会被标为"待策展"缺口。
+2. **报告规范清单策展摄入**（✅ 已建，2026-07-24）：内容固定、与疾病无关 → 不需检索，一次录入永久可用。
+   见下节。
+3. **规范指南策展摄入**（最高价值、最不 API 化，⏭ 待建）：WHO/NICE/USPSTF/学会指南多为 Class B PDF、
+   许可敏感 → 按 Claim Card 小批策展摄入，不做通用爬虫。路由时 `normative` 角色仍被标为"待策展"缺口。
 
-## 状态（2026-07-22）
-- ✅ 端到端跑通：注册表 / schema / 原子写 / 4 个连接器 / predates 门控 / 路由层 / 示例 Claim Card。
-- ✅ 实测：肺癌筛查 Claim Card → CT.gov 出真实 comparator(AI vs 放射科医生)+endpoint，Europe PMC 出相关文献，
-  投稿后文献被 `predates=false` 正确标记。
-- ⏭ 待建（见 DESIGN.md §未来）：规范指南策展摄入层、更多无 key 连接器、Claim Card 自动抽取器(上游/内部)、
-  与内部原文核验子系统对接成 Claim–Evidence Graph。
+## 报告规范清单策展层（`curated/reporting_tools/`）
+
+与 API 连接器的根本区别：这些文档**内容固定**，不随论文变化，所以不检索，而是按
+**研究设计 + 证据阶段**做适用性门控。
+
+| 清单 | 发布 | 条目 | 完整性 | 适用于 | 许可 |
+|---|---|---|---|---|---|
+| TRIPOD+AI | 2024-04-16 | 52 | 完整 | 预测模型开发/验证 (C0–C4) | CC BY 4.0 |
+| PROBAST+AI | 2025-03-24 | 34 | 步骤3信号问题 | 预测模型偏倚评估 | CC BY-NC 4.0 |
+| DECIDE-AI | 2022-05-18 | 38 | 完整 | 早期真实临床评价 (C3–C4) | CC BY-NC 4.0 |
+| CONSORT-AI | 2020-09-09 | 14 | AI 专属扩展 | 已完成 AI 试验报告 (C4) | CC BY 4.0 |
+| SPIRIT-AI | 2020-09-09 | 15 | AI 专属扩展 | AI 试验方案 (C4) | CC BY 4.0 |
+| QUADAS-3 | 2026-02-17 | 4 | ⚠️仅域级骨架 | 诊断准确性研究 | 付费全文，待补 |
+| CLAIM 2024 | 2024-07-01 | 0 | 🕳**未摄入** | 影像 AI | 付费全文，待补 |
+
+条目原文取自各清单的 CC BY / CC BY-NC 开放全文（Europe PMC），逐字保存并注明出处；
+付费全文的两份**如实标为未摄入/仅骨架**，系统不得声称"已按其核查"。
+
+**关键设计：不适用时必须说明理由。** 一份清单被拦下不是静默返回空，而是打印
+"论文为 C1，CONSORT-AI 适用于 C4，套用属越级要求"。这是 C0–C4 分级的执行点——
+防止系统对一篇回顾性研究提出"你没做随机对照试验"。
+
+## 状态（2026-07-24）
+- ✅ 端到端跑通：注册表 / schema / 原子写 / 4 个 API 连接器 / **报告规范策展层** / predates 门控 /
+  路由层 / 2 张示例 Claim Card。
+- ✅ 实测（C1 肺癌 CT 卡）：98 条去重记录、schema 零错误；TRIPOD+AI(2024-04-16) 早于投稿 → `predates=true`，
+  PROBAST+AI(2025-03-24) 晚于投稿 → `predates=false`，不得据此指责作者。
+- ✅ 门控双向验证：C1 影像卡启用 CLAIM/QUADAS-3 拦截 DECIDE-AI；C3 病房卡启用 DECIDE-AI 拦截 CLAIM/QUADAS-3；
+  CONSORT/SPIRIT-AI 两卡均拦截（仅 C4）。
+- 🕳 已知缺口（显式，不静默）：`normative` 角色（WHO/NICE/USPSTF/学会指南，8 模块里 7 个的首选源）
+  仍无任何连接器；CLAIM 2024 条目、QUADAS-3 信号问题在付费全文中未摄入。
+- ⏭ 待建（见 DESIGN.md §7）：规范指南策展摄入层、Europe PMC 降噪(PICO+证据等级过滤)、更多无 key 连接器、
+  Claim Card 自动抽取器(上游/内部)、与内部原文核验对接成 Claim–Evidence Graph。

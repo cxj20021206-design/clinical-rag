@@ -19,14 +19,18 @@ from clinicaltrials import ClinicalTrialsConnector       # noqa: E402
 from europepmc import EuropePMCConnector                 # noqa: E402
 from who_gho import WHOGHOConnector                       # noqa: E402
 from openfda import OpenFDAConnector                       # noqa: E402
+from curated_reporting import build_connectors, applicability_report  # noqa: E402
 
 # 已实现的连接器：source_id -> 实例
 CONNECTORS = {
+    # ① API 直连（在线检索，结果随 Claim Card 变化）
     "clinicaltrials_gov": ClinicalTrialsConnector(),
     "europepmc": EuropePMCConnector(),
     "who_gho": WHOGHOConnector(),
     "openfda": OpenFDAConnector(),
 }
+# ② 策展摄入（离线固定内容，按研究设计/证据阶段做适用性门控）
+CONNECTORS.update(build_connectors())
 
 
 def load_registry(path=None):
@@ -34,7 +38,11 @@ def load_registry(path=None):
 
 
 def claim_to_query(card: dict) -> dict:
-    """Clinical Claim Card → 连接器统一 query_context。"""
+    """Clinical Claim Card → 连接器统一 query_context。
+
+    前六个键给 API 连接器做查询翻译；后四个是策展层做适用性门控用的（证据阶段/
+    研究设计/输入输出模态），API 连接器忽略即可。`_card` 传原卡，下划线前缀不落盘。
+    """
     return {
         "condition": card.get("disease_or_condition", ""),
         "intervention": card.get("intended_use") or card.get("model_output", ""),
@@ -42,6 +50,12 @@ def claim_to_query(card: dict) -> dict:
         "outcome": card.get("claimed_benefit", ""),
         "setting": card.get("care_setting", ""),
         "region": card.get("region", ""),
+        # 门控字段
+        "evidence_stage": card.get("evidence_stage", ""),
+        "model_input": card.get("model_input", ""),
+        "model_output": card.get("model_output", ""),
+        "deployment_claim_level": card.get("deployment_claim_level", ""),
+        "_card": card,
     }
 
 
@@ -89,11 +103,14 @@ def retrieve(card: dict, submission_date: str | None,
         except Exception as e:
             print(f"  [warn] {sid} 检索异常: {str(e)[:80]}")
             cache[sid] = []
-    # 3) 结果分配到所有相关模块 (一条记录可跨模块)
+    # 3) 结果分配到相关模块。记录若自带 modules 声明 (策展条目)，只落到声明的模块；
+    #    留空的 (API 连接器) 沿用原行为：按源角色散射到所有相关模块。
     for module in modules:
         gaps[module] = roles_without_connector(registry, module, routing)
         for sid in module_sources[module]:
-            results[module].extend(cache.get(sid, []))
+            for rec in cache.get(sid, []):
+                if not rec.modules or module in rec.modules:
+                    results[module].append(rec)
     return results, gaps
 
 
@@ -112,21 +129,46 @@ def main():
 
     results, gaps = retrieve(card, submission, args.modules, args.per_source, registry)
 
+    # 策展清单的适用性判定：启用了哪些、以及**没启用哪些和为什么**
+    print("\n=== 报告规范清单适用性 (策展层) ===")
+    for a in applicability_report(card):
+        if not a["applicable"]:
+            mark = "⛔"                      # 不适用——理由必须打印，防止越级要求
+        elif a["n_items"] == 0:
+            mark = "🕳"                      # 适用但一条都没摄入 = 真缺口，不能显示成已覆盖
+        elif a["completeness"] != "full":
+            mark = "🟡"                      # 适用但摄入不完整
+        else:
+            mark = "✅"
+        print(f" {mark} {a['name']:18s} ({a['n_items']:3d} 条, 完整性={a['completeness']}"
+              f", 发布 {a['publication_date']})")
+        print(f"      {a['reason']}")
+        if a["applicable"] and a["completeness"] != "full":
+            print(f"      ⚠️ {(a['completeness_note'] or '').strip()[:170]}")
+        if a["applicable"] and submission and a["publication_date"] and \
+                a["publication_date"] > submission:
+            print(f"      ⏱ 发布于投稿日 {submission} 之后 → predates=false，"
+                  f"可用于'今天能否部署'，不得据此指责作者。")
+
     all_recs = []
     print("\n=== 检索结果 (按模块) ===")
     for module in (args.modules or registry["module_routing"].keys()):
         recs = results.get(module, [])
         gap = sorted(gaps.get(module, []))
-        print(f"\n[{module}]  命中 {len(recs)} 条" +
-              (f"  ⚠️无连接器角色(待策展): {gap}" if gap else ""))
+        by_src = defaultdict(int)
+        for r in recs:
+            by_src[r.source_id] += 1
+        print(f"\n[{module}]  命中 {len(recs)} 条 {dict(by_src)}" +
+              (f"\n   ⚠️无连接器角色(待策展): {gap}" if gap else ""))
         for r in recs[:3]:
             pre = r.predates_paper_submission
             flag = "" if pre == "true" else f"  <predates={pre}>"
             print(f"   - {r.source_id}: {(r.title or '')[:64]}{flag}")
         all_recs.extend(recs)
 
-    # dedup 后统一写盘
-    uniq = {(r.source_id, r.canonical_url): r for r in all_recs}
+    # dedup 后统一写盘。键含 section_page_table——同一份清单的不同条目共用 canonical_url，
+    # 只按 (source_id, url) 去重会把整份清单塌成一条。
+    uniq = {(r.source_id, r.canonical_url, r.section_page_table): r for r in all_recs}
     atomic_write_jsonl(list(uniq.values()), args.out)
     errs = [e for r in uniq.values() for e in r.validate()]
     print(f"\n=== 写入 {args.out} ({len(uniq)} 条去重记录)；schema 错误: {errs or '无'} ===")

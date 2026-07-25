@@ -1,0 +1,144 @@
+# 策展摄入：TRIPOD+AI 报告规范清单
+# 条目原文逐字取自 CC BY 4.0 全文 Table 2，可合规复用（须署名，见 provenance）。
+source_id: tripod_ai
+name: TRIPOD+AI
+issuing_body: TRIPOD+AI Group (EQUATOR Network)
+document_type: reporting_guideline
+source_role: reporting_tool
+tier: 2
+region: global
+
+provenance:
+  citation: >-
+    Collins GS, Moons KGM, Dhiman P, et al. TRIPOD+AI statement: updated guidance for
+    reporting clinical prediction models that use regression or machine learning methods.
+    BMJ. 2024;385:e078378.
+  doi: 10.1136/bmj-2023-078378
+  pmid: "38626948"
+  pmcid: PMC11019967
+  canonical_url: https://doi.org/10.1136/bmj-2023-078378
+  publication_date: "2024-04-16"
+  license: CC BY 4.0
+  license_note: 开放许可，允许复用与再分发，须署名原作者。
+  ingested_from: Europe PMC fullTextXML (PMC11019967) Table 2
+  ingested_date: "2026-07-24"
+  verbatim: true          # 条目文本为原文逐字，未改写
+  completeness: full      # 27 个编号条目 / 展开后 52 个子条目，全部摄入
+
+applicability:
+  study_designs: [prediction_model_development, prediction_model_validation]
+  evidence_stages: [C0, C1, C2, C3, C4]
+  modalities: [any]
+  applies_when: >-
+    论文开发或验证一个针对个体的多变量预测模型（诊断或预后），无论用回归还是机器学习。
+  not_applicable_when: >-
+    论文不产出个体层面的预测/风险估计（如纯图像分割、纯表示学习、纯方法学基准）。
+  note: >-
+    TRIPOD+AI 是报告完整性清单，不是偏倚评估工具，也不是质量评分。
+    "未报告某条目" 只能推出 "报告不完整"，不能直接推出 "研究有偏倚"。偏倚请用 PROBAST+AI。
+
+items:
+  - {id: "1",   section: Title,          applies_to: [D, E], modules: [clinical_question, population_validity],
+     text: "Identify the study as developing or evaluating the performance of a multivariable prediction model, the target population, and the outcome to be predicted"}
+  - {id: "2",   section: Abstract,       applies_to: [D, E], modules: [clinical_question],
+     text: "See TRIPOD+AI for Abstracts checklist"}
+  - {id: "3a",  section: Background,     applies_to: [D, E], modules: [clinical_question, comparator_baseline],
+     text: "Explain the healthcare context (including whether diagnostic or prognostic) and rationale for developing or evaluating the prediction model, including references to existing models"}
+  - {id: "3b",  section: Background,     applies_to: [D, E], modules: [clinical_question, population_validity, workflow_deployment],
+     text: "Describe the target population and the intended purpose of the prediction model in the context of the care pathway, including its intended users (eg, healthcare professionals, patients, public)"}
+  - {id: "3c",  section: Background,     applies_to: [D, E], modules: [safety_harm_equity, population_validity],
+     text: "Describe any known health inequalities between sociodemographic groups"}
+  - {id: "4",   section: Objectives,     applies_to: [D, E], modules: [clinical_question],
+     text: "Specify the study objectives, including whether the study describes the development or validation of a prediction model (or both)"}
+  - {id: "5a",  section: Data,           applies_to: [D, E], modules: [population_validity, generalization],
+     text: "Describe the sources of data separately for the development and evaluation datasets (eg, randomised trial, cohort, routine care or registry data), the rationale for using these data, and representativeness of the data"}
+  - {id: "5b",  section: Data,           applies_to: [D, E], modules: [population_validity, generalization],
+     text: "Specify the dates of the collected participant data, including start and end of participant accrual; and, if applicable, end of follow-up"}
+  - {id: "6a",  section: Participants,   applies_to: [D, E], modules: [population_validity, generalization],
+     text: "Specify key elements of the study setting (eg, primary care, secondary care, general population) including the number and location of centres"}
+  - {id: "6b",  section: Participants,   applies_to: [D, E], modules: [population_validity],
+     text: "Describe the eligibility criteria for study participants"}
+  - {id: "6c",  section: Participants,   applies_to: [D, E], modules: [population_validity],
+     text: "Give details of any treatments received, and how they were handled during model development or evaluation, if relevant"}
+  - {id: "7",   section: Data preparation, applies_to: [D, E], modules: [generalization, safety_harm_equity],
+     text: "Describe any data pre-processing and quality checking, including whether this was similar across relevant sociodemographic groups"}
+  - {id: "8a",  section: Outcome,        applies_to: [D, E], modules: [endpoint_utility, reference_standard, safety_harm_equity],
+     text: "Clearly define the outcome that is being predicted and the time horizon, including how and when assessed, the rationale for choosing this outcome, and whether the method of outcome assessment is consistent across sociodemographic groups"}
+  - {id: "8b",  section: Outcome,        applies_to: [D, E], modules: [reference_standard],
+     text: "If outcome assessment requires subjective interpretation, describe the qualifications and demographic characteristics of the outcome assessors"}
+  - {id: "8c",  section: Outcome,        applies_to: [D, E], modules: [reference_standard],
+     text: "Report any actions to blind assessment of the outcome to be predicted"}
+  - {id: "9a",  section: Predictors,     applies_to: [D],    modules: [generalization],
+     text: "Describe the choice of initial predictors (eg, literature, previous models, all available predictors) and any pre-selection of predictors before model building"}
+  - {id: "9b",  section: Predictors,     applies_to: [D, E], modules: [reference_standard, generalization],
+     text: "Clearly define all predictors, including how and when they were measured (and any actions to blind assessment of predictors for the outcome and other predictors)"}
+  - {id: "9c",  section: Predictors,     applies_to: [D, E], modules: [reference_standard],
+     text: "If predictor measurement requires subjective interpretation, describe the qualifications and demographic characteristics of the predictor assessors"}
+  - {id: "10",  section: Sample size,    applies_to: [D, E], modules: [generalization],
+     text: "Explain how the study size was arrived at (separately for development and evaluation), and justify that the study size was sufficient to answer the research question. Include details of any sample size calculation"}
+  - {id: "11",  section: Missing data,   applies_to: [D, E], modules: [generalization, population_validity],
+     text: "Describe how missing data were handled. Provide reasons for omitting any data"}
+  - {id: "12a", section: Analytical methods, applies_to: [D], modules: [generalization],
+     text: "Describe how the data were used (eg, for development and evaluation of model performance) in the analysis, including whether the data were partitioned, considering any sample size requirements"}
+  - {id: "12b", section: Analytical methods, applies_to: [D], modules: [generalization],
+     text: "Depending on the type of model, describe how predictors were handled in the analyses (functional form, rescaling, transformation, or any standardisation)"}
+  - {id: "12c", section: Analytical methods, applies_to: [D], modules: [generalization],
+     text: "Specify the type of model, rationale, all model building steps, including any hyperparameter tuning, and method for internal validation"}
+  - {id: "12d", section: Analytical methods, applies_to: [D, E], modules: [generalization],
+     text: "Describe if and how any heterogeneity in estimates of model parameter values and model performance was handled and quantified across clusters (eg, hospitals, countries). See TRIPOD-Cluster for additional considerations"}
+  - {id: "12e", section: Analytical methods, applies_to: [D, E], modules: [endpoint_utility, generalization],
+     text: "Specify all measures and plots used (and their rationale) to evaluate model performance (eg, discrimination, calibration, clinical utility) and, if relevant, to compare multiple models"}
+  - {id: "12f", section: Analytical methods, applies_to: [E], modules: [generalization, safety_harm_equity],
+     text: "Describe any model updating (eg, recalibration) arising from the model evaluation, either overall or for particular sociodemographic groups or settings"}
+  - {id: "12g", section: Analytical methods, applies_to: [E], modules: [generalization, workflow_deployment],
+     text: "For model evaluation, describe how the model predictions were calculated (eg, formula, code, object, application programming interface)"}
+  - {id: "13",  section: Class imbalance, applies_to: [D, E], modules: [generalization],
+     text: "If class imbalance methods were used, state why and how this was done, and any subsequent methods to recalibrate the model or the model predictions"}
+  - {id: "14",  section: Fairness,       applies_to: [D, E], modules: [safety_harm_equity],
+     text: "Describe any approaches that were used to address model fairness and their rationale"}
+  - {id: "15",  section: Model output,   applies_to: [D],    modules: [endpoint_utility, workflow_deployment],
+     text: "Specify the output of the prediction model (eg, probabilities, classification). Provide details and rationale for any classification and how the thresholds were identified"}
+  - {id: "16",  section: Training versus evaluation, applies_to: [D, E], modules: [generalization],
+     text: "Identify any differences between the development and evaluation data in healthcare setting, eligibility criteria, outcome, and predictors"}
+  - {id: "17",  section: Ethical approval, applies_to: [D, E], modules: [safety_harm_equity],
+     text: "Name the institutional research board or ethics committee that approved the study and describe the participant informed consent or the ethics committee waiver of informed consent"}
+  - {id: "18a", section: "Open science / Funding", applies_to: [D, E], modules: [generalization],
+     text: "Give the source of funding and the role of the funders for the present study"}
+  - {id: "18b", section: "Open science / Conflicts of interest", applies_to: [D, E], modules: [generalization],
+     text: "Declare any conflicts of interest and financial disclosures for all authors"}
+  - {id: "18c", section: "Open science / Protocol", applies_to: [D, E], modules: [generalization],
+     text: "Indicate where the study protocol can be accessed or state that a protocol was not prepared"}
+  - {id: "18d", section: "Open science / Registration", applies_to: [D, E], modules: [generalization],
+     text: "Provide registration information for the study, including register name and registration number, or state that the study was not registered"}
+  - {id: "18e", section: "Open science / Data sharing", applies_to: [D, E], modules: [generalization],
+     text: "Provide details of the availability of the study data"}
+  - {id: "18f", section: "Open science / Code sharing", applies_to: [D, E], modules: [generalization, workflow_deployment],
+     text: "Provide details of the availability of the analytical code"}
+  - {id: "19",  section: Patient and public involvement, applies_to: [D, E], modules: [clinical_question, safety_harm_equity],
+     text: "Provide details of any patient and public involvement during the design, conduct, reporting, interpretation, or dissemination of the study or state no involvement"}
+  - {id: "20a", section: "Results / Participants", applies_to: [D, E], modules: [population_validity],
+     text: "Describe the flow of participants through the study, including the number of participants with and without the outcome and, if applicable, a summary of the follow-up time. A diagram may be helpful"}
+  - {id: "20b", section: "Results / Participants", applies_to: [D, E], modules: [population_validity, safety_harm_equity],
+     text: "Report the characteristics overall and, where applicable, for each data source or setting, including the key dates, key predictors (including demographics), treatments received, sample size, number of outcome events, follow-up time, and amount of missing data. A table may be helpful. Report any differences across key demographic groups"}
+  - {id: "20c", section: "Results / Participants", applies_to: [E], modules: [generalization, population_validity],
+     text: "For model evaluation, show a comparison with the development data of the distribution of important predictors (demographics, predictors, and outcome)"}
+  - {id: "21",  section: Model development, applies_to: [D, E], modules: [generalization],
+     text: "Specify the number of participants and outcome events in each analysis (eg, for model development, hyperparameter tuning, model evaluation)"}
+  - {id: "22",  section: Model specification, applies_to: [D], modules: [generalization, workflow_deployment],
+     text: "Provide details of the full prediction model (eg, formula, code, object, application programming interface) to allow predictions in new individuals and to enable third party evaluation and implementation, including any restrictions to access or reuse (eg, freely available, proprietary)"}
+  - {id: "23a", section: Model performance, applies_to: [D, E], modules: [endpoint_utility, safety_harm_equity],
+     text: "Report model performance estimates with confidence intervals, including for any key subgroups (eg, sociodemographic). Consider plots to aid presentation"}
+  - {id: "23b", section: Model performance, applies_to: [D, E], modules: [generalization],
+     text: "If examined, report results of any heterogeneity in model performance across clusters. See TRIPOD-Cluster for additional details"}
+  - {id: "24",  section: Model updating, applies_to: [E], modules: [generalization],
+     text: "Report the results from any model updating, including the updated model and subsequent performance"}
+  - {id: "25",  section: "Discussion / Interpretation", applies_to: [D, E], modules: [endpoint_utility, safety_harm_equity],
+     text: "Give an overall interpretation of the main results, including issues of fairness in the context of the objectives and previous studies"}
+  - {id: "26",  section: "Discussion / Limitations", applies_to: [D, E], modules: [generalization, population_validity],
+     text: "Discuss any limitations of the study (such as a non-representative sample, sample size, overfitting, missing data) and their effects on any biases, statistical uncertainty, and generalisability"}
+  - {id: "27a", section: Usability of the model in the context of current care, applies_to: [D], modules: [workflow_deployment, safety_harm_equity],
+     text: "Describe how poor quality or unavailable input data (eg, predictor values) should be assessed and handled when implementing the prediction model"}
+  - {id: "27b", section: Usability of the model in the context of current care, applies_to: [D], modules: [workflow_deployment],
+     text: "Specify whether users will be required to interact in the handling of the input data or use of the model, and what level of expertise is required of users"}
+  - {id: "27c", section: Usability of the model in the context of current care, applies_to: [D, E], modules: [generalization],
+     text: "Discuss any next steps for future research, with a specific view to applicability and generalisability of the model"}

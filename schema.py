@@ -16,12 +16,20 @@ DOCUMENT_TYPES = {
     "systematic_review", "registry", "terminology",
     # 工程扩展：发现层文献 / 流行病学统计 (source_role 会标明其非规范性)
     "literature", "epidemiology",
+    # 策展摄入层：报告规范清单 / 偏倚评估工具 / 证据框架 (reporting_tool 角色)
+    "reporting_guideline", "bias_tool", "evidence_framework",
 }
 SOURCE_ROLES = {
     "normative", "evidence_synthesis", "regulatory", "registry",
     "terminology", "epidemiology", "reporting_tool", "discovery",
 }
 ACCESS_CLASSES = {"A", "B", "C"}
+# 八个审查模块 (须与 clinical_sources.yaml: module_routing 的键一致)
+REVIEW_MODULES = {
+    "clinical_question", "population_validity", "reference_standard",
+    "comparator_baseline", "endpoint_utility", "generalization",
+    "safety_harm_equity", "workflow_deployment",
+}
 
 
 @dataclass
@@ -61,9 +69,15 @@ class ExternalStandard:
     notes: Optional[str] = None
     # 结构化查询上下文 (PICO/Intended-Use)，便于审计"为什么检到这条"
     query_context: dict = field(default_factory=dict)
+    # 本条记录服务哪些审查模块。留空 = 不限定，由路由层按源角色分配（API 连接器的默认行为）；
+    # 非空 = 记录自己声明（策展条目用，让清单条目精确落到对应模块而非全模块散射）。
+    modules: list = field(default_factory=list)
 
     def validate(self) -> list[str]:
         errs = []
+        for m in self.modules:
+            if m not in REVIEW_MODULES:
+                errs.append(f"modules 含未知模块 '{m}'")
         if self.document_type not in DOCUMENT_TYPES:
             errs.append(f"document_type '{self.document_type}' 不在 {sorted(DOCUMENT_TYPES)}")
         if self.source_role and self.source_role not in SOURCE_ROLES:

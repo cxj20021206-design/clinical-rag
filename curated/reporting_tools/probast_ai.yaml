@@ -1,0 +1,116 @@
+# 策展摄入：PROBAST+AI 偏倚/适用性评估工具
+# 信号问题逐字取自 CC BY-NC 全文 Table 2（步骤 3）。
+source_id: probast_ai
+name: PROBAST+AI
+issuing_body: PROBAST+AI Group
+document_type: bias_tool
+source_role: reporting_tool
+tier: 2
+region: global
+
+provenance:
+  citation: >-
+    Moons KGM, Damen JAA, Kaul T, et al. PROBAST+AI: an updated quality, risk of bias, and
+    applicability assessment tool for prediction models using regression or artificial
+    intelligence methods. BMJ. 2025;388:e082505.
+  doi: 10.1136/bmj-2024-082505
+  pmid: "40127903"
+  pmcid: PMC11931409
+  canonical_url: https://doi.org/10.1136/bmj-2024-082505
+  publication_date: "2025-03-24"
+  license: CC BY-NC 4.0
+  license_note: >-
+    非商业性使用许可。本项目为学术研究用途，符合 NC 条款；若系统日后转为商业用途，
+    须重新取得授权。license_review_required=true。
+  ingested_from: Europe PMC fullTextXML (PMC11931409) Table 2
+  ingested_date: "2026-07-24"
+  verbatim: true
+  completeness: partial
+  completeness_note: >-
+    已摄入步骤 3 的全部信号问题（开发 16 条 + 评估 18 条，共 34 条）。PROBAST+AI 完整流程共 4 步，
+    步骤 1-2（判定是否为预测模型研究、提取模型信息）与步骤 4（总体判定）为流程说明，未逐条摄入。
+
+applicability:
+  study_designs: [prediction_model_development, prediction_model_validation]
+  evidence_stages: [C0, C1, C2, C3, C4]
+  modalities: [any]
+  applies_when: >-
+    先确认研究对象确为个体层面的诊断/预后预测模型，再使用本工具。
+  not_applicable_when: >-
+    非个体预测模型的研究（如纯方法学基准、分割任务、干预性试验）。
+  note: >-
+    这是偏倚与适用性评估工具，回答 "这个研究结论有多可信"，与 TRIPOD+AI（报告完整性）互补。
+    信号问题的答案域为 yes / probably yes / probably no / no / no information / not applicable；
+    域级判定为 low / high / unclear。审稿时不得把 "no information" 直接当作 "high risk of bias"。
+
+items:
+  # ---- 模型开发阶段 (model development) ----
+  - {id: "dev-1.1", phase: development, domain: Participants and data sources, modules: [population_validity, generalization],
+     text: "Were appropriate data sources used?"}
+  - {id: "dev-1.2", phase: development, domain: Participants and data sources, modules: [population_validity, generalization],
+     text: "Was an appropriate study design used?"}
+  - {id: "dev-1.3", phase: development, domain: Participants and data sources, modules: [population_validity],
+     text: "Did the inclusions and exclusions of study participants result in a representative dataset?"}
+  - {id: "dev-2.1", phase: development, domain: Predictors, modules: [reference_standard, safety_harm_equity],
+     text: "Were predictors defined and assessed in a similar way for all participants?"}
+  - {id: "dev-2.2", phase: development, domain: Predictors, modules: [reference_standard, generalization],
+     text: "Was any preprocessing of predictors similar for all participants?"}
+  - {id: "dev-2.3", phase: development, domain: Predictors, modules: [reference_standard],
+     text: "Were predictor assessments made without knowledge of outcome data?"}
+  - {id: "dev-2.4", phase: development, domain: Predictors, modules: [workflow_deployment, population_validity],
+     text: "Were the predictors included in the model available at the time the model was intended to be used?"}
+  - {id: "dev-3.1", phase: development, domain: Outcomes, modules: [reference_standard, endpoint_utility],
+     text: "Were outcomes defined and assessed appropriately?"}
+  - {id: "dev-3.2", phase: development, domain: Outcomes, modules: [reference_standard, safety_harm_equity],
+     text: "Were outcomes defined and assessed in a similar way for all participants?"}
+  - {id: "dev-3.3", phase: development, domain: Outcomes, modules: [reference_standard],
+     text: "Were outcome assessments made without use or knowledge of predictor data?"}
+  - {id: "dev-3.4", phase: development, domain: Outcomes, modules: [reference_standard, endpoint_utility],
+     text: "Was the time interval between predictor assessment and outcome assessment appropriate?"}
+  - {id: "dev-4.1", phase: development, domain: Analyses, modules: [generalization],
+     text: "Was there evidence that the sample size was reasonable?"}
+  - {id: "dev-4.2", phase: development, domain: Analyses, modules: [generalization],
+     text: "Were continuous and categorical predictors handled appropriately?"}
+  - {id: "dev-4.3", phase: development, domain: Analyses, modules: [generalization, population_validity],
+     text: "Were participants with missing or censored data handled appropriately in the analysis?"}
+  - {id: "dev-4.4", phase: development, domain: Analyses, modules: [generalization],
+     text: "If methods to address class imbalance were used, was the model or the model predictions recalibrated?"}
+  - {id: "dev-4.5", phase: development, domain: Analyses, modules: [generalization],
+     text: "Were methods used to address potential model overfitting?"}
+  # ---- 模型评估阶段 (model evaluation) ----
+  - {id: "eval-1.1", phase: evaluation, domain: Participants and data sources, modules: [population_validity, generalization],
+     text: "Were appropriate data sources used?"}
+  - {id: "eval-1.2", phase: evaluation, domain: Participants and data sources, modules: [population_validity, generalization],
+     text: "Was an appropriate study design used?"}
+  - {id: "eval-1.3", phase: evaluation, domain: Participants and data sources, modules: [population_validity],
+     text: "Did the inclusions and exclusions of study participants result in a representative dataset?"}
+  - {id: "eval-2.1", phase: evaluation, domain: Predictors, modules: [reference_standard, safety_harm_equity],
+     text: "Were predictors defined and assessed in a similar way for all participants?"}
+  - {id: "eval-2.2", phase: evaluation, domain: Predictors, modules: [reference_standard, generalization],
+     text: "Was any preprocessing of predictors similar for all participants?"}
+  - {id: "eval-2.3", phase: evaluation, domain: Predictors, modules: [reference_standard],
+     text: "Were predictor assessments made without knowledge of outcome data?"}
+  - {id: "eval-2.4", phase: evaluation, domain: Predictors, modules: [workflow_deployment, population_validity],
+     text: "Were the predictors included in the model available at the time the model was intended to be used?"}
+  - {id: "eval-3.1", phase: evaluation, domain: Outcomes, modules: [reference_standard, endpoint_utility],
+     text: "Were outcomes defined and assessed appropriately?"}
+  - {id: "eval-3.2", phase: evaluation, domain: Outcomes, modules: [reference_standard, safety_harm_equity],
+     text: "Were outcomes defined and assessed in a similar way for all participants?"}
+  - {id: "eval-3.3", phase: evaluation, domain: Outcomes, modules: [reference_standard],
+     text: "Were outcome assessments made without use or knowledge of predictor data?"}
+  - {id: "eval-3.4", phase: evaluation, domain: Outcomes, modules: [reference_standard, endpoint_utility],
+     text: "Was the time interval between predictor assessment and outcome assessment appropriate?"}
+  - {id: "eval-4.1", phase: evaluation, domain: Analyses, modules: [generalization],
+     text: "Was model evaluation based on only apparent performance avoided?"}
+  - {id: "eval-4.2", phase: evaluation, domain: Analyses, modules: [generalization],
+     text: "Was there evidence that the sample size was reasonable?"}
+  - {id: "eval-4.3", phase: evaluation, domain: Analyses, modules: [generalization, population_validity],
+     text: "Were participants with missing or censored data handled appropriately in the analysis?"}
+  - {id: "eval-4.4", phase: evaluation, domain: Analyses, modules: [generalization],
+     text: "If methods to address class imbalance were used, was the evaluation done in a dataset without correction for imbalance?"}
+  - {id: "eval-4.5", phase: evaluation, domain: Analyses, modules: [generalization],
+     text: "If data splitting was done to create training and test datasets, was there evidence that data leakage was avoided?"}
+  - {id: "eval-4.6", phase: evaluation, domain: Analyses, modules: [generalization],
+     text: "If resampling methods were used to evaluate model performance, were all model development steps replicated in the resampling process?"}
+  - {id: "eval-4.7", phase: evaluation, domain: Analyses, modules: [endpoint_utility, generalization],
+     text: "Was the predictive performance of the model evaluated appropriately—for example, calibration, discrimination, and net benefit?"}

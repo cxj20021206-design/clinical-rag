@@ -1,0 +1,63 @@
+# 策展摄入：QUADAS-3（诊断准确性研究的质量/偏倚评估工具，2026 版）
+# 结构取自 Bristol 官方工具页；信号问题原文在 Annals of Internal Medicine 付费全文中，未摄入。
+source_id: quadas_3
+name: QUADAS-3
+issuing_body: QUADAS Group (University of Bristol)
+document_type: bias_tool
+source_role: reporting_tool
+tier: 2
+region: global
+
+provenance:
+  citation: >-
+    Whiting PF, Tomlinson E, Rutjes AWS, et al. QUADAS-3: A revised tool for the quality
+    assessment of diagnostic test accuracy studies. Ann Intern Med. 2026 Feb 17.
+  pmid: "41698208"
+  companion: >-
+    QUADAS-3 Explanation and Elaboration: Guidance for Quality Assessment of Diagnostic Test
+    Accuracy Studies. Ann Intern Med. 2026 Feb 17. PMID 41698205.
+  canonical_url: https://www.bristol.ac.uk/population-health-sciences/projects/quadas/quadas-3/quadas-3-tool/
+  publication_date: "2026-02-17"
+  license: 未开放获取（Annals of Internal Medicine 付费全文）；工具页为免费阅读，复用条款需逐项核对。
+  license_note: license_review_required = true
+  ingested_from: Bristol 官方 QUADAS-3 工具页（2026-07-24 取）
+  ingested_date: "2026-07-24"
+  verbatim: false
+  completeness: structure_only
+  completeness_note: >-
+    ⚠️ 仅摄入工具的结构骨架（6 步流程 + 4 个偏倚域）。逐条信号问题原文位于付费全文，
+    本次未获取，因此**不得**声称已按 QUADAS-3 逐条核查。补齐需人工从原文策展。
+    取代 QUADAS-2（2011）。
+
+applicability:
+  study_designs: [diagnostic_test_accuracy]
+  evidence_stages: [C1, C2, C3]
+  modalities: [any]
+  applies_when: >-
+    研究评估一个指标测试（index test）相对参考标准的诊断准确性（敏感度/特异度等）。
+  not_applicable_when: 预后预测模型（用 PROBAST+AI）、干预性试验（用 RoB 2）。
+  note: >-
+    诊断准确性研究只能证明"测得准不准"，**不能**证明临床效用（患者结局改善）。
+    审稿时不得把高 AUC 直接当作临床获益证据。
+
+# 已核实的结构（非逐条信号问题）
+structure:
+  phases:
+    - "1. State the systematic review synthesis questions"
+    - "2. Define the ideal test accuracy trial for each synthesis question"
+    - "3. Draw a flow diagram"
+    - "4. Identify the accuracy estimates to assess for risk of bias and applicability"
+    - "5. Assess risk of bias and concerns regarding applicability"
+    - "6. Overall judgment"
+  risk_of_bias_domains: [Participants, Index test, Target condition, Analysis]
+  applicability_domains: [Participants, Index test, Target condition]
+
+items:
+  - {id: "domain-1", domain: Participants, kind: domain_only, modules: [population_validity],
+     text: "Risk of bias and applicability concerns arising from the participants included (QUADAS-3 域级；逐条信号问题未摄入)"}
+  - {id: "domain-2", domain: Index test, kind: domain_only, modules: [reference_standard, generalization],
+     text: "Risk of bias and applicability concerns arising from the index test, its conduct and interpretation (QUADAS-3 域级；逐条信号问题未摄入)"}
+  - {id: "domain-3", domain: Target condition, kind: domain_only, modules: [reference_standard, endpoint_utility],
+     text: "Risk of bias and applicability concerns arising from the definition and determination of the target condition (QUADAS-3 域级；逐条信号问题未摄入)"}
+  - {id: "domain-4", domain: Analysis, kind: domain_only, modules: [generalization],
+     text: "Risk of bias arising from the analysis of accuracy estimates (QUADAS-3 域级；逐条信号问题未摄入)"}

@@ -1,0 +1,43 @@
+# 策展摄入：CLAIM 2024（医学影像 AI 报告清单）—— ⚠️ 条目未摄入（付费墙）
+source_id: claim_2024
+name: CLAIM 2024 Update
+issuing_body: "Radiology: Artificial Intelligence (RSNA)"
+document_type: reporting_guideline
+source_role: reporting_tool
+tier: 2
+region: global
+
+provenance:
+  citation: >-
+    Tejani AS, Klontzas ME, Gatti AA, et al. Checklist for Artificial Intelligence in Medical
+    Imaging (CLAIM): 2024 Update. Radiol Artif Intell. 2024;6(4):e240300.
+  doi: 10.1148/ryai.240300
+  pmid: "38809149"
+  pmcid: PMC11304031
+  canonical_url: https://doi.org/10.1148/ryai.240300
+  publication_date: "2024-07-01"
+  license: 未开放获取（isOpenAccess=N；PMC 全文 2026-07-24 取回 404）
+  license_note: license_review_required = true；复用条款需向 RSNA 核对。
+  ingested_from: null
+  ingested_date: "2026-07-24"
+  verbatim: false
+  completeness: none
+  completeness_note: >-
+    ⚠️ 本次仅摄入身份、出处与适用条件，**条目一条都没摄入**。
+    尝试过的合规路径：Europe PMC fullTextXML (PMC11304031) → 404；
+    相关伞状综述 (PMC12417908) 未列出条目表。
+    补齐路径：人工获取原文后按 CLAIM 2024 条目表策展录入（本项目最优先的影像类缺口）。
+    在补齐之前，系统**不得**声称"已按 CLAIM 核查"，只能提示"本文属影像 AI，应对照 CLAIM 2024"。
+
+applicability:
+  study_designs: [medical_imaging_ai]
+  evidence_stages: [C0, C1, C2, C3, C4]
+  modalities: [medical_imaging]
+  applies_when: >-
+    论文的模型输入为医学影像（CT / MRI / X 光 / 超声 / 病理切片 / 眼底照相等）。
+  not_applicable_when: 非影像输入的模型。
+  note: >-
+    CLAIM 是影像 AI 的报告清单，不替代 ACR 等专科对真实检查路径的要求。
+    与 TRIPOD+AI 并用：TRIPOD+AI 管预测模型报告，CLAIM 管影像特有环节。
+
+items: []          # 有意为空——见 completeness_note

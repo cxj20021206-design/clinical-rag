@@ -94,10 +94,62 @@ evidence_stage(C0-C4) / deployment_claim_level / region / submission_date
 
 注册表里另有 4 个无 key Class-A 源可快速加连接器：`pubmed_eutils / pmc_oa / crossref / mesh`。
 
+## 6b. 已实现（策展摄入这条腿）：报告规范清单
+
+**2026-07-24 补齐。** `curated/reporting_tools/*.yaml` + `connectors/curated_reporting.py`。
+
+为什么这批先做：`reporting_tool` 角色的文档（TRIPOD+AI / PROBAST+AI / DECIDE-AI /
+CONSORT-AI / SPIRIT-AI / QUADAS-3 / CLAIM）**内容固定、与疾病无关**——它们是"这类研究必须
+报告/必须核查什么"的清单，不随 Claim Card 变化。因此不需要检索、不需要连接器、不需要爬虫，
+一次人工录入即永久可用。而 `module_routing` 里 `generalization` 与 `workflow_deployment`
+两个模块都点名要 reporting_tool，此前是"待策展"缺口。
+
+### 与 API 连接器的三点不同
+
+1. **不检索，只做适用性门控。** 输入不是查询词，而是 Claim Card 的
+   `evidence_stage` + 推断出的研究设计（`infer_study_designs`：从 `model_input` 判影像、
+   `model_output` 判预测/诊断、`evidence_stage` 判部署阶段）。
+2. **不适用时必须写明理由**（`check_applicability` 返回 `(bool, reason)`）。
+   这是 C0–C4 分级的执行点：对 C1 回顾性论文套 CONSORT-AI 会输出
+   "论文为 C1，CONSORT-AI 适用于 C4，套用属越级要求"，而不是静默返回空。
+   `clinical_trial_protocol` **永不推断**，必须由卡显式声明——误判会引入
+   "你没写数据监查计划"这类完全不适用的意见。
+3. **条目自带模块归属。** `ExternalStandard.modules` 新增字段：条目声明自己服务哪些审查模块，
+   路由层只把它投放到声明的模块，而非按源角色散射到全部相关模块（API 连接器行为不变）。
+   `limit` 被有意忽略——清单是完整要求集，截断等于静默丢弃要求。
+
+### 摄入内容与许可
+
+条目原文取自各清单的开放全文（Europe PMC `fullTextXML`），逐字保存并记录
+citation / DOI / PMID / PMCID / 发布日 / 许可 / 摄入来源 / `verbatim` / `completeness`。
+
+| 清单 | 发布日 | 条目数 | completeness | 许可 |
+|---|---|---|---|---|
+| TRIPOD+AI | 2024-04-16 | 52 | full | CC BY 4.0 |
+| PROBAST+AI | 2025-03-24 | 34 | partial（步骤3信号问题） | CC BY-NC 4.0 |
+| DECIDE-AI | 2022-05-18 | 38 | full | CC BY-NC 4.0 |
+| CONSORT-AI | 2020-09-09 | 14 | partial（仅 AI 专属扩展） | CC BY 4.0 |
+| SPIRIT-AI | 2020-09-09 | 15 | partial（仅 AI 专属扩展） | CC BY 4.0 |
+| QUADAS-3 | 2026-02-17 | 4 | **structure_only** | 付费全文 |
+| CLAIM 2024 | 2024-07-01 | 0 | **none** | 付费全文 |
+
+CC BY-NC 两份（PROBAST+AI / DECIDE-AI）为非商业许可，学术研究用途符合条款；系统若转商用须重新授权。
+QUADAS-3 与 CLAIM 2024 全文在付费墙后，**条目未摄入**——文件里如实标注并写明补齐路径，
+系统在补齐前只能提示"本文属该类研究，应对照该清单"，不得声称"已按其逐条核查"。
+
+### predates 门控在这里同样生效
+
+清单本身有发布日。例如 C1 肺癌卡（投稿 2024-05-01）：TRIPOD+AI(2024-04-16) → `true`；
+PROBAST+AI(2025-03-24) → `false`。后者可用于"今天能否部署"的评价，但不得用来指责作者。
+
 ## 7. 未来工作
 
-1. **规范指南策展摄入层（最高价值）**：WHO/NICE/USPSTF/学会指南多为 Class B PDF、许可敏感 →
-   按 Claim Card 小批策展摄入（fetch + 分节 + provenance），补上路由里 `normative` 的"待策展"缺口。
+0. ~~报告规范清单策展层~~ —— ✅ 2026-07-24 完成，见 §6b。`reporting_tool` 缺口已闭合。
+1. **规范指南策展摄入层（最高价值，仍是最大缺口）**：WHO/NICE/USPSTF/学会指南多为 Class B PDF、
+   许可敏感 → 按 Claim Card 小批策展摄入（fetch + 分节 + provenance），补上路由里 `normative`
+   的"待策展"缺口。注意 8 个模块里有 7 个把 normative 列为首选源，目前**一个连接器都没有**。
+   §6b 的 yaml 结构（provenance + applicability + items + completeness）可直接复用为指南条目的载体。
+1b. **补齐两份付费清单**：CLAIM 2024 条目表（影像 AI，优先）、QUADAS-3 信号问题原文。
 2. **更多连接器**：Europe PMC 全文(OA)、openFDA 器械 510k/PMA、PubMed E-utils、术语(MeSH/ICD-11)。
 3. **检索质量**：Europe PMC 目前是关键词发现，噪声偏高 → 加 PICO 结构化查询 + 出版类型/证据等级过滤。
 4. **对接内部核验**：定义 Claim–Evidence Graph 的落盘格式，把外部 requirement 与内部 evidence 拼起来。

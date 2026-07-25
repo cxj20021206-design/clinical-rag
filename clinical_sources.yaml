@@ -366,8 +366,11 @@ sources:
     machine_access: [html, pdf]
     license_review_required: false
     url: "https://www.bmj.com/content/385/bmj-2023-078378"
-    modules: [generalization]
+    # modules 按 curated/reporting_tools/tripod_ai.yaml 的条目实际覆盖更新 (2026-07-24)
+    modules: [clinical_question, population_validity, reference_standard, comparator_baseline,
+              endpoint_utility, generalization, safety_harm_equity, workflow_deployment]
     applies_when: "预测模型开发/验证的报告完整性；非偏倚工具"
+    curated: "curated/reporting_tools/tripod_ai.yaml (52 条，完整)"
 
   - id: probast_ai
     name: PROBAST+AI
@@ -380,8 +383,10 @@ sources:
     machine_access: [html, pdf]
     license_review_required: false
     url: "https://www.bmj.com/content/388/bmj-2024-082505"
-    modules: [generalization]
+    modules: [population_validity, reference_standard, endpoint_utility,
+              generalization, safety_harm_equity, workflow_deployment]
     applies_when: "先确认是个体诊断/预后预测模型"
+    curated: "curated/reporting_tools/probast_ai.yaml (34 条信号问题，步骤3)"
 
   - id: quadas_3
     name: QUADAS-3 (2026 取代 QUADAS-2)
@@ -394,8 +399,9 @@ sources:
     machine_access: [html]
     license_review_required: false
     url: "https://www.bristol.ac.uk/population-health-sciences/projects/quadas/quadas-3/quadas-3-tool/"
-    modules: [reference_standard, generalization]
+    modules: [population_validity, reference_standard, endpoint_utility, generalization]
     applies_when: "诊断准确性研究；不能证明临床效用"
+    curated: "curated/reporting_tools/quadas_3.yaml (仅域级骨架，信号问题在付费全文，待补)"
 
   - id: rob2_robins_i
     name: Cochrane RoB 2 / ROBINS-I
@@ -422,8 +428,10 @@ sources:
     machine_access: [html]
     license_review_required: false
     url: "https://www.equator-network.org/reporting-guidelines/consort-artificial-intelligence/"
-    modules: [endpoint_utility, workflow_deployment]
+    modules: [clinical_question, population_validity, reference_standard, comparator_baseline,
+              endpoint_utility, generalization, safety_harm_equity, workflow_deployment]
     applies_when: "研究设计确为相应临床试验时"
+    curated: "curated/reporting_tools/{consort_ai,spirit_ai}.yaml (29 条 AI 专属扩展)"
 
   - id: decide_ai
     name: DECIDE-AI
@@ -436,8 +444,10 @@ sources:
     machine_access: [html]
     license_review_required: false
     url: "https://www.equator-network.org/reporting-guidelines/reporting-guideline-for-the-early-stage-clinical-evaluation-of-decision-support-systems-driven-by-artificial-intelligence-decide-ai/"
-    modules: [workflow_deployment, safety_harm_equity]
+    modules: [clinical_question, population_validity, reference_standard, comparator_baseline,
+              endpoint_utility, generalization, safety_harm_equity, workflow_deployment]
     applies_when: "早期真实临床环境评价；不适用纯离线回顾 benchmark"
+    curated: "curated/reporting_tools/decide_ai.yaml (38 条，完整)"
 
   - id: claim_2024
     name: CLAIM 2024 (影像 AI 报告)
