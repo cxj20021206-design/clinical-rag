@@ -381,7 +381,9 @@ USPSTF 是**一个机构一个网站**，写一个抓取器即可。学会指南
 
 - `rec_sections` —— 每条推荐是一个标题为 Recommendation 的 `<sec>`（韩国脓毒症 CPG）；
 - `rec_boxes` —— 推荐写在 `<boxed-text>` 里；
-- `rec_tables` —— "Summary of recommendations" 汇总表，一行一条（德国 S3 / WSES / ESPNIC）。
+- `rec_tables` —— "Summary of recommendations" 汇总表，一行一条（德国 S3 / WSES / ESPNIC）；
+  **有表头就按列取**（`Recommendation` 列取条文，`Quality of evidence` / `Level of agreement`
+  列取分级），没表头才退回启发式，理由见下文③。
 
 ### 关键实现决策（四条，都是实测撞出来的）
 
@@ -396,11 +398,21 @@ Comments 小节末尾**。按兄弟找会让 13 条推荐里 12 条丢掉临床�
 强度去标第一条。切点是"以中括号分级标记收尾"，且**一格多条时只能就地解析分级**，
 一格一条时才可借同行的强度列/证据列——否则同行条目互相污染。
 
-**③ 汇总表要两道过滤，缺一不可。** 初版只要求 caption 含 "recommendation"、行文本够长，结果：
+**③ 汇总表：caption 要收紧，行要**按表头列**取，两者解决的是相反方向的错。**
+
+*假阳（抓进不是推荐的东西）*：初版只要求 caption 含 "recommendation"、行文本够长，结果
 Chest/AABB 输血指南的《Hemoglobin Thresholds in Studies Included **per Recommendation**》
-是研究特征表，抓出 "Gastrointestinal bleeding" 这种单元格碎片；巴西胸科学会指南的筛查
-**入选标准**表被抓成推荐。故 caption 必须**以** "(summary of) recommendations" 起头，
-且行本身必须含推荐动词/分级标记。
+（研究特征表）抓出 "Gastrointestinal bleeding" 这种单元格碎片；巴西胸科学会指南的筛查
+**入选标准**表被抓成推荐。故 caption 必须**以** "(summary of) recommendations" 起头。
+
+*假阴（静默丢掉真推荐）*：收紧后又要求每行含推荐动词（recommend/should/must），
+在 ESPNIC 儿科 POCUS 指南上 **41 条推荐只抽出 10 条**——其余写作 "POCUS is helpful to…"、
+"POCUS may detect…"，本来就没有推荐动词。被丢掉的 31 条里**包含全部肺部推荐**，
+系统会据此得出"该指南没有肺部推荐"的错误结论。
+改为先找表头（`Recommendation | Level of agreement | Quality of evidence`）**按列取值**
+后 41/41 齐全，且证据等级与一致程度直接取指南自己的栏位，不再靠正则猜；
+只有找不到表头时才退回"最长单元格 + 推荐动词"的启发式。
+**沉默的截断比报错更危险**——与 §6a"全落空返空列表，宁可空手不喂垃圾"是同一取向的两面。
 
 **④ 病种门控：多词条目按整词组匹配，单词条目才按词匹配。**
 把 scope 里的 `lung ultrasound` 拆成 lung / ultrasound，一篇肺癌 CT 论文就会因为一个 `lung`
@@ -417,14 +429,14 @@ Chest/AABB 输血指南的《Hemoglobin Thresholds in Studies Included **per Rec
 
 ### 实测
 
-摄入 **4 份 / 未摄入 6 份**（deferred：2 份许可、4 份结构），schema 零错误：
+摄入 **4 份 / 108 条推荐；未摄入 6 份**（deferred：2 份许可、4 份结构），schema 零错误：
 
-| 指南 | 策略×条数 | 许可 |
-|---|---|---|
-| Korean sepsis CPG 2024 (KSCCM) | rec_sections × 13 | CC BY-NC |
-| German nosocomial pneumonia S3 2024 | rec_tables × 10 | CC BY |
-| WSES elderly trauma 2023 | rec_tables × 44 | CC BY |
-| ESPNIC neonatal/paediatric POCUS 2020 | rec_tables × 10 | CC BY |
+| 指南 | 策略×条数 | 许可 | 覆盖 |
+|---|---|---|---|
+| Korean sepsis CPG 2024 (KSCCM) | rec_sections × 13 | CC BY-NC | 成人脓毒症早期复苏（抗生素时机/MAP/液体/血管活性药） |
+| German nosocomial pneumonia S3 2024 | rec_tables × 10 | CC BY | 成人院内肺炎 / VAP 诊断与经验性治疗 |
+| WSES elderly trauma 2023 | rec_tables × 44 | CC BY | 老年创伤分诊激活阈值、衰弱评估 |
+| ESPNIC neonatal/paediatric POCUS 2020 | rec_tables × 41 | CC BY | 危重新生儿/儿童床旁超声各器官应用边界 |
 
 三张卡的门控**三向**验证：
 
@@ -446,7 +458,17 @@ comparator_baseline / endpoint_utility / workflow_deployment 三个模块。
 
 - **SSC 因许可缺席**（脓毒症最权威的那份指南不在库里）；
 - 德国 2025 脓毒症 S3 许可合规但**德语**、推荐以 `<list>` 散列呈现，三策略产量均为 0 →
-  需为德语 GRADE 标记（`starke Empfehlung` / `Empfehlungsgrad`）单独写策略。
+  需为德语 GRADE 标记（`starke Empfehlung` / `Empfehlungsgrad`）单独写策略；
+- **各家分级词汇表不统一，且刻意不做归一化**：韩国 CPG 用 GRADE
+  （strong/conditional + certainty high–very low），ESPNIC 用 A–D 质量等级 +
+  「专家一致程度」（Strong agreement / Agreement / Disagreement）。**一致程度不是推荐强度**
+  ——它说的是专家投票有多齐，不是证据有多硬。故单列 `agreement` 字段、在 notes 里写明
+  "不可当作 GRADE 强度使用"，并对解析不出强度的条目显式提示"不得替它假定强度"。
+  跨源归一化会抹掉各家方法学差异，等于替指南做了它没做的判断。
+- **WHO IRIS 探过但没接**：DSpace REST API 可用
+  （`/server/api/discover/search/objects`，sepsis 相关 1941 条，`dc.rights` 直接给出
+  CC BY-NC-SA 3.0 IGO，许可是所有 normative 源里最干净的），但正文是 PDF ——
+  只拿题录就只能算 discovery，按铁律不得冒充 normative。要进这条腿必须先接 PDF 解析。
 
 覆盖只有 4 份指南，远谈不上"全"；但架构上 `normative` 从"USPSTF 一个源"变成了
 **多源角色**，多源打架的处理（全收、标明发布方与适用地区、如实呈现分歧）沿用 §6c 末尾的定调。
