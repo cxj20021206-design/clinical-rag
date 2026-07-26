@@ -1,0 +1,118 @@
+# 学会 / 国家临床实践指南 (CPG) 的策展清单 —— source_role = normative
+#
+# 这不是"爬虫的种子列表"，是**人工策展记录**：每一条都要人来确认发布机构、适用病种、
+# 适用场景与人群，因为这些字段决定了系统会拿这份指南去要求论文做什么。机器只负责
+# 取全文、抽推荐条目、解析分级（connectors/guideline_fetch.py）。
+#
+# 入选条件（三条同时满足）：
+#   ① Europe PMC 有 OA 全文 XML；
+#   ② license 在白名单内（CC BY / BY-NC / BY-NC-ND / BY-SA / CC0）——空 = 未授权，不收；
+#   ③ 推荐条目以可识别结构呈现（推荐节 / 推荐框 / 推荐汇总表），且抽出 ≥3 条。
+# 不满足 ③ 的指南记入 deferred 并写明原因，**不做关键词抓句降级**——那会把
+# "美国癌症协会建议…"这类转述句抓成本指南的推荐（详见 guideline_fetch.py 头部注释）。
+
+ingested:
+  - pmcid: PMC11617831
+    slug: korean_sepsis_cpg_2024
+    issuing_body: "Korean Sepsis Alliance / Korean Society of Critical Care Medicine (KSCCM)"
+    short_name: "Korean sepsis CPG 2024"
+    region: KR
+    tier: 1
+    scope:
+      disease_terms: [sepsis, "septic shock"]
+      care_settings: ["emergency department", "intensive care unit", "inpatient"]
+      population: adult
+      topic: "早期复苏与初始治疗（乳酸清除率/液体/血压目标/抗生素时机/血管活性药/ECMO/超声）"
+    notes: >-
+      对 AI 脓毒症预警类论文最直接的规范来源：报警之后该发生什么（抗生素 1 小时内、
+      MAP≥65、30 ml/kg 液体）就是论文"claimed benefit"必须对齐的现实标准。
+
+  - pmcid: PMC11621171
+    slug: german_nosocomial_pneumonia_2024
+    issuing_body: "Deutsche Gesellschaft für Anästhesiologie und Intensivmedizin 等德国六学会联合 (S3, Update 2024)"
+    short_name: "German nosocomial pneumonia S3 2024"
+    region: DE
+    tier: 1
+    scope:
+      disease_terms: ["nosocomial pneumonia", "ventilator-associated pneumonia", "hospital-acquired pneumonia", pneumonia]
+      care_settings: ["intensive care unit", "inpatient"]
+      population: adult
+      topic: "院内肺炎的诊断与经验性抗菌治疗（含 VAP 采样策略、多重耐药风险分层）"
+    notes: >-
+      收它是为了检验多源与病种门控：脓毒症卡不应命中它（病种不同），
+      而一篇 VAP 预测模型论文应当命中。
+
+  - pmcid: PMC11140935
+    slug: wses_elderly_trauma_2023
+    issuing_body: "World Society of Emergency Surgery (WSES)"
+    short_name: "WSES elderly trauma 2023"
+    region: international
+    tier: 1
+    scope:
+      disease_terms: [trauma, injury, "traumatic injury", frailty]
+      care_settings: ["emergency department", "trauma bay", "inpatient"]
+      population: "elderly adult"
+      topic: "老年/衰弱创伤患者的分诊激活、衰弱评估、影像与出血处理"
+    notes: >-
+      含大量**分诊阈值与预警激活**推荐（trauma protocol activation、GTOS 评分），
+      是"AI 分诊/恶化预警"类论文的对照标准。推荐汇总表一格塞多条，
+      靠 split_statements 切分后分级才绑对（见 guideline_fetch.py）。
+
+  - pmcid: PMC7041196
+    slug: espnic_neonatal_pocus_2020
+    issuing_body: "European Society of Paediatric and Neonatal Intensive Care (ESPNIC) POCUS Working Group"
+    short_name: "ESPNIC neonatal/paediatric POCUS 2020"
+    region: international
+    tier: 1
+    scope:
+      disease_terms: ["point of care ultrasound", pocus, ultrasound, "congenital heart",
+                      "ductus arteriosus", "intraventricular haemorrhage", pneumothorax,
+                      "necrotising enterocolitis", "lung ultrasound", "critical illness"]
+      care_settings: ["neonatal intensive care unit", "paediatric intensive care unit", "inpatient"]
+      population: "neonates and children"
+      topic: "危重新生儿/儿童床旁超声（POCUS）各器官应用的推荐与边界"
+    notes: >-
+      收它有两个用途：(a) 库里需要一份**儿科人群**指南，否则人群门控只能单向验证；
+      (b) 它是**影像模态**指南——"POCUS 不应作为先心病筛查工具，除非…"这类语句
+      正是影像 AI 论文声称适应证时要对齐的边界。多数条目未解析出强度（原文分级
+      不在推荐句内），记录里明确标注"不得替它假定强度"。
+
+# ---------------------------------------------------------------------------
+# 未摄入（如实记录原因；系统不得声称已按这些指南核查过）
+# ---------------------------------------------------------------------------
+deferred:
+  - pmcid: PMC7101866
+    title: "Surviving Sepsis Campaign: guidelines on the management of critically ill adults with COVID-19"
+    reason: "license 字段为空 —— 出版商未声明开放许可，视为未授权，不摄入"
+    blocker: license
+  - pmcid: PMC7095013
+    title: "Surviving Sepsis Campaign international guidelines for sepsis and septic shock (2016/2021)"
+    reason: >-
+      同上：SSC 系列在 Europe PMC 无开放许可标注。这是本腿最大的内容损失——
+      SSC 是脓毒症领域引用最多的指南。替代方案：韩国 CPG / 德国 S3 覆盖同类问题；
+      若日后取得许可再补。
+    blocker: license
+  - pmcid: PMC12708846
+    title: "S3 guideline on sepsis (German Sepsis Society, 2025)"
+    reason: >-
+      许可合规 (CC BY) 但全文为德语且推荐以 <list> 散列呈现，三种结构策略产量均为 0。
+      需为德语 GRADE 标记（"starke Empfehlung"/"Empfehlungsgrad"）单独写策略。
+    blocker: structure
+  - pmcid: PMC9987116
+    title: "中国肺癌低剂量CT筛查指南（2023年版）"
+    reason: >-
+      许可合规 (CC BY) 但推荐散在背景散文里，且相当一部分"建议"句是在**转述**
+      ACS/USPSTF 的推荐。关键词抓句会把别家的推荐记成本指南的 → 拒绝降级摄入。
+      肺癌筛查方向的 normative 覆盖目前由 USPSTF 承担（DESIGN §6c）。
+    blocker: structure
+  - pmcid: PMC4529446
+    title: "ESR/ERS white paper on lung cancer screening"
+    reason: "许可合规 (CC BY-NC)，但白皮书体例无推荐条目结构，Key points 为叙述性要点"
+    blocker: structure
+  - pmcid: PMC11867898
+    title: "Red Blood Cell Transfusion in Critically Ill Adults (AABB/Chest)"
+    reason: >-
+      唯一含 recommendation 字样的表是《Hemoglobin Thresholds in Studies Included
+      per Recommendation》——研究特征表而非推荐表。初版曾误抓出
+      "Gastrointestinal bleeding" 这类单元格碎片，已收紧 caption 与推荐动词过滤。
+    blocker: structure

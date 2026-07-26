@@ -1,0 +1,177 @@
+source_id: society_guidelines
+slug: korean_sepsis_cpg_2024
+name: 'Early management of adult sepsis and septic shock: Korean clinical practice guidelines.'
+short_name: Korean sepsis CPG 2024
+issuing_body: Korean Sepsis Alliance / Korean Society of Critical Care Medicine (KSCCM)
+document_type: guideline
+source_role: normative
+tier: 1
+region: KR
+publication_date: '2024-11-18'
+scope:
+  disease_terms:
+  - sepsis
+  - septic shock
+  care_settings:
+  - emergency department
+  - intensive care unit
+  - inpatient
+  population: adult
+  topic: 早期复苏与初始治疗（乳酸清除率/液体/血压目标/抗生素时机/血管活性药/ECMO/超声）
+curation_note: 对 AI 脓毒症预警类论文最直接的规范来源：报警之后该发生什么（抗生素 1 小时内、 MAP≥65、30 ml/kg 液体）就是论文"claimed benefit"必须对齐的现实标准。
+provenance:
+  canonical_url: https://europepmc.org/article/PMC/PMC11617831
+  pmcid: PMC11617831
+  pmid: '39622601'
+  doi: 10.4266/acc.2024.00920
+  journal: Acute and Critical Care
+  license: cc by-nc
+  license_note: 许可 cc by-nc：允许逐字未改动的复制与再分发。逐字摘录、未改动、注明出处；不做演绎、不收费再分发。
+  ingested_from: Europe PMC OA fullTextXML
+  extraction_strategy: rec_sections
+  strategy_yields:
+    rec_sections: 13
+    rec_boxes: 0
+    rec_tables: 0
+  ingested_date: '2026-07-26'
+  verbatim: true
+  completeness: structured_recommendations_only
+  completeness_note: 仅摄入以结构（rec_sections）呈现的推荐条目 13 条。正文讨论中未进入推荐结构的表述不在库内，系统不得声称已覆盖全文。
+  n_recommendations: 13
+recommendations:
+- statement: 'When performing fluid resuscitation in patients with sepsis or septic shock, the use of
+    lactate clearance is suggested as an indicator rather than ScvO2 (Recommendation strength B, conditional
+    recommendation for intervention; Certainty of evidence: moderate).'
+  context: KQ 1. Lactate clearance When performing fluid resuscitation in patients with sepsis or septic
+    shock, is the use of lactate clearance recommended as an indicator rather than central venous oxygen
+    saturation (ScvO2)?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: moderate
+  agreement: null
+- statement: 'In adult patients with sepsis or septic shock accompanied by hypotension or hypoperfusion,
+    administration of 30 ml/kg of crystalloid fluids within the first 3 hours is suggested (Recommendation
+    strength B, conditional recommendation for intervention; Certainty of evidence: low).'
+  context: KQ 2. Fluid resuscitation Should at least 30 ml/kg of crystalloid fluids be administered within
+    3 hours of starting resuscitation in adult patients with sepsis or septic shock and hypoperfusion?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: low
+  agreement: null
+- statement: 'Balanced crystalloids or saline (0.9% saline) can be used during fluid resuscitation in
+    patients with sepsis (Recommendation strength B, conditional recommendation for intervention; Certainty
+    of evidence: moderate)'
+  context: KQ 3. Fluid type When performing fluid resuscitation in patients with sepsis, does the use
+    of balanced crystalloid, compared to 0.9% saline, reduce mortality rates and incidence of acute kidney
+    injury?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: moderate
+  agreement: null
+- statement: 'In adult patients with septic shock, we suggest a target MAP ≥65 mm Hg over higher MAP targets
+    (Recommendation strength B, conditional recommendation for intervention; Certainty of evidence: moderate).'
+  context: KQ 4. Target blood pressure In adult patients with septic shock, can a target MAP ≥65 mm Hg
+    improve the outcomes of patients compared to targeting a higher MAP?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: moderate
+  agreement: null
+- statement: 'If additional fluids are required after initial fluid resuscitation in adult patients with
+    sepsis or septic shock, fluid therapy using dynamic parameters is suggested (Recommendation strength
+    B, conditional recommendation for intervention; Certainty of evidence: moderate).'
+  context: KQ 5. Dynamic parameters In adult patients with sepsis or septic shock, can fluid therapy using
+    dynamic parameters compared to static parameters or usual treatments reduce mortality rate?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: moderate
+  agreement: null
+- statement: 'In adult patients with septic shock, we suggest administering antibiotics within 1 hour
+    of septic shock recognition (Recommendation strength B, conditional recommendation for intervention;
+    Certainty of evidence: low).'
+  context: KQ 6-1. Antibiotics In adult septic shock patients, does administering antibiotics within 1
+    hour of sepsis recognition improve mortality compared to administering antibiotics at 1 hour or later?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: low
+  agreement: null
+- statement: 'In adult patients with sepsis, we suggest administering antibiotics within 3 hours of sepsis
+    recognition (Recommendation strength E, expert consensus; Certainty of evidence: very low).'
+  context: KQ 6-2. Antibiotics In adult sepsis patients, does administering antibiotics within 3 hours
+    of sepsis recognition improve mortality compared to administering antibiotics at 3 hours or later?
+  section: Recommendation
+  recommendation_strength: expert_opinion
+  grade_letter: E
+  evidence_certainty: very low
+  agreement: null
+- statement: 'In adult patients with septic shock, early administration of vasopressors is suggested if
+    necessary to ensure hemodynamic stability during initial fluid therapy (Recommendation strength B,
+    conditional recommendation for intervention; Certainty of evidence: moderate).'
+  context: KQ 7. Timing of vasopressors When should vasopressors be administered to adult patients with
+    septic shock?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: moderate
+  agreement: null
+- statement: 'We suggest that norepinephrine be used in preference to other vasopressors in adult patients
+    with septic shock (Recommendation strength A, strong recommendation for intervention). Quality of
+    evidence: • Norepinephrine vs. dopamine: high quality • Norepinephrine vs. vasopressin: moderate quality
+    • Norepinephrine vs. epinephrine: low quality • Phenylephrine: very low quality • Norepinephrine vs.
+    terlipressin: low quality'
+  context: KQ 8. Vasopressor type Should norepinephrine be used preferentially over other vasopressors
+    in adult patients with septic shock?
+  section: Recommendation
+  recommendation_strength: strong
+  grade_letter: A
+  evidence_certainty: null
+  agreement: null
+- statement: 'In adult patients with septic shock, when appropriate MAP is not maintained despite the
+    usual dose of norepinephrine, we suggest adding vasopressin rather than increasing norepinephrine
+    dose (Recommendation strength B, conditional recommendation for intervention; Quality of evidence:
+    moderate).'
+  context: KQ 9. Vasopressin In adult patients with septic shock, when appropriate MAP is not maintained
+    despite the use of norepinephrine, is the addition of vasopressin better than increasing norepinephrine
+    dose?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: moderate
+  agreement: null
+- statement: 'In adult septic shock patients with decreased cardiac function and hypoperfusion, the use
+    of dobutamine may be considered (Recommendation strength E, expert opinion; Quality of evidence: very
+    low).'
+  context: KQ 10. Dobutamine In adult patients with septic shock accompanied by decreased cardiac function,
+    does adding dobutamine to existing treatments reduce mortality?
+  section: Recommendation
+  recommendation_strength: expert_opinion
+  grade_letter: E
+  evidence_certainty: very low
+  agreement: null
+- statement: '1. In patients with acute respiratory distress syndrome due to sepsis who do not respond
+    to existing standard treatments, we suggest performing venovenous (VV) ECMO (Recommendation strength
+    E, expert opinion; Quality of evidence: none). 2. In patients with septic shock and decreased cardiac
+    function who do not respond to existing standard treatments, venous arterial (VA) ECMO can be applied
+    (Recommendation strength B, conditional recommendation for intervention; Quality of evidence: low).'
+  context: KQ 11. Extracorporeal membrane oxygenation (ECMO) Is ECMO treatment effective in adult patients
+    with septic shock?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: E
+  evidence_certainty: none
+  agreement: null
+- statement: 'We suggest echocardiography to assess cardiac function and hemodynamics in adult patients
+    with sepsis (Recommendation strength B, conditional recommendation for intervention; Quality of evidence:
+    very low).'
+  context: KQ 12. Echocardiography Is echocardiography recommended to assess cardiac function in adult
+    patients with sepsis?
+  section: Recommendation
+  recommendation_strength: conditional
+  grade_letter: B
+  evidence_certainty: very low
+  agreement: null

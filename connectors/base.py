@@ -71,6 +71,23 @@ def keywords(*texts, exclude=None, max_terms: int = 8) -> list[str]:
     return out
 
 
+def discriminative_terms(*texts) -> set[str]:
+    """抽**判别词**：去停用词、ML 术语、泛化医学词，留下的才有资格当匹配信号。
+
+    策展层（USPSTF / 学会指南）的病种门控共用：泛化词当判别信号必翻车——
+    "lung cancer screening" 会因为 cancer 命中乳腺癌指南。
+    """
+    out = set()
+    for t in texts:
+        for tok in clean_text(t).lower().split():
+            tok = tok.strip(".,;/:-")
+            if (len(tok) < 3 or tok in STOPWORDS or tok in NON_CLINICAL
+                    or tok in GENERIC_CLINICAL):
+                continue
+            out.add(tok)
+    return out
+
+
 def expand_plural(terms: list[str]) -> list[str]:
     """adult ↔ adults：卡里写单数、文献写复数（或反之）不该漏掉。"""
     out = list(terms)

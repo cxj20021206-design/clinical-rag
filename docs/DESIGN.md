@@ -335,17 +335,139 @@ VA/DoD（许可无碍但纯 PDF）。
 **多源之后会出现新问题：指南互相打架**（USPSTF 与 NCCN 与中国指南对肺癌筛查的入选标准并不一致）。
 拟沿用 `predates` 的处理思路——全部收录、各自标明发布方与适用地区、**如实呈现分歧而不代为裁决**。
 
+## 6d. 已实现（规范指南这条腿的第二个源族）：学会 / 国家 CPG —— 2026-07-26
+
+§6c 末尾写明的缺口：USPSTF 只管预防与筛查，**急重症与治疗一类论文（脓毒症预警、创伤分诊、
+院内肺炎）接完 USPSTF 之后仍然没有任何规范源**。本节把这块补上。
+
+两个源族的分工是互补的，任何一篇论文都应当能从某一侧得到"标准"或得到"我为什么不适用"：
+
+| 源族 | 覆盖 | 典型问题 |
+|---|---|---|
+| USPSTF (§6c) | 预防与筛查 | 谁该被筛、多久筛一次 |
+| 学会 / 国家 CPG (本节) | 急重症与治疗 | 报警之后该做什么、多快做、跟谁比 |
+
+### 通道：为什么是 Europe PMC 而不是各学会官网
+
+USPSTF 是**一个机构一个网站**，写一个抓取器即可。学会指南是**几十家机构各发各的**
+（ESICM、WSES、KSCCM、德国六学会联合…），逐家写抓取器不可持续，且官网 PDF 的许可
+多半含糊。唯一能统一拿到"许可机读 + 全文可解析"的通道是 **Europe PMC 的 OA 全文 XML**——
+§6b 的报告规范清单就是这么摄入的，而 §6a.1 Europe PMC 降噪后 `PUB_TYPE:"Guideline"`
+分层检索**自动产出的候选清单**（NCCN/ESICM/中国肺癌筛查指南等）正好是本节的入口。
+发现层与摄入层就此接上：**发现层找到候选 → 策展层核许可与结构 → 摄入为规范条目**。
+
+### 入选三条件（`curated/guidelines/manifest.yaml`）
+
+① Europe PMC 有 OA 全文 XML；② `license` 在白名单内（CC BY / BY-NC / BY-NC-ND / BY-SA / CC0）；
+③ 推荐以**可识别结构**呈现且抽出 ≥3 条。三条缺一即记入 `deferred` 并写明 blocker，不静默降级。
+
+- **`license` 字段为空 = 未授权，不是"待查"。** SSC（Surviving Sepsis Campaign）系列因此
+  全部落榜——这是本腿最大的内容损失，SSC 是脓毒症领域引用最多的指南。如实记在 deferred 里。
+- **ND / SA 也收**：本项目只做逐字未改动的摘录，不产生演绎作品——与 USPSTF "without any
+  changes" 是同一条逻辑，`verbatim: true` 这条铁律在这里第二次直接换来合规。
+- **拒绝关键词抓句降级。** 中国肺癌筛查指南（PMC9987116）许可合规，但"建议"散在背景散文里，
+  其中相当一部分是在**转述 ACS/USPSTF 的推荐**——抓句会把别家的推荐记成本指南的。
+  **绑错推荐来源比不给更糟**，与 §6c 不用正则扫句子是同一个判断。
+
+### 三个组件与三种抽取策略
+
+| 文件 | 职责 |
+|---|---|
+| `guideline_fetch.py` | 候选检索 + OA 全文 XML（带磁盘缓存）+ **三种结构策略抽推荐** + GRADE 解析 |
+| `guideline_ingest.py` | 按 manifest 一次性摄入 → `curated/guidelines/cpg_<slug>.yaml` |
+| `curated_guidelines.py` | 连接器：病种 + 人群 + 场景门控，按与本卡相关度挑条目 |
+
+策略跑全部、取产量最高者，产量 <3 视为"结构没抽对"，宁可不摄入：
+
+- `rec_sections` —— 每条推荐是一个标题为 Recommendation 的 `<sec>`（韩国脓毒症 CPG）；
+- `rec_boxes` —— 推荐写在 `<boxed-text>` 里；
+- `rec_tables` —— "Summary of recommendations" 汇总表，一行一条（德国 S3 / WSES / ESPNIC）。
+
+### 关键实现决策（四条，都是实测撞出来的）
+
+**① 推荐的"上下文"按文档顺序取最近的前置 `<boxed-text>`，不能按兄弟节点找。**
+韩国 CPG 里只有 KQ1 是 Recommendation 节的兄弟，KQ2–KQ12 都被排版嵌进了**上一条推荐的
+Comments 小节末尾**。按兄弟找会让 13 条推荐里 12 条丢掉临床问题卡片，退化成
+"KEY QUESTIONS AND RECOMMENDATIONS"这种无用上下文——而没有上下文的推荐句在审稿里几乎不可用
+（不知道它在管什么）。
+
+**② 一格多条必须切开（`split_statements`）。** WSES 2023 的汇总表把三四条推荐塞进同一单元格：
+`We suggest X [Weak recommendation … 2C]We recommend Y [Strong …]`。不切开就会用最后一条的
+强度去标第一条。切点是"以中括号分级标记收尾"，且**一格多条时只能就地解析分级**，
+一格一条时才可借同行的强度列/证据列——否则同行条目互相污染。
+
+**③ 汇总表要两道过滤，缺一不可。** 初版只要求 caption 含 "recommendation"、行文本够长，结果：
+Chest/AABB 输血指南的《Hemoglobin Thresholds in Studies Included **per Recommendation**》
+是研究特征表，抓出 "Gastrointestinal bleeding" 这种单元格碎片；巴西胸科学会指南的筛查
+**入选标准**表被抓成推荐。故 caption 必须**以** "(summary of) recommendations" 起头，
+且行本身必须含推荐动词/分级标记。
+
+**④ 病种门控：多词条目按整词组匹配，单词条目才按词匹配。**
+把 scope 里的 `lung ultrasound` 拆成 lung / ultrasound，一篇肺癌 CT 论文就会因为一个 `lung`
+命中儿科床旁超声指南——实测发生过，随后被人群门控拦下。**靠第二道门兜住第一道门的错是运气，
+不是设计**，所以在第一道门修掉。同 §6a 的教训：泛化词当判别信号必翻车。
+
+### 检索侧三道门（严格程度递减，理由都要打印）
+
+| 门 | 行为 | 理由 |
+|---|---|---|
+| 病种 | 硬拦 | 判别词与 `scope.disease_terms` 无交集 → 该指南与本文无关 |
+| 人群 | **硬拦** | 成人指南 vs 新生儿论文：`sepsis` 在成人与新生儿是两套完全不同的标准，是临床上最常见的越权外推 |
+| 场景 | **软提示** | ICU 指南用于普通病房论文并非无效，但外推须由论文论证 → 写进 notes 让审稿端看见，**不代为裁决** |
+
+### 实测
+
+摄入 **4 份 / 未摄入 6 份**（deferred：2 份许可、4 份结构），schema 零错误：
+
+| 指南 | 策略×条数 | 许可 |
+|---|---|---|
+| Korean sepsis CPG 2024 (KSCCM) | rec_sections × 13 | CC BY-NC |
+| German nosocomial pneumonia S3 2024 | rec_tables × 10 | CC BY |
+| WSES elderly trauma 2023 | rec_tables × 44 | CC BY |
+| ESPNIC neonatal/paediatric POCUS 2020 | rec_tables × 10 | CC BY |
+
+三张卡的门控**三向**验证：
+
+| Claim Card | 结果 |
+|---|---|
+| 脓毒症预警 (C3, 成人 ICU) | ✅ Korean sepsis CPG，13/13 条可用，取到 **"septic shock 识别后 1 小时内给抗生素"（conditional / certainty low）** 与 3 小时那条（expert_opinion / very low）——正是这篇论文 `claimed_benefit`（更早识别→更早用药）必须对齐的现实标准；`predates=true` |
+| 新生儿脓毒症 (C3, NICU) | ⛔ 韩国 CPG 被**人群门控**拦下：「本卡为新生儿人群，该指南限成人——成人标准外推到儿科属越权」。病种同为 sepsis，仅人群不同即拦截 |
+| 肺癌 CT (C1, 筛查) | ⛔ 四份 CPG 全不匹配（病种），该卡由 USPSTF 承担 ✅ —— 两个源族的互补性在此得到验证 |
+
+条目→模块按推荐句里实际出现的东西判定（`rather than`→comparator、`within N hours`→workflow、
+`mortality`→endpoint），不给同一份指南的所有条目贴同一组模块。抗生素时机那两条因此同时进入
+comparator_baseline / endpoint_utility / workflow_deployment 三个模块。
+
+### 覆盖边界（重要）
+
+`completeness: structured_recommendations_only` —— **只摄入以结构呈现的推荐条目，
+正文讨论里散落的表述不在库内**，系统不得声称"已按这份指南全文核查"。这与 §6b 报告清单的
+`completeness` 字段同义。另有两处如实记录、不得掩盖：
+
+- **SSC 因许可缺席**（脓毒症最权威的那份指南不在库里）；
+- 德国 2025 脓毒症 S3 许可合规但**德语**、推荐以 `<list>` 散列呈现，三策略产量均为 0 →
+  需为德语 GRADE 标记（`starke Empfehlung` / `Empfehlungsgrad`）单独写策略。
+
+覆盖只有 4 份指南，远谈不上"全"；但架构上 `normative` 从"USPSTF 一个源"变成了
+**多源角色**，多源打架的处理（全收、标明发布方与适用地区、如实呈现分歧）沿用 §6c 末尾的定调。
+
 ## 7. 未来工作
 
 0. ~~报告规范清单策展层~~ —— ✅ 2026-07-24 完成，见 §6b。`reporting_tool` 缺口已闭合。
-1. **规范指南策展摄入层（最高价值，仍是最大缺口）**：WHO/NICE/USPSTF/学会指南多为 Class B PDF、
-   许可敏感 → 按 Claim Card 小批策展摄入（fetch + 分节 + provenance），补上路由里 `normative`
-   的"待策展"缺口。注意 8 个模块里有 7 个把 normative 列为首选源，目前**一个连接器都没有**。
-   §6b 的 yaml 结构（provenance + applicability + items + completeness）可直接复用为指南条目的载体。
-   ⚠️ **2026-07-25 调研后修订，见 [RELATED_WORK.md](RELATED_WORK.md) §7**：NICE 虽是 5 个 normative
-   源里唯一有 API 的，但其条款明令「在 NICE 内容上使用 AI 必须另行取得许可」且国际使用收费 →
-   **降为不可行**；首攻改为 **USPSTF**（美国政府作品／公有领域／无许可障碍）。切块与检索配置
-   沿用 arXiv 2510.02967（层级语义分块 200–600 token / overlap 50 + BM25·稠密混合 + RRF + reranker）。
+1. **规范指南策展摄入层** —— 🟡 两个源族已建：USPSTF（§6c，预防/筛查）+ 学会与国家 CPG
+   （§6d，急重症/治疗，经 Europe PMC OA 通道摄入 4 份）。`normative` 从"零连接器"变成多源角色。
+   NICE 因条款明令「在 NICE 内容上使用 AI 须另行取得许可」+ 国际使用收费 → **不可行**
+   （见 [RELATED_WORK.md](RELATED_WORK.md) §7）。**剩余工作**：
+   1a. **扩摄入面**：现有 4 份 CPG 只覆盖脓毒症/院内肺炎/创伤/新生儿 POCUS，
+       常见 MedAI 病种（心衰、卒中、糖网、AKI…）尚无对应指南；WHO IRIS（CC BY-NC-SA 3.0 IGO，
+       许可最干净）与 VA/DoD（纯 PDF，许可无碍）仍未接。
+   1b. **德语等非英语 GRADE 策略**：德国 2025 脓毒症 S3 许可合规却因语言+结构落榜（§6d）。
+   1c. **SSC 许可**：脓毒症最权威指南因 Europe PMC 无许可标注而缺席，若日后取得许可应优先补。
+   1d. **长文档分块检索仍未做**：USPSTF 与 CPG 都是靠结构化表格/推荐节躲过去的，
+       一旦要摄入整份 PDF 指南就必须做——沿用 arXiv 2510.02967 配置（层级语义分块
+       200–600 token / overlap 50 + BM25·稠密混合 + RRF + reranker），不自行调参。
+   1e. **多源分歧**：定调已定（全收、标明发布方与适用地区、不代为裁决），但库里指南尚未真正撞车，
+       实现要等同病种多源之后。
 1b. **补齐两份付费清单**：CLAIM 2024 条目表（影像 AI，优先）、QUADAS-3 信号问题原文。
 2. **更多连接器**：Europe PMC 全文(OA)、openFDA 器械 510k/PMA、PubMed E-utils、术语(MeSH/ICD-11)。
 3. ~~**检索质量**~~ —— ✅ 2026-07-25 完成，**四个 API 连接器全部重写**，见 §6a。

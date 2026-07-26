@@ -21,6 +21,7 @@ from who_gho import WHOGHOConnector                       # noqa: E402
 from openfda import OpenFDAConnector                       # noqa: E402
 from curated_reporting import build_connectors, applicability_report  # noqa: E402
 from uspstf import USPSTFConnector                          # noqa: E402
+from curated_guidelines import CuratedGuidelinesConnector    # noqa: E402
 
 # 已实现的连接器：source_id -> 实例
 CONNECTORS = {
@@ -33,9 +34,13 @@ CONNECTORS = {
 # ② 策展摄入·报告规范清单（离线固定内容，按研究设计/证据阶段做适用性门控）
 CONNECTORS.update(build_connectors())
 # ③ 策展摄入·临床指南 (normative)。按病种+场景门控，与 ② 同构但依据不同。
+#    USPSTF = 预防/筛查；学会与国家 CPG = 急重症/治疗。两者互补，缺一边就有整类论文没人管。
 _uspstf = USPSTFConnector()
 if _uspstf.available():
     CONNECTORS["uspstf"] = _uspstf
+_cpg = CuratedGuidelinesConnector()
+if _cpg.available():
+    CONNECTORS["society_guidelines"] = _cpg
 
 
 def load_registry(path=None):
@@ -165,8 +170,25 @@ def main():
             print(f"      · {t['title'][:66]}  Grade={t['grades']} ({t['date']})")
     else:
         print(" 🕳 USPSTF 未摄入 — 先跑 python3 connectors/uspstf_ingest.py")
-    print("    ⚠️ 其余 normative 源 (WHO / 学会指南 / VA-DoD) 仍待策展；"
-          "NICE 因 AI 用途许可禁令不可行，见 docs/RELATED_WORK.md §2。")
+
+    if "society_guidelines" in CONNECTORS:
+        for g in CONNECTORS["society_guidelines"].report(card):
+            mark = "✅" if g["applicable"] else "⛔"
+            print(f" {mark} {(g['name'] or g['slug'])[:34]:34s} "
+                  f"({g['n_recs']}/{g['n_total']} 条推荐, {g['publication_date']}, "
+                  f"{g['issuing_body'][:34]})")
+            print(f"      {g['reason']}")
+            if g["setting_note"]:
+                print(f"      {g['setting_note']}")
+            if g["applicable"] and submission and g["publication_date"] and \
+                    g["publication_date"] > submission:
+                print(f"      ⏱ 发布于投稿日 {submission} 之后 → predates=false，"
+                      f"不得据此指责作者。")
+    else:
+        print(" 🕳 学会/国家 CPG 未摄入 — 先跑 python3 connectors/guideline_ingest.py")
+    print("    ⚠️ 其余 normative 源 (WHO IRIS / VA-DoD) 仍待策展；"
+          "NICE 因 AI 用途许可禁令不可行，见 docs/RELATED_WORK.md §2。"
+          "未摄入的具体指南与原因见 curated/guidelines/manifest.yaml: deferred。")
 
     all_recs = []
     print("\n=== 检索结果 (按模块) ===")

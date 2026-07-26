@@ -1,0 +1,142 @@
+source_id: society_guidelines
+slug: german_nosocomial_pneumonia_2024
+name: 'Key summary of German national guideline for adult patients with nosocomial pneumonia- Update 2024
+  Funding number at the Federal Joint Committee (G-BA): 01VSF22007.'
+short_name: German nosocomial pneumonia S3 2024
+issuing_body: Deutsche Gesellschaft für Anästhesiologie und Intensivmedizin 等德国六学会联合 (S3, Update 2024)
+document_type: guideline
+source_role: normative
+tier: 1
+region: DE
+publication_date: '2024-08-08'
+scope:
+  disease_terms:
+  - nosocomial pneumonia
+  - ventilator-associated pneumonia
+  - hospital-acquired pneumonia
+  - pneumonia
+  care_settings:
+  - intensive care unit
+  - inpatient
+  population: adult
+  topic: 院内肺炎的诊断与经验性抗菌治疗（含 VAP 采样策略、多重耐药风险分层）
+curation_note: 收它是为了检验多源与病种门控：脓毒症卡不应命中它（病种不同）， 而一篇 VAP 预测模型论文应当命中。
+provenance:
+  canonical_url: https://europepmc.org/article/PMC/PMC11621171
+  pmcid: PMC11621171
+  pmid: '39115698'
+  doi: 10.1007/s15010-024-02358-y
+  journal: Infection
+  license: cc by
+  license_note: 许可 cc by：允许逐字未改动的复制与再分发。逐字摘录、未改动、注明出处；不做演绎、不收费再分发。
+  ingested_from: Europe PMC OA fullTextXML
+  extraction_strategy: rec_tables
+  strategy_yields:
+    rec_sections: 0
+    rec_boxes: 0
+    rec_tables: 10
+  ingested_date: '2026-07-26'
+  verbatim: true
+  completeness: structured_recommendations_only
+  completeness_note: 仅摄入以结构（rec_tables）呈现的推荐条目 10 条。正文讨论中未进入推荐结构的表述不在库内，系统不得声称已覆盖全文。
+  n_recommendations: 10
+recommendations:
+- statement: 1. For the initial, empiric antimicrobial therapy of nosocomial pneumonia, we recommend a
+    distinction between patients with and without risk factors for multidrug-resistant pathogens and/or
+    Pseudomonas aeruginosa (Table 1)The pathogen spectrum and the resistance situation of the respective
+    ward/facility should be recorded and presented at intervals of 6–12 months and decisions on empiric
+    antibiotic therapy should be based on these data
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 2. The regular use of bacterial multiplex PCR systems in patients with suspected nosocomial
+    pneumonia cannot be recommended
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 3. We suggest rapid and targeted diagnostics for Aspergillus in patients with nosocomial
+    pneumonia on the ICU with risk factors for invasive pulmonary aspergillosis (IPA) (e.g. steroid therapy,
+    COPD, liver cirrhosis, malnutrition, burns, diabetes, severe influenza or COVID-19 infection), even
+    in the absence of severe immunosuppression such as neutropenia, if IPA is suspectedFor Aspergillus
+    detection, at least one antigen test for galactomannan (GM) (limit value ODI > = 1.0) from bronchoalveolar
+    lavage (BAL) and, if necessary, additional microbiological procedures should be performed
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 4. A bronchoscopic microbiological sampling is not superior to a non-bronchoscopic microbiological
+    sampling in VAP in terms of important outcomes. Therefore, the decision about a bronchoscopic sampling
+    should be made depending on local logistics, differential diagnostic considerations, and possible
+    therapeutic aspects of an endoscopic examination
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 5. We suggest the use of aminopenicillins with beta-lactamase inhibitors or group 3a cephalosporins
+    (i.e. ceftriaxone or cefotaxime) in patients without an increased risk of MDRP/PA (Table 1). Fluoroquinolones
+    with pneumococcal activity (i.e. moxifloxacin or levofloxacin) can be used as a secondary optionPiperacillin/tazobactam,
+    cefepime or meropenem should be used in patients with an increased risk of MDRP/PA (Table 1). Potential
+    combination substances (see 3.2) include antipseudomonal fluoroquinolones, fosfomycin or aminoglycosidesThe
+    choice of substance -or combination in selected patients- should be made based on local pathogen spectrum
+    and resistance profiles
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 6. We suggest an initial empiric combination therapy in patients with septic shock AND the
+    presence of at least one additional risk factor for MDRP (Table 1 / Fig. 1)In patients with septic
+    shock and an increased risk of P. aeruginosa (Table 1), P. aeruginosa-effective combination therapy
+    should be given until the results of the susceptibility test are available
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 7. We suggest prolonged application of suitable beta-lactam antibiotics after the initial
+    loading dose in critically ill patients
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 8. We do not suggest routinely inhaled antibiotic therapy in addition to systemic therapyIn
+    the presence of multi-resistant Gram-negative pathogens that are only sensitive to colistin and/or
+    aminoglycosides, supplementary inhalation therapy with suitable nebulizers should be considered in
+    addition to systemic antibiotic therapy
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 9. We recommend de-escalation in patients with clinical treatment response even without pathogen
+    detectionIn patients with microbiological evidence of a relevant pathogen, therapy should be focused
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: 10. We suggest a therapy duration of 7–8 days if the patient responds well. In individual
+    cases, longer treatment durations may be necessary (e.g. S. aureus bacteremia, non-remediable empyema,
+    abscess)
+  context: Summary of recommendations with quality of evidence level
+  section: 表：Summary of recommendations with quality of evidence level
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null

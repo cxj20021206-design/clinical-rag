@@ -1,0 +1,19 @@
+# 示例 Clinical Claim Card —— 新生儿脓毒症预警（与成人脓毒症卡 C3 对照）
+# 用途：验证 normative 层的**人群门控**。病种同为 sepsis，人群从成人换成新生儿后，
+# 成人 CPG（韩国脓毒症指南，scope.population=adult）必须被拦下并说明理由 ——
+# 成人脓毒症的复苏与抗生素标准不能拿来要求一篇新生儿论文（NICU 是另一套标准）。
+clinical_claim:
+  disease_or_condition: "neonatal sepsis"
+  intended_use: "AI early warning system for late-onset neonatal sepsis"
+  target_population: "preterm and term neonates in the neonatal intensive care unit"
+  intended_user: "neonatologists and NICU nurses"
+  care_setting: "neonatal intensive care unit"
+  model_input: "continuous vital signs, heart rate variability, laboratory results"
+  model_output: "neonatal sepsis onset risk score"
+  clinical_decision_affected: "blood culture sampling / empiric antibiotic initiation"
+  comparator: "clinician judgement with routine monitoring"
+  claimed_benefit: "earlier recognition, lower mortality"
+  evidence_stage: "C3"
+  deployment_claim_level: "prospective silent deployment in one NICU"
+  region: "US"
+  submission_date: "2025-09-15"

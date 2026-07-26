@@ -1,0 +1,361 @@
+source_id: society_guidelines
+slug: espnic_neonatal_pocus_2020
+name: International evidence-based guidelines on Point of Care Ultrasound (POCUS) for critically ill neonates
+  and children issued by the POCUS Working Group of the European Society of Paediatric and Neonatal Intensive
+  Care (ESPNIC).
+short_name: ESPNIC neonatal/paediatric POCUS 2020
+issuing_body: European Society of Paediatric and Neonatal Intensive Care (ESPNIC) POCUS Working Group
+document_type: guideline
+source_role: normative
+tier: 1
+region: international
+publication_date: '2020-02-24'
+scope:
+  disease_terms:
+  - point of care ultrasound
+  - pocus
+  - ultrasound
+  - congenital heart
+  - ductus arteriosus
+  - intraventricular haemorrhage
+  - pneumothorax
+  - necrotising enterocolitis
+  - lung ultrasound
+  - critical illness
+  care_settings:
+  - neonatal intensive care unit
+  - paediatric intensive care unit
+  - inpatient
+  population: neonates and children
+  topic: 危重新生儿/儿童床旁超声（POCUS）各器官应用的推荐与边界
+curation_note: 收它有两个用途：(a) 库里需要一份**儿科人群**指南，否则人群门控只能单向验证； (b) 它是**影像模态**指南——"POCUS 不应作为先心病筛查工具，除非…"这类语句
+  正是影像 AI 论文声称适应证时要对齐的边界。多数条目未解析出强度（原文分级 不在推荐句内），记录里明确标注"不得替它假定强度"。
+provenance:
+  canonical_url: https://europepmc.org/article/PMC/PMC7041196
+  pmcid: PMC7041196
+  pmid: '32093763'
+  doi: 10.1186/s13054-020-2787-9
+  journal: Critical Care
+  license: cc by
+  license_note: 许可 cc by：允许逐字未改动的复制与再分发。逐字摘录、未改动、注明出处；不做演绎、不收费再分发。
+  ingested_from: Europe PMC OA fullTextXML
+  extraction_strategy: rec_tables
+  strategy_yields:
+    rec_sections: 0
+    rec_boxes: 0
+    rec_tables: 41
+  ingested_date: '2026-07-26'
+  verbatim: true
+  completeness: structured_recommendations_only
+  completeness_note: 仅摄入以结构（rec_tables）呈现的推荐条目 41 条。正文讨论中未进入推荐结构的表述不在库内，系统不得声称已覆盖全文。
+  n_recommendations: 41
+recommendations:
+- statement: POCUS should not be used as a screening tool for diagnosing congenital heart defects in neonates
+    and children, unless neonatologists/paediatric intensivists have received an advanced echocardiography
+    training specifically for this purpose
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: A
+  agreement: Strong agreement
+- statement: POCUS may be helpful to assess cardiac filling (preload assessment) and intravascular volume
+    status in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Strong agreement
+- statement: POCUS may be helpful to assess fluid responsiveness in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Strong agreement
+- statement: POCUS may be helpful for qualitative assessment of cardiac function on visual inspection
+    in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Strong agreement
+- statement: POCUS is helpful for semi-quantitative assessment of cardiac function in neonates and children
+    [however, a detailed functional assessment should be performed by a person with advanced echocardiography
+    training]
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Agreement
+- statement: POCUS is helpful for assessment of pulmonary artery systolic pressure in pulmonary hypertension
+    in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS is helpful for semi-quantitative assessment of pulmonary hypertension in neonates and
+    children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS is helpful to diagnose pericardial effusion in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS is helpful to guide pericardiocentesis in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS should be used to assess the patency of ductus arteriosus in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: A
+  agreement: Strong agreement
+- statement: POCUS may be used to detect vegetation to make or exclude the diagnosis of endocarditis [however,
+    a definitive diagnosis requires a detailed assessment by a paediatric cardiologist].
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Disagreement
+- statement: POCUS is helpful to distinguish between respiratory distress syndrome (RDS) and transient
+    tachypnoea of the neonate (TTN)
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Agreement
+- statement: POCUS is helpful to detect pneumonia in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Agreement
+- statement: POCUS is helpful to semi-quantitatively evaluate lung aeration and help the management of
+    respiratory intervention in acute respiratory distress syndrome (ARDS) in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Agreement
+- statement: POCUS is helpful to recognise meconium aspiration syndrome (MAS)
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Agreement
+- statement: POCUS is helpful for descriptive purposes in viral bronchiolitis but cannot provide a differential
+    aetiological diagnosis
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Strong agreement
+- statement: POCUS is helpful to accurately detect pneumothorax in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS is helpful to insert chest tube or perform needle aspiration in neonatal tension pneumothorax
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS is helpful to detect pleural effusions in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS is helpful to guide thoracentesis in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS is helpful to evaluate lung oedema in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Agreement
+- statement: POCUS is helpful in detecting anaesthesia-induced atelectasis in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Agreement
+- statement: POCUS-guided technique should be used for internal jugular vein (IJV) line placement in neonates
+    and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: A
+  agreement: Strong agreement
+- statement: POCUS-guided technique is helpful for subclavian vein line placement in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS-guided technique is helpful for femoral line placement in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Strong agreement
+- statement: POCUS-guided technique is helpful for arterial catheters placement in children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Agreement
+- statement: POCUS-guided technique is helpful for peripherally inserted central catheters in children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Agreement
+- statement: POCUS is helpful to locate catheter tip position in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Strong agreement
+- statement: POCUS is helpful to detect cerebral blood flow changes in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Agreement
+- statement: POCUS should be used to detect germinal matrix and intraventricular haemorrhage (IVH) in
+    neonates
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: A
+  agreement: Strong agreement
+- statement: POCUS is helpful to detect cerebral blood flow patterns suggesting the presence of cerebral
+    circulatory arrest in children with fused skull bones
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Agreement
+- statement: POCUS is helpful to detect cerebral blood flow changes secondary to vasospasm in patients
+    with traumatic brain injury and non-traumatic intracranial bleeding.
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Agreement
+- statement: POCUS is helpful to detect changes in optic nerve sheath diameter (ONSD) indicative of raised
+    ICP in children with fused skull bones
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: B
+  agreement: Agreement
+- statement: POCUS is helpful to detect cerebral midline shift in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Agreement
+- statement: POCUS is helpful for detection of free intra-abdominal fluid in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Strong agreement
+- statement: POCUS may detect parenchymal changes of abdominal organs in neonates and children [although
+    for a definitive diagnosis a detailed assessment should be performed by a paediatric radiologist]
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Agreement
+- statement: POCUS may detect obstructive uropathy in neonates and children [although for a definitive
+    diagnosis a detailed assessment should be performed by a paediatric radiologist]
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Agreement
+- statement: POCUS may assess bowel peristalsis in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Agreement
+- statement: POCUS may recognise hypertrophic pyloric stenosis [although for a definitive diagnosis a
+    detailed assessment should be performed by a paediatric radiologist]
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Disagreement
+- statement: POCUS my guide peritoneal drainage or aspiration of peritoneal fluid in neonates and children
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: D
+  agreement: Strong agreement
+- statement: POCUS is helpful to detect signs of necrotising enterocolitis [although for a definitive
+    diagnosis a detailed assessment should be performed by a paediatric radiologist or a person with specific
+    advanced ultrasound training]
+  context: Summary of recommendations on the use of POCUS in the neonatal and paediatric critical care
+  section: 表：Summary of recommendations on the use of POCUS in the neonat
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: C
+  agreement: Agreement

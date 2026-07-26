@@ -1,0 +1,466 @@
+source_id: society_guidelines
+slug: wses_elderly_trauma_2023
+name: The 2023 WSES guidelines on the management of trauma in elderly and frail patients.
+short_name: WSES elderly trauma 2023
+issuing_body: World Society of Emergency Surgery (WSES)
+document_type: guideline
+source_role: normative
+tier: 1
+region: international
+publication_date: '2024-05-31'
+scope:
+  disease_terms:
+  - trauma
+  - injury
+  - traumatic injury
+  - frailty
+  care_settings:
+  - emergency department
+  - trauma bay
+  - inpatient
+  population: elderly adult
+  topic: 老年/衰弱创伤患者的分诊激活、衰弱评估、影像与出血处理
+curation_note: 含大量**分诊阈值与预警激活**推荐（trauma protocol activation、GTOS 评分）， 是"AI 分诊/恶化预警"类论文的对照标准。推荐汇总表一格塞多条，
+  靠 split_statements 切分后分级才绑对（见 guideline_fetch.py）。
+provenance:
+  canonical_url: https://europepmc.org/article/PMC/PMC11140935
+  pmcid: PMC11140935
+  pmid: '38816766'
+  doi: 10.1186/s13017-024-00537-8
+  journal: 'World Journal of Emergency Surgery : WJES'
+  license: cc by
+  license_note: 许可 cc by：允许逐字未改动的复制与再分发。逐字摘录、未改动、注明出处；不做演绎、不收费再分发。
+  ingested_from: Europe PMC OA fullTextXML
+  extraction_strategy: rec_tables
+  strategy_yields:
+    rec_sections: 0
+    rec_boxes: 0
+    rec_tables: 44
+  ingested_date: '2026-07-26'
+  verbatim: true
+  completeness: structured_recommendations_only
+  completeness_note: 仅摄入以结构（rec_tables）呈现的推荐条目 44 条。正文讨论中未进入推荐结构的表述不在库内，系统不得声称已覆盖全文。
+  n_recommendations: 44
+recommendations:
+- statement: We suggest early trauma protocol activation in patients aged ≥ 55 years old [Weak recommendation
+    based on a low level of evidence 2C]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2C
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend to carefully evaluate injured patients aged ≥ 55-year-old for potential high
+    risk of mortality and to avoid under-triage [Strong recommendation based on a low level of evidence
+    1C]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1C
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest an early and rapid assessment of the patient including vital signs on presentation,
+    mechanism of injury, injury severity and frailty including comorbidities and medication history to
+    identify vulnerable trauma patients [Weak recommendation based on low level of evidence 2C]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2C
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend assessing frailty in all elderly trauma patients [Strong recommendation based
+    on a moderate level of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1B
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest evaluating elderly patients for trauma through the Geriatric Trauma Outcome Score
+    (GTOS) to predict in-hospital mortality and the Trauma-Specific Frailty Index in order to identify
+    patients at highest risk of poor outcome [Weak Recommendation, based on Moderate Quality of Evidence,
+    2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend keeping a lower threshold for trauma protocol activation in geriatric patients,
+    with triage set points of heart ratio 90 bpm and systolic blood pressure less than 110 mmHg [Strong
+    Recommendation, based on Moderate Quality of Evidence, 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend performing an early blood gas (arterial or venous) for baseline base-deficit
+    or a lactic acid assessment in geriatric trauma patients [Strong Recommendation, based on Moderate
+    Quality of Evidence, 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend a low threshold for initial imaging with CT scan in geriatric trauma patients.
+    The diagnostic yield of a contrast-enhanced CT outweighs the risk of contrast-induced nephropathy,
+    especially in view of the potential, dramatic effects of under-triage [Strong Recommendation, based
+    on Moderate Quality of Evidence, 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend that every trauma center provides meticulous triage criteria to recognize the
+    need to early activate resuscitative protocols for elderly patients. These triaging criteria should
+    include physical examination, vital signs, blood gas analysis, and medical history, emphasizing clinical
+    conditions and drug history that may guide resuscitative therapies, early coagulative support, and
+    the need to correct coagulopathies, and minimise fluids [Strong recommendation based on moderate quality
+    of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend rapid recognition and correction of coagulation disorders related to trauma
+    or chronic medication intake in elderly patients. [Strong recommendation based on moderate quality
+    of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend performing serial base deficit assessment and lactate levels as markers of occult
+    hypoperfusion in addition to close monitoring of vital parameters trend (heart rate, blood pressure,
+    respiratory rate, urinary output), and mental status in elderly patients in a dedicated intensive
+    geriatric care unit [Strong recommendation based on moderate-low level quality of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest considering carefully to administer inotropic agents in selected non-responding
+    elderly patients to target resuscitation [Weak recommendation based on low level of evidence 2C]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2C
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend evaluating the indication for invasive versus non-invasive hemodynamic monitoring
+    on a case-by-case basis in injured elderly patients. Hypoperfusion should be ruled out by serial base
+    deficit assessments and lactate concentration [Strong recommendation based on moderate-low level of
+    evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1B
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest the implementation of POCUS in monitoring the cardiac function and blood volume
+    in elderly injured patient, if skills are present. Invasive hemodynamic monitoring should be reserved
+    in selected cases, to critically ill elderly trauma patients who have hypotension, significant injuries
+    (as defined by an Abbreviated Injury Score > 3 or a Trauma Score < 15), or uncertain cardiovascular
+    and/or fluid status [Weak recommendation based on moderate and low level of evidence 2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2B
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend against the routine use of vasopressors in elderly injured patients presenting
+    with hypotension caused by hemorrhage [Strong recommendation based on high-moderate level of evidence
+    1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend identifying the cause of hypoperfusion and assessing preexisting conditions
+    and pharmacologic history before choosing a vasopressor in managing trauma in an elderly patient [Strong
+    recommendation based on a high-low quality level of evidence 1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest using norepinephrine in elderly patients suffering from neurogenic shock. The
+    dose to be used must be the lowest to guarantee tissue perfusion. The possible onset of cardiac arrhythmia
+    and possible hypotensive effects should be monitored [Weak recommendation based on a moderate-low
+    quality level of evidence 2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2B
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend to carefully evaluate to implement permissive hypotension in managing selected
+    elderly trauma patients. Tissue perfusion has to be constantly monitored by base excess level, arterial
+    lactates dosage, urine output, and when possible, neurologic assessment. [Strong recommendation based
+    on a high-low quality level of evidence 1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest assessing, as early as possible, the risk factors for the onset of delirium because
+    it is related to unfavourable outcomes in trauma geriatric patients. [Weak recommendation based on
+    a moderate-low quality level of evidence 2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2B
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend performing routinely the common coagulation assays in elderly patients including
+    the Activated Partial Thromboplastin Time (aPTT), Thromboplastin Time (TT), Prothrombin Time (PT),
+    INR, and anti-Xa levels to assess early anticoagulants exposure in the trauma setting. There is not
+    enough evidence to support the routinely use of TEG or ROTEM in elderly trauma patients. Further studies
+    are necessary to determine their role. [Strong recommendation based on a moderate level quality of
+    evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend administrating a reversal agent in elderly trauma patients anticoagulated with
+    oral vitamin K antagonists who present with bleeding, not responding to supportive measures, major
+    life-threatening bleeding, bleeding located in critical organs (central nervous system, abdominal,
+    thoracic), or needing urgent surgical or invasive procedures [Strong recommendation based on a moderate
+    level quality of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend using the reversal protocol including intravenous four factor prothrombin complex
+    concentrates (4F-PCCs) and 5 mg intravenous vitamin K in case of life-threatening bleeding and/or
+    urgent surgical procedures. Further doses should be administered if needed to achieve INR < 1.5 [Strong
+    recommendation based on a high level quality of evidence 1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend giving Fresh frozen plasma (FFP) as oral vitamin K antagonists (VKAs) agent
+    reversal only if no other treatment is available [Strong recommendation based on a moderate quality
+    level of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1B
+  evidence_certainty: null
+  agreement: null
+- statement: We do not recommend the use of recombinant activated coagulation factor VII (rFVIIa) as first-line
+    VKA reversal agent [Strong recommendation based on a low level of quality evidence 1C]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend an early assessment of laboratory coagulation tests and direct measurements
+    of DOAC levels, if quantitative tests are available, in elderly trauma patients receiving or suspected
+    of having received a DOAC before deciding for reversal due to the thromboembolic risk [Strong recommendation
+    based on a moderate level quality of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest the administration of DOACS reversal agents only in critically ill patients with
+    dosable plasma DOAC levels and presenting with hemorrhagic shock not responding to resuscitation,
+    when level of DOACS can be assessed [Weak recommendation based on a moderate-low quality of evidence
+    2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: If the trauma patient with uncontrolled life-threatening bleeding, was treated with dabigatran
+    (anti-FIIa activity), the suggested reversal protocol is to administer idarucizumab 5 g IV. If idarucizumab
+    is not available, 50 units/kg IV of activated prothrombin complex concentrates (APCC) may be administrated
+    [Weak recommendation based on a moderate-low quality level of evidence 2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2B
+  evidence_certainty: null
+  agreement: null
+- statement: In patients with rivaroxaban-associated or apixaban-associated (FX inhibitors) life-threatening
+    and uncontrolled bleeding, the suggested reversal protocol is the administration of andexanet alfa
+    as an intravenous bolus of 400 mg over 15 min followed by a continuous infusion of 480 mg over 2 h
+    (low dose) or 800 mg over 30 min followed by a continuous infusion of 960 mg over 2 h (high dose),
+    according to the last dose of DOAC and the size of the dose. If andexanet alfa is not available, 2000
+    units of four-factor prothrombin complex concentrates (PCC) may be administrated [Weak recommendation
+    based on a moderate-low quality level of evidence 2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2B
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend antibiotic prophylaxis in penetrating (abdominal, thoracic) trauma, in severely
+    burned and in open fractures in elderly patients to decrease septic complications [Strong recommendation
+    based on a high-moderate quality level of evidence 1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend early empiric antibiotic therapy in patients presenting with signs of sepsis
+    and septic shock and high risk patients (obesity, immunocompromised, high ASA score) in penetrating
+    abdominal trauma, which should be active against common bacteria causing surgical site infections
+    in peritonitis, such as Escherichia coli or other Enterobacteriales or Clostridiales [Strong recommendation
+    based on a moderate quality level of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1B
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend against the administration of antibiotics in blunt trauma in absence of signs
+    of sepsis and septic shock [Strong recommendation based on a moderate-low quality level of evidence
+    1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1B
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend a regular administration of intravenous acetaminophen every 6 h as first line
+    treatment in managing acute trauma pain in the elderly in a multimodal analgesic approach [Strong
+    recommendation based on high quality level of evidence 1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest considering to add NSAIDs in elderly patients presenting with severe pain, taking
+    into account potential adverse events and pharmacological interactions [Weak recommendation based
+    on a moderate quality level of evidence 2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2B
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend the implementation of Multi-Modal-Analgesia approach (MMA) in trauma setting
+    for elderly injured patients including acetaminophen, gabapentinoids, NSAIDs, lidocaine patches, and
+    tramadol and opioids only for breakthrough pain for the shortest period of administration at the lowest
+    effective dose [Strong recommendation based on a moderate quality level of evidence 1B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1B
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend peripheral nerve blocks placement in elderly patients with acute hip fractures
+    at the time of presentation to reduce preoperative and postoperative opioid use for analgesia [Strong
+    recommendation based on a high quality level of evidence 1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest the adoption of epidural analgesia and regional anaesthesia to control severe
+    pain in acute hip fractures in selected elderly patients [Weak recommendation based on a moderate
+    quality level of evidence 2B]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2B
+  evidence_certainty: null
+  agreement: null
+- statement: In elderly patients with ribs fractures, we recommend the association of systemic analgesic
+    treatment with thoracic epidural and paravertebral blocks to offer an adequate pain control with limited
+    contraindications and improvement in respiratory function, reducing opioid consumption, infections
+    and delirium, if skills are available [Strong recommendation based on a high quality level of evidence
+    1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend to routinely consider the use of epidural or spinal analgesia for management
+    of postoperative pain in elderly patients who undergo major thoracic and abdominal procedures for
+    trauma, if skills are available [Strong recommendation based on a high-quality level of evidence 1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend carefully evaluating the use of neuraxial and plexus blocks for patients receiving
+    anticoagulants to avoid bleeding and complications [Strong recommendation based on a high-quality
+    level of evidence 1A]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1A
+  evidence_certainty: null
+  agreement: null
+- statement: We suggest the implementation of non-pharmacological measures such as immobilizing limbs
+    and applying dressings or ice packs in conjunction with drug therapy, in control acute pain in elderly
+    patients in the trauma setting [Weak recommendation based on a very low level of evidence 2D]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: weak
+  grade_letter: 2D
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend administering venous thromboembolism prophylaxis with LMWH or UFH as soon as
+    possible in high and moderate risk elderly patients in the trauma setting according to the renal function,
+    weight of the patient and bleeding risk [Strong recommendation based on a low quality level of evidence
+    1C]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1C
+  evidence_certainty: null
+  agreement: null
+- statement: If pharmacological prophylaxis of venous thromboembolism is contraindicated, we recommend
+    mechanical prophylaxis [Strong recommendation based on a low quality level of evidence 1C]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1C
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend discussing in a multidisciplinary approach the end of life in an elderly patient
+    in the trauma setting. The decision should be considering the patient’s directives, family feelings
+    and representatives desires and should be shared [Strong recommendation based on a low-very low quality
+    of evidence 1D]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+- statement: We recommend involving as soon as possible the palliative care team in managing an elderly
+    severely injured patient at the end-of-life status [Strong recommendation based on a low-very low
+    quality level of evidence 1C]
+  context: List of recommendations
+  section: 表：List of recommendations
+  recommendation_strength: strong
+  grade_letter: 1C
+  evidence_certainty: null
+  agreement: null

@@ -19,8 +19,7 @@ import re
 
 import yaml
 
-from base import (GENERIC_CLINICAL, NON_CLINICAL, STOPWORDS, Connector,
-                  clean_text, expand_plural)
+from base import Connector, discriminative_terms, expand_plural
 from schema import ExternalStandard, compute_predates
 
 CURATED = os.path.join(
@@ -37,19 +36,6 @@ _ACUTE_KW = ("icu", "intensive care", "critical care", "inpatient", "ward",
 _PREV_KW = ("screening", "screen", "prevention", "preventive", "early detection",
             "case-finding", "case finding", "surveillance", "risk assessment",
             "primary care", "counseling", "prophylaxis")
-
-
-def _discriminative(*texts) -> set[str]:
-    """抽判别词：去停用词、ML 术语、泛化医学词。留下的才有资格作病种匹配信号。"""
-    out = set()
-    for t in texts:
-        for tok in clean_text(t).lower().split():
-            tok = tok.strip(".,;/:-")
-            if (len(tok) < 3 or tok in STOPWORDS or tok in NON_CLINICAL
-                    or tok in GENERIC_CLINICAL):
-                continue
-            out.add(tok)
-    return out
 
 
 def check_setting(card: dict) -> tuple[bool, str]:
@@ -87,12 +73,12 @@ def match_topics(card: dict, doc: dict, limit: int = 4) -> tuple[list[tuple[dict
     target_population / intended_use 只参与排序加分，不参与准入；否则人群修饰词
     （high-risk、low-dose）会把完全无关的主题拉进来。
     """
-    gate = {w for w in _discriminative(card.get("disease_or_condition"))
+    gate = {w for w in discriminative_terms(card.get("disease_or_condition"))
             if w not in _MODIFIER}
     gate = set(expand_plural(sorted(gate)))
     if not gate:
         return [], gate
-    bonus = {w for w in _discriminative(card.get("target_population"),
+    bonus = {w for w in discriminative_terms(card.get("target_population"),
                                         card.get("intended_use"))
              if w not in _MODIFIER and w not in gate}
 

@@ -18,8 +18,10 @@
 ## 快速开始
 ```bash
 cd /work/hdd/bgkq/xchen48/clinical-rag
-# 首次使用：摄入 USPSTF 指南语料（约 4 分钟，产物 curated/guidelines/uspstf.yaml 已入库，通常无需重跑）
-# python3 connectors/uspstf_ingest.py
+# 首次使用：摄入指南语料（产物已入库，通常无需重跑）
+# python3 connectors/uspstf_ingest.py       # USPSTF，约 4 分钟 → curated/guidelines/uspstf.yaml
+# python3 connectors/guideline_ingest.py    # 学会/国家 CPG，按 manifest → curated/guidelines/cpg_*.yaml
+#                                           # 加 --check 只核许可与抽取、不写盘；末尾会打印 deferred（未摄入的指南与原因）
 python3 retrieve.py --claim examples/claim_card_lung_ct.yaml --per-source 3
 # 输出：① 报告规范清单适用性判定(启用了哪些、没启用的理由)
 #       ② 按 8 个审查模块分组的外部标准 + 无连接器角色(待策展)提示
@@ -27,10 +29,11 @@ python3 retrieve.py --claim examples/claim_card_lung_ct.yaml --per-source 3
 ```
 指定模块：`--modules comparator_baseline endpoint_utility`
 
-两张示例卡刻意用来验证适用性门控**双向**都正确：
+三张示例卡刻意用来验证适用性门控**各个方向**都正确：
 ```bash
-python3 retrieve.py --claim examples/claim_card_lung_ct.yaml    # C1 影像 → CLAIM/QUADAS-3 启用，DECIDE-AI 拦截
-python3 retrieve.py --claim examples/claim_card_sepsis_c3.yaml  # C3 病房 → DECIDE-AI 启用，CLAIM/QUADAS-3 拦截
+python3 retrieve.py --claim examples/claim_card_lung_ct.yaml    # C1 影像 → CLAIM/QUADAS-3 启用，DECIDE-AI 拦截；normative 走 USPSTF
+python3 retrieve.py --claim examples/claim_card_sepsis_c3.yaml  # C3 病房 → DECIDE-AI 启用，CLAIM/QUADAS-3 拦截；normative 走韩国脓毒症 CPG
+python3 retrieve.py --claim examples/claim_card_neonatal_sepsis.yaml  # 同为 sepsis，仅人群换成新生儿 → 成人 CPG 被人群门控拦下
 ```
 
 ## 结构
@@ -49,8 +52,12 @@ connectors/
   uspstf_fetch.py       USPSTF 取数层 (索引分页 + Population|Recommendation|Grade 表解析)
   uspstf_ingest.py      USPSTF 一次性摄入 → curated/guidelines/uspstf.yaml
   uspstf.py             USPSTF 连接器 (normative；场景门控 + 病种门控)
+  guideline_fetch.py    学会/国家 CPG 取数层 (Europe PMC OA 全文 + 三种结构策略抽推荐 + GRADE 解析)
+  guideline_ingest.py   按 manifest 一次性摄入 → curated/guidelines/cpg_<slug>.yaml
+  curated_guidelines.py 学会/国家 CPG 连接器 (normative；病种+人群硬拦、场景软提示)
 curated/reporting_tools/  人工策展的报告规范清单 (yaml，带 provenance/许可/完整性标注)
-curated/guidelines/       策展摄入的临床指南 (normative)；现有 uspstf.yaml
+curated/guidelines/       策展摄入的临床指南 (normative)：uspstf.yaml + cpg_*.yaml
+                          manifest.yaml 记策展决定；deferred 段如实记录未摄入的指南与原因
 examples/               示例 Clinical Claim Card
 store/                  检索记录缓存(jsonl，带日期 + query_context)
 docs/DESIGN.md          完整设计文档
@@ -63,13 +70,17 @@ docs/DESIGN.md          完整设计文档
    注册表里另有 4 个无 key Class-A 可加：pubmed_eutils / pmc_oa / crossref / mesh。
 2. **报告规范清单策展摄入**（✅ 已建，2026-07-24）：内容固定、与疾病无关 → 不需检索，一次录入永久可用。
    见下节。
-3. **规范指南策展摄入**（最高价值、最不 API 化，🟡 已起步 2026-07-25）：
-   **USPSTF 已摄入**（108 条主题：90 条现行推荐 / 142 条推荐条目，18 条已停用或转交）——
-   `normative` 角色首次有了连接器。选它而非 NICE 的原因：NICE 条款明令「在 NICE 内容上使用 AI
-   须另行取得许可」且国际使用收费，**不可行**；USPSTF 为美国政府作品，无改动前提下允许复制再分发，
-   版权声明未涉及 AI 用途。详见 [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md) §2。
-   **仍待策展**：WHO（CC BY-NC-SA 3.0 IGO）、学会指南（按 Claim Card 动态、每家许可不同）、
-   VA/DoD（纯 PDF，但许可无障碍）。
+3. **规范指南策展摄入**（最高价值、最不 API 化，🟡 两个源族已建）：
+   - **USPSTF**（2026-07-25，§6c）：108 条主题 / 142 条推荐条目。选它而非 NICE 的原因：
+     NICE 条款明令「在 NICE 内容上使用 AI 须另行取得许可」且国际使用收费，**不可行**；
+     USPSTF 为美国政府作品，无改动前提下允许复制再分发。详见
+     [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md) §2。**只覆盖预防与筛查**。
+   - **学会 / 国家 CPG**（2026-07-26，§6d）：补上急重症与治疗那一侧。学会指南没有统一门户，
+     实际通道是 **Europe PMC OA 全文 XML**（发现层 §6a.1 自动产出候选清单 → 策展层核许可与结构）。
+     已摄入 4 份（韩国脓毒症 / 德国院内肺炎 S3 / WSES 老年创伤 / ESPNIC 新生儿 POCUS），
+     未摄入 6 份连原因记在 `curated/guidelines/manifest.yaml: deferred`。
+   **仍待策展**：WHO IRIS（CC BY-NC-SA 3.0 IGO，许可最干净）、VA/DoD（纯 PDF 但许可无障碍）、
+   更多病种的学会指南。
 
 ## 报告规范清单策展层（`curated/reporting_tools/`）
 
@@ -93,7 +104,7 @@ docs/DESIGN.md          完整设计文档
 "论文为 C1，CONSORT-AI 适用于 C4，套用属越级要求"。这是 C0–C4 分级的执行点——
 防止系统对一篇回顾性研究提出"你没做随机对照试验"。
 
-## 状态（2026-07-25）
+## 状态（2026-07-26）
 - ✅ 端到端跑通：注册表 / schema / 原子写 / 4 个 API 连接器 / **报告规范策展层** / predates 门控 /
   路由层 / 2 张示例 Claim Card。
 - ✅ 实测（C1 肺癌 CT 卡）：98 条去重记录、schema 零错误；TRIPOD+AI(2024-04-16) 早于投稿 → `predates=true`，
@@ -119,12 +130,27 @@ docs/DESIGN.md          完整设计文档
   - 门控双向验证：肺癌筛查卡 ✅ 命中 `Lung Cancer: Screening`（判别词仅 `lung`——泛化词
     cancer/screening 不计入准入，否则会误配到乳腺癌/结直肠癌筛查）；脓毒症 C3 卡 ⛔ 被场景门控拦下
     （"USPSTF 职权仅限预防服务，套用属越权外推"），这是 `uspstf.notes: 不能外推到治疗问题` 的执行点。
-- 🕳 已知缺口（显式，不静默）：`normative` 仍缺 WHO / 学会指南 / VA-DoD（NICE 因许可禁令不可行）——
-  脓毒症一类急重症问题目前**没有任何**可用指南源；发现层能检出候选（中国肺癌筛查指南、
-  ESICM 成人脓毒症 CPG 等）并在路由输出报数，但只有题录+摘要，须策展摄入全文方可作规范条目引用；
+- ✅ **`normative` 补上急重症一侧（2026-07-26）**：学会/国家 CPG 经 Europe PMC OA 全文通道摄入
+  4 份（韩国脓毒症 13 条 / 德国院内肺炎 S3 10 条 / WSES 老年创伤 44 条 / ESPNIC 新生儿 POCUS 10 条），
+  详见 DESIGN §6d。
+  - 三种结构策略（推荐节 / 推荐框 / 推荐汇总表）取产量最高者，<3 条视为没抽对宁可不摄入；
+    **拒绝关键词抓句降级**——中国肺癌筛查指南的"建议"有相当一部分是在转述 ACS/USPSTF，
+    抓句会把别家的推荐记成本指南的。未摄入 6 份连原因记入 `manifest.yaml: deferred`
+    （2 份许可为空 = 未授权，含 **SSC 脓毒症指南，本腿最大内容损失**；4 份无推荐结构）。
+  - 实测脓毒症 C3 卡取到 **"septic shock 识别后 1 小时内给抗生素"（conditional / 证据确定性 low）**——
+    正是该论文 claimed benefit（更早识别→更早用药）必须对齐的现实标准，且 `predates=true`。
+  - 门控三向：成人脓毒症卡 ✅ 命中；**新生儿脓毒症卡 ⛔ 被人群门控拦下**（病种同为 sepsis，
+    成人标准外推到 NICU 属越权）；肺癌卡 ⛔ 四份全不匹配、由 USPSTF 承担 → 两个源族互补性成立。
+  - 覆盖边界如实标注 `completeness: structured_recommendations_only`：正文散文里的表述不在库内，
+    系统不得声称"已按该指南全文核查"。
+- 🕳 已知缺口（显式，不静默）：`normative` 仍缺 WHO IRIS / VA-DoD（NICE 因许可禁令不可行），
+  现有 4 份 CPG 只覆盖 4 个病种，心衰/卒中/糖网/AKI 等常见 MedAI 方向尚无对应指南；
+  德国 2025 脓毒症 S3 许可合规但因德语 + `<list>` 散列结构未能摄入；发现层能检出更多候选
+  （ESICM 成人脓毒症 CPG、NCCN 等）并在路由输出报数，但只有题录+摘要，须策展摄入全文方可作规范条目引用；
   CLAIM 2024 条目、QUADAS-3 信号问题在付费全文中未摄入。
 - 🕳 `epidemiology` 角色（WHO GHO）对专科病种覆盖很薄——肺癌、成人脓毒症在 GHO 里都没有可用指标。
   这是数据源本身的局限，连接器如实返回空而非编出覆盖。
-- ⏭ 待建（见 DESIGN.md §7）：规范指南策展摄入层（现已有发现层自动生成的待摄入清单）、
+- ⏭ 待建（见 DESIGN.md §7）：扩大指南摄入面（WHO IRIS 优先，许可最干净）、非英语 GRADE 策略、
+  长文档分块检索（现有两个源都靠结构化表格躲过去了，摄入整份 PDF 指南就必须做）、
   更多无 key 连接器（PubMed/PMC 全文/术语/openFDA PMA）、Claim Card 自动抽取器(上游/内部)、
   与内部原文核验对接成 Claim–Evidence Graph。

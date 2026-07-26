@@ -54,7 +54,7 @@ sources:
     license_review_required: true
     license: "常见 CC BY-NC-SA 3.0 IGO，逐文档核对"
     url: "https://iris.who.int/"
-    modules: [clinical_question, comparator, endpoint, safety_harm_equity]
+    modules: [clinical_question, comparator_baseline, endpoint_utility, safety_harm_equity]
     notes: "第一优先；保存推荐原文/证据确定性/发布日期/适用国家"
 
   - id: nice_guidance
@@ -69,7 +69,7 @@ sources:
     license_review_required: true
     license: "免费阅读+API；国际复用(非个人研究)可能需许可付费"
     url: "https://www.nice.org.uk/guidance"
-    modules: [comparator, endpoint, generalization, workflow_deployment]
+    modules: [comparator_baseline, endpoint_utility, generalization, workflow_deployment]
 
   - id: uspstf
     name: USPSTF Recommendations
@@ -96,7 +96,7 @@ sources:
     machine_access: [pdf]
     license_review_required: false
     url: "https://www.healthquality.va.gov/"
-    modules: [comparator, endpoint_utility, population_validity]
+    modules: [comparator_baseline, endpoint_utility, population_validity]
 
   - id: society_guidelines
     name: 专业学会指南门户 (ACR / AHA-ACC / ESC / IDSA ...)
@@ -106,12 +106,17 @@ sources:
     clinical_domains: [radiology, cardiology, infectious_disease, varies]
     document_types: [guideline, appropriateness_criteria]
     access_class: B
-    machine_access: [html, pdf]
+    machine_access: [curated, html, pdf]
     license_review_required: true
-    license: "多免费阅读；ACR 等复用需申请许可"
+    license: "逐份核对：只摄入 Europe PMC 标注 CC BY/BY-NC/BY-NC-ND/BY-SA/CC0 的开放全文；许可为空一律不收"
     url: "https://www.acr.org/clinical-resources/clinical-tools-and-reference/appropriateness-criteria"
-    modules: [reference_standard, comparator, population_validity]
-    notes: "按 Claim Card 动态路由；不能预先把所有学会文件当同一证据等级"
+    modules: [clinical_question, reference_standard, comparator_baseline, population_validity,
+              endpoint_utility, workflow_deployment, safety_harm_equity]
+    notes: >-
+      ✅已接（2026-07-26，策展摄入腿）。学会指南没有统一门户，实际通道是
+      **Europe PMC OA 全文 XML** → 结构化抽推荐条目（connectors/guideline_fetch.py），
+      策展决定记在 curated/guidelines/manifest.yaml，未摄入者写明原因(许可/结构)。
+      按 Claim Card 动态路由；不能预先把所有学会文件当同一证据等级。
 
   # ===== 2.2 系统综述 / HTA (evidence_synthesis) =====
   - id: ncbi_bookshelf
@@ -125,7 +130,7 @@ sources:
     machine_access: [html, ftp, xml]
     license_review_required: true
     url: "https://www.ncbi.nlm.nih.gov/books/"
-    modules: [comparator, endpoint_utility, clinical_question]
+    modules: [comparator_baseline, endpoint_utility, clinical_question]
     notes: "优先接入；免费全文，版权逐项不同"
 
   - id: ahrq_epc
@@ -139,7 +144,7 @@ sources:
     machine_access: [html, pdf]
     license_review_required: false
     url: "https://effectivehealthcare.ahrq.gov/"
-    modules: [comparator, endpoint_utility, generalization]
+    modules: [comparator_baseline, endpoint_utility, generalization]
 
   - id: iqwig
     name: IQWiG Projects & Results
@@ -152,7 +157,7 @@ sources:
     machine_access: [html, pdf]
     license_review_required: true
     url: "https://www.iqwig.de/en/projects/projects-results/"
-    modules: [endpoint_utility, comparator]
+    modules: [endpoint_utility, comparator_baseline]
     notes: "验证'是否有患者获益'；保留德国制度背景；英语覆盖不全"
 
   - id: cochrane
@@ -167,7 +172,7 @@ sources:
     license_review_required: true
     license: "摘要免费；综述常 12 月后免费阅读；非统一开放全文"
     url: "https://www.cochrane.org/"
-    modules: [comparator, endpoint_utility]
+    modules: [comparator_baseline, endpoint_utility]
     notes: "高质量证据发现；仅明确许可的全文进批量 RAG"
 
   - id: grade_book
