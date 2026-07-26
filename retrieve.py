@@ -20,6 +20,7 @@ from europepmc import EuropePMCConnector                 # noqa: E402
 from who_gho import WHOGHOConnector                       # noqa: E402
 from openfda import OpenFDAConnector                       # noqa: E402
 from curated_reporting import build_connectors, applicability_report  # noqa: E402
+from uspstf import USPSTFConnector                          # noqa: E402
 
 # 已实现的连接器：source_id -> 实例
 CONNECTORS = {
@@ -29,8 +30,12 @@ CONNECTORS = {
     "who_gho": WHOGHOConnector(),
     "openfda": OpenFDAConnector(),
 }
-# ② 策展摄入（离线固定内容，按研究设计/证据阶段做适用性门控）
+# ② 策展摄入·报告规范清单（离线固定内容，按研究设计/证据阶段做适用性门控）
 CONNECTORS.update(build_connectors())
+# ③ 策展摄入·临床指南 (normative)。按病种+场景门控，与 ② 同构但依据不同。
+_uspstf = USPSTFConnector()
+if _uspstf.available():
+    CONNECTORS["uspstf"] = _uspstf
 
 
 def load_registry(path=None):
@@ -149,6 +154,19 @@ def main():
                 a["publication_date"] > submission:
             print(f"      ⏱ 发布于投稿日 {submission} 之后 → predates=false，"
                   f"可用于'今天能否部署'，不得据此指责作者。")
+
+    # 临床指南层 (normative) 的适用性判定：同样要求不适用时说明理由
+    print("\n=== 临床指南适用性 (normative 策展层) ===")
+    if "uspstf" in CONNECTORS:
+        rep = CONNECTORS["uspstf"].report(card)
+        print(f" {'✅' if rep['applicable'] else '⛔'} USPSTF ({rep['n_recs']} 条推荐)")
+        print(f"      {rep['reason']}")
+        for t in rep["topics"]:
+            print(f"      · {t['title'][:66]}  Grade={t['grades']} ({t['date']})")
+    else:
+        print(" 🕳 USPSTF 未摄入 — 先跑 python3 connectors/uspstf_ingest.py")
+    print("    ⚠️ 其余 normative 源 (WHO / 学会指南 / VA-DoD) 仍待策展；"
+          "NICE 因 AI 用途许可禁令不可行，见 docs/RELATED_WORK.md §2。")
 
     all_recs = []
     print("\n=== 检索结果 (按模块) ===")

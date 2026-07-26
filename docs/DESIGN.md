@@ -260,6 +260,81 @@ QUADAS-3 与 CLAIM 2024 全文在付费墙后，**条目未摄入**——文件�
 清单本身有发布日。例如 C1 肺癌卡（投稿 2024-05-01）：TRIPOD+AI(2024-04-16) → `true`；
 PROBAST+AI(2025-03-24) → `false`。后者可用于"今天能否部署"的评价，但不得用来指责作者。
 
+## 6c. 已实现（规范指南这条腿的第一个源）：USPSTF —— 2026-07-25
+
+`normative` 是 8 个审查模块里 7 个的首选源，此前**一个连接器都没有**。本节记录第一个落地的源。
+
+### 为什么是 USPSTF 而不是 NICE
+
+调研（[RELATED_WORK.md](RELATED_WORK.md)）表明 arXiv 2510.02967 已用 **NICE 官方 API** 一次取到
+2164 份指南做 RAG，技术上完全可行。但 NICE 条款有三重限制：免费仅限英国境内、国际使用收费、
+且**明令「在 NICE 内容上使用 AI 必须另行取得许可」**——本项目做的恰恰就是这件事，故 **NICE 不可行**。
+
+USPSTF 的版权声明允许 "reproduce, redistribute, publicly display, and incorporate USPSTF work
+into other materials"，**条件是 without any changes**，禁止收费再分发与营利用途，
+并要求注明出处；**全文未提及 AI/文本挖掘限制**。
+"不得改动"这一条与本项目"原文逐字、`verbatim: true`"的既有铁律天然一致——
+项目原则在这里直接换来了合规。
+
+### 三个组件
+
+| 文件 | 职责 |
+|---|---|
+| `uspstf_fetch.py` | 索引分页抓取（`?topic_status=P&PAGE=n`，6 页 108 条）+ 单页解析 |
+| `uspstf_ingest.py` | 一次性摄入 → `curated/guidelines/uspstf.yaml`（内容固定，不随论文变，故不在线检索） |
+| `uspstf.py` | 连接器：按 Claim Card 做**场景门控 + 病种门控** |
+
+### 关键实现决策
+
+**① 人群—推荐—等级必须由页面的 `Population | Recommendation | Grade` 表绑定，不能正则扫句子。**
+两个理由：(a) 并非所有推荐都以 "The USPSTF recommends" 开头——前列腺癌 C 级那条以
+"For men aged 55 to 69 years, the decision to undergo..." 开头，正则整条漏掉，
+实测 grades=['C','D'] 却只抓到 1 条；(b) 一条推荐常含多亚组分级（结直肠 A+B+C 对应
+50–75 / 45–49 / 76–85 岁），只有该表能正确绑定。**绑错推荐强度比不给更糟。**
+额外收益：表格的 Population 列直接就是 `target_population` 字段。
+
+**② Inactive / Referred 主题不是解析失败。**
+18 条主题（CKD 筛查、儿童免疫接种等）页面标题带 `Inactive:` / `Referred:` 前缀，
+本身没有 Recommendation Summary 表——USPSTF 已停止维护或转交其他机构（免疫接种转给 ACIP）。
+按状态区分后：`status=active` 却解析不出才算失败（现为 0），其余记入 `retired_topics` 保留。
+论文所在领域的推荐若已被停用，本身即有价值的审稿背景，不应因"无推荐条目"而从库中消失。
+
+**③ 两条门控，不适用时给理由。**
+
+- **场景门控**：USPSTF 职权仅限预防服务（筛查/预防用药/行为咨询、初级保健）。
+  Claim Card 命中急重症/治疗信号（icu / inpatient / sepsis / ventilat…）而无预防信号 → 拦截。
+  这是 `clinical_sources.yaml: uspstf.notes「筛查类第一优先；不能外推到治疗问题」`的执行点。
+- **病种门控**：准入**只看 `disease_or_condition`**，且泛化词（cancer / screening / risk /
+  imaging，见 `base.py: GENERIC_CLINICAL`）与人群/技术修饰词（high-risk / low-dose /
+  ai-assisted，见 `uspstf.py: _MODIFIER`）均不计入判别。
+  初版把 `target_population` / `intended_use` 也纳入准入，结果肺癌卡因 "high-risk" 命中了
+  「Aspirin Use to Prevent Preeclampsia in persons at high risk」、因 "low-dose" 命中了心血管饮食推荐。
+  收紧后判别词只剩 `lung`，精确命中且仅命中 `Lung Cancer: Screening`。
+  `target_population` / `intended_use` 降级为排序加分项。
+
+### 实测（双向验证）
+
+| Claim Card | 结果 |
+|---|---|
+| 肺癌 CT (C1, screening) | ✅ 命中 `Lung Cancer: Screening`，Grade **B**，certainty **moderate**，人群 "Adults aged 50 to 80 years who have a 20 pack-year..."，发布 2021-03-09 **早于**投稿 2024-05-01 → `predates=true`，**可据此要求作者** |
+| 脓毒症预警 (C3, ICU 病房) | ⛔ 场景门控拦截：「命中 inpatient/ward/sepsis，USPSTF 职权仅限预防服务，套用属越权外推，须改由学会指南/WHO 承担」 |
+
+`recommendation_strength` 与 `evidence_certainty` **首次有值**（此前全库 0/104）——
+这两个字段自 §5 定义起即为临床指南预留，至此才被真正填充。
+USPSTF 的 **I 级（证据不足）** 在审稿中价值尤高：官方都认为证据不足的领域，
+论文若声称临床价值，正是应追问之处；连接器对 I 级记录附加专门提示。
+
+### 覆盖边界（重要）
+
+USPSTF **只能覆盖预防与筛查**。急重症、住院管理、治疗方案、诊断细节一概不在其职权内——
+脓毒症那张卡接完 USPSTF 之后**仍是缺口**。`normative` 是一个**角色**而非单一源，
+架构（`sources_for_module` 按角色聚合）本就支持多源；USPSTF 只是第一个。
+后续按"许可难度 × 覆盖价值"排序：WHO（标准 CC 许可）→ 学会指南（按需、每家单独对付）→
+VA/DoD（许可无碍但纯 PDF）。
+
+**多源之后会出现新问题：指南互相打架**（USPSTF 与 NCCN 与中国指南对肺癌筛查的入选标准并不一致）。
+拟沿用 `predates` 的处理思路——全部收录、各自标明发布方与适用地区、**如实呈现分歧而不代为裁决**。
+
 ## 7. 未来工作
 
 0. ~~报告规范清单策展层~~ —— ✅ 2026-07-24 完成，见 §6b。`reporting_tool` 缺口已闭合。
@@ -267,6 +342,10 @@ PROBAST+AI(2025-03-24) → `false`。后者可用于"今天能否部署"的评�
    许可敏感 → 按 Claim Card 小批策展摄入（fetch + 分节 + provenance），补上路由里 `normative`
    的"待策展"缺口。注意 8 个模块里有 7 个把 normative 列为首选源，目前**一个连接器都没有**。
    §6b 的 yaml 结构（provenance + applicability + items + completeness）可直接复用为指南条目的载体。
+   ⚠️ **2026-07-25 调研后修订，见 [RELATED_WORK.md](RELATED_WORK.md) §7**：NICE 虽是 5 个 normative
+   源里唯一有 API 的，但其条款明令「在 NICE 内容上使用 AI 必须另行取得许可」且国际使用收费 →
+   **降为不可行**；首攻改为 **USPSTF**（美国政府作品／公有领域／无许可障碍）。切块与检索配置
+   沿用 arXiv 2510.02967（层级语义分块 200–600 token / overlap 50 + BM25·稠密混合 + RRF + reranker）。
 1b. **补齐两份付费清单**：CLAIM 2024 条目表（影像 AI，优先）、QUADAS-3 信号问题原文。
 2. **更多连接器**：Europe PMC 全文(OA)、openFDA 器械 510k/PMA、PubMed E-utils、术语(MeSH/ICD-11)。
 3. ~~**检索质量**~~ —— ✅ 2026-07-25 完成，**四个 API 连接器全部重写**，见 §6a。

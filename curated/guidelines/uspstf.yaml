@@ -1,0 +1,1961 @@
+source_id: uspstf
+name: U.S. Preventive Services Task Force Recommendations
+issuing_body: U.S. Preventive Services Task Force (USPSTF) / AHRQ
+document_type: guideline
+source_role: normative
+tier: 1
+region: US
+provenance:
+  canonical_url: https://www.uspreventiveservicestaskforce.org/uspstf/topic_search_results?topic_status=P
+  copyright_notice_url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation-topics/copyright-notice
+  license: US government work (AHRQ) — 无改动前提下允许复制与再分发
+  license_note: AHRQ permits members of the public to reproduce, redistribute, publicly display, and incorporate
+    USPSTF work into other materials provided that it is reproduced without any changes to the work or
+    portions thereof. 禁止收费再分发与营利用途；引用须注明 USPSTF 网页为出处。版权声明未提及 AI/文本挖掘限制（2026-07-25 核对；对比 NICE 明令 AI 用途需另行许可
+    → NICE 不可行）。
+  ingested_from: USPSTF 官网 Recommendation Summary 表 (Population|Recommendation|Grade)
+  ingested_date: '2026-07-25'
+  verbatim: true
+  completeness: full
+  completeness_note: 索引 108 条主题：90 条有现行推荐（共 142 条推荐条目），18 条已停用/转交（USPSTF 页面标注 Inactive/Referred，本身无现行推荐，非解析缺陷）。无解析失败。
+  n_topics: 90
+  n_recommendations: 142
+  n_retired: 18
+retired_topics:
+- slug: congenital-hypothyroidism-screening
+  title: 'Congenital Hypothyroidism: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/congenital-hypothyroidism-screening
+  status: referred
+- slug: phenylketonuria-in-newborns-screening
+  title: 'Phenylketonuria in Newborns: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/phenylketonuria-in-newborns-screening
+  status: referred
+- slug: sickle-cell-disease-hemoglobinopathies-in-newborns-screening
+  title: 'Sickle Cell Disease (Hemoglobinopathies) in Newborns: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/sickle-cell-disease-hemoglobinopathies-in-newborns-screening
+  status: referred
+- slug: motor-vehicle-occupant-restraints-counseling
+  title: 'Motor Vehicle Occupant Restraints: Counseling'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/motor-vehicle-occupant-restraints-counseling
+  status: referred
+- slug: immunizations-for-children
+  title: Immunizations for Children
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/immunizations-for-children
+  status: referred
+- slug: rubella-immunizations
+  title: 'Rubella: Immunizations'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/rubella-immunizations
+  status: referred
+- slug: youth-violence-counseling
+  title: 'Youth Violence: Counseling'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/youth-violence-counseling
+  status: referred
+- slug: immunizations-for-adults
+  title: Immunizations for Adults
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/immunizations-for-adults
+  status: referred
+- slug: elevated-blood-lead-levels-in-childhood-and-pregnancy-screening
+  title: 'Elevated Blood Lead Levels in Children and Pregnant Women: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/elevated-blood-lead-levels-in-childhood-and-pregnancy-screening
+  status: inactive
+- slug: gynecological-conditions-screening-with-the-pelvic-examination
+  title: 'Gynecological Conditions: Periodic Screening With the Pelvic Examination'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/gynecological-conditions-screening-with-the-pelvic-examination
+  status: inactive
+- slug: chronic-kidney-disease-ckd-screening
+  title: 'Chronic Kidney Disease: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/chronic-kidney-disease-ckd-screening
+  status: inactive
+- slug: hyperbilirubinemia-screening-infants
+  title: 'Hyperbilirubinemia: Screening Infants'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hyperbilirubinemia-screening-infants
+  status: inactive
+- slug: hearing-loss-in-newborns-screening
+  title: 'Hearing Loss in Newborns: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hearing-loss-in-newborns-screening
+  status: inactive
+- slug: hemochromatosis-screening
+  title: 'Hemochromatosis: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hemochromatosis-screening
+  status: inactive
+- slug: developmental-hip-dysplasia-screening
+  title: 'Developmental Hip Dysplasia: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/developmental-hip-dysplasia-screening
+  status: inactive
+- slug: dental-and-periodontal-disease-counseling
+  title: 'Dental and Periodontal Disease: Counseling'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/dental-and-periodontal-disease-counseling
+  status: inactive
+- slug: gynecological-cancers-counseling
+  title: 'Gynecological Cancers: Counseling'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/gynecological-cancers-counseling
+  status: inactive
+- slug: rubella-screening
+  title: 'Rubella: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/rubella-screening
+  status: inactive
+scope_note: 'USPSTF 职权范围仅限预防服务：筛查、预防用药、行为咨询，面向社区与初级保健。不覆盖急重症、住院管理、治疗方案与诊断细节 —— 该类问题须由学会指南/WHO 等其他 normative
+  源承担，不得用本源外推（clinical_sources.yaml: uspstf.notes「筛查类第一优先；不能外推到治疗问题」）。'
+grade_definitions:
+  A:
+    certainty: high
+    meaning: 高确定性，净收益大
+  B:
+    certainty: moderate
+    meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  C:
+    certainty: moderate
+    meaning: 中等确定性净收益小；应按个体情况选择性提供
+  D:
+    certainty: moderate
+    meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  I:
+    certainty: insufficient
+    meaning: 证据不足，无法评估收益与危害的平衡
+topics:
+- slug: intimate-partner-violence-and-abuse-of-elderly-and-vulnerable-adults-screening
+  title: 'Intimate Partner Violence and Caregiver Abuse of Older or Vulnerable Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/intimate-partner-violence-and-abuse-of-elderly-and-vulnerable-adults-screening
+  publication_date: '2025-06-24'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Injury Prevention, Mental Health Conditions and Substance Abuse, Miscellaneous
+  index_year: '2025'
+  recommendations:
+  - population: Women of reproductive age, including pregnant and postpartum women
+    text: "The USPSTF recommends that clinicians screen for intimate partner violence (IPV) in women of\
+      \ reproductive age, including those who are pregnant and postpartum. \r\n\nSee the \"Practice Considerations\"\
+      \ section for information on evidence-based multicomponent interventions and for information on\
+      \ IPV in men."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Older or vulnerable adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for caregiver abuse and neglect in older or vulnerable adults.\r\n\nSee\
+      \ the \"Practice Considerations\" section for additional information."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: syphilis-infection-in-pregnancy-screening
+  title: 'Syphilis Infection During Pregnancy: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/syphilis-infection-in-pregnancy-screening
+  publication_date: '2025-05-13'
+  type: Screening
+  age_group: Adolescent, Adult
+  category: Infectious Diseases, Obstetric and Gynecologic Conditions
+  index_year: '2025'
+  recommendations:
+  - population: Asymptomatic pregnant women
+    text: The USPSTF recommends early, universal screening for syphilis infection during pregnancy; if
+      an individual is not screened early in pregnancy, the USPSTF recommends screening at the first available
+      opportunity.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+- slug: breastfeeding-primary-care-interventions
+  title: 'Breastfeeding: Primary Care Behavioral Counseling Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breastfeeding-primary-care-interventions
+  publication_date: '2025-04-11'
+  type: Counseling
+  age_group: Adult
+  category: Perinatal Care
+  index_year: '2025'
+  recommendations:
+  - population: Pregnant and postpartum women
+    text: The USPSTF recommends providing interventions or referrals, during pregnancy and after birth,
+      to support breastfeeding.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: food-insecurity-screening
+  title: 'Food Insecurity: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/food-insecurity-screening
+  publication_date: '2025-03-11'
+  type: Counseling, Screening
+  age_group: Adolescent, Adult, Pediatric, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2025'
+  recommendations:
+  - population: Children, adolescents, and adults
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for food insecurity on health outcomes in the primary care setting.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: osteoporosis-screening
+  title: 'Osteoporosis to Prevent Fractures: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/osteoporosis-screening
+  publication_date: '2025-01-14'
+  type: Screening
+  age_group: Adult, Senior
+  category: Musculoskeletal Disorders
+  index_year: '2025'
+  recommendations:
+  - population: Women 65 years or older
+    text: "The USPSTF recommends screening for osteoporosis to prevent osteoporotic fractures in women\
+      \ 65 years or older.\r\n\nSee the \"Practice Considerations\" section for more information on screening\
+      \ tests."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Postmenopausal women younger than 65 years with 1 or more risk factors for osteoporosis
+    text: "The USPSTF recommends screening for osteoporosis to prevent osteoporotic fractures in postmenopausal\
+      \ women younger than 65 years who are at increased risk for an osteoporotic fracture as estimated\
+      \ by clinical risk assessment.\r\n\nSee the \"Practice Considerations\" section for more information\
+      \ on risk assessment and screening tests."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Men
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for osteoporosis to prevent osteoporotic fractures in men.\r\n\nSee the\
+      \ \"Practice Considerations\" section for suggestions for practice regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: iron-deficiency-anemia-in-pregnant-women-screening-and-supplementation
+  title: 'Iron Deficiency and Iron Deficiency Anemia During Pregnancy: Screening and Supplementation'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/iron-deficiency-anemia-in-pregnant-women-screening-and-supplementation
+  publication_date: '2024-08-20'
+  type: Preventive medication, Screening
+  age_group: Adolescent, Adult
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2024'
+  recommendations:
+  - population: Asymptomatic pregnant adolescents and adults
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for iron deficiency and iron deficiency anemia in pregnant persons to prevent
+      adverse maternal and infant health outcomes.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+  - population: Asymptomatic pregnant adolescents and adults
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of routine iron supplementation in pregnant persons to prevent adverse maternal and infant
+      health outcomes.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: obesity-in-children-and-adolescents-screening
+  title: 'High Body Mass Index in Children and Adolescents: Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/obesity-in-children-and-adolescents-screening
+  publication_date: '2024-06-18'
+  type: Counseling
+  age_group: Adolescent, Pediatric
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2024'
+  recommendations:
+  - population: Children and adolescents 6 years or older
+    text: "The USPSTF recommends that clinicians provide or refer children and adolescents 6 years or\
+      \ older with a high body mass index (BMI) (≥95th percentile for age and sex) to comprehensive, intensive\
+      \ behavioral interventions. \r\n\nSee the Practice Considerations section for more information about\
+      \ behavioral interventions."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: falls-prevention-community-dwelling-older-adults-interventions
+  title: 'Falls Prevention in Community-Dwelling Older Adults: Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/falls-prevention-community-dwelling-older-adults-interventions
+  publication_date: '2024-06-04'
+  type: Counseling
+  age_group: Senior
+  category: Injury Prevention, Musculoskeletal Disorders
+  index_year: '2024'
+  recommendations:
+  - population: Community-dwelling adults 65 years or older
+    text: The USPSTF recommends exercise interventions to prevent falls in community-dwelling adults 65
+      years or older who are at increased risk for falls.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Community-dwelling adults 65 years or older
+    text: "The USPSTF recommends that clinicians individualize the decision to offer multifactorial interventions\
+      \ to prevent falls to community-dwelling adults 65 years or older who are at increased risk for\
+      \ falls. Existing evidence indicates that the overall net benefit of routinely offering multifactorial\
+      \ interventions to prevent falls is small. When determining whether this service is appropriate\
+      \ for an individual, patients and clinicians should consider the balance of benefits and harms based\
+      \ on the circumstances of prior falls, presence of comorbid medical conditions, and the patient's\
+      \ values and preferences.\r\n\nSee the Practice Considerations section for information on risk assessment\
+      \ for falls."
+    grade: C
+    certainty: moderate
+    grade_meaning: 中等确定性净收益小；应按个体情况选择性提供
+- slug: breast-cancer-screening
+  title: 'Breast Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-screening
+  publication_date: '2024-04-30'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2024'
+  recommendations:
+  - population: Women aged 40 to 74 years
+    text: The USPSTF recommends biennial screening mammography for women aged 40 to 74 years.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Women 75 years or older
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening mammography in women 75 years or older.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+  - population: Women with dense breasts
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of supplemental screening for breast cancer using breast ultrasonography or magnetic\
+      \ resonance imaging (MRI) in women identified to have dense breasts on an otherwise negative screening\
+      \ mammogram.\r\n\nSee the \"Practice Considerations\" section for more information on the patient\
+      \ population to whom this recommendation applies and on screening mammography modalities."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: child-maltreatment-primary-care-interventions
+  title: 'Prevention of Child Maltreatment: Primary Care Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/child-maltreatment-primary-care-interventions
+  publication_date: '2024-03-19'
+  type: Counseling, Screening
+  age_group: Adolescent, Pediatric
+  category: Development and Behavior, Injury Prevention, Mental Health Conditions and Substance Abuse
+  index_year: '2024'
+  recommendations:
+  - population: Children and adolescents younger than 18 years without signs and symptoms of or known
+      exposure to maltreatment
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of primary care interventions to prevent child maltreatment.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: speech-and-language-delay-and-disorders-in-children-age-5-and-younger-screening
+  title: 'Speech and Language Delay and Disorders in Children: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/speech-and-language-delay-and-disorders-in-children-age-5-and-younger-screening
+  publication_date: '2024-01-23'
+  type: Screening
+  age_group: Pediatric
+  category: Development and Behavior
+  index_year: '2024'
+  recommendations:
+  - population: Children 5 years or younger without signs or symptoms of speech and language delay and
+      disorders
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for speech and language delay and disorders in children 5 years or younger.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: oral-health-adults-screening-preventive-interventions
+  title: 'Oral Health in Adults: Screening and Preventive Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/oral-health-adults-screening-preventive-interventions
+  publication_date: '2023-11-07'
+  type: Counseling, Preventive medication, Screening
+  age_group: Adult, Senior
+  category: Miscellaneous
+  index_year: '2023'
+  recommendations:
+  - population: Asymptomatic adults 18 years or older
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of routine screening performed by primary care clinicians for oral health conditions,
+      including dental caries or periodontal-related disease, in adults.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+  - population: Asymptomatic adults 18 years or older
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of preventive interventions performed by primary care clinicians for oral health conditions,
+      including dental caries or periodontal-related disease, in adults.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: oral-health-children-adolescents-screening-preventive-interventions
+  title: 'Oral Health in Children and Adolescents Aged 5 to 17 Years: Screening and Preventive Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/oral-health-children-adolescents-screening-preventive-interventions
+  publication_date: '2023-11-07'
+  type: Counseling, Preventive medication, Screening
+  age_group: Adolescent, Pediatric
+  category: Miscellaneous
+  index_year: '2023'
+  recommendations:
+  - population: Asymptomatic children and adolescents aged 5 to 17 years
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of routine screening performed by primary care clinicians for oral health conditions,
+      including dental caries, in children and adolescents aged 5 to 17 years.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+  - population: Asymptomatic children and adolescents aged 5 to 17 years
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of preventive interventions performed by primary care clinicians for oral health conditions,
+      including dental caries, in children and adolescents aged 5 to 17 years.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: hypertensive-disorders-pregnancy-screening
+  title: 'Hypertensive Disorders of Pregnancy: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hypertensive-disorders-pregnancy-screening
+  publication_date: '2023-09-19'
+  type: Screening
+  age_group: Adult
+  category: Obstetric and Gynecologic Conditions
+  index_year: '2023'
+  recommendations:
+  - population: Asymptomatic pregnant persons
+    text: The USPSTF recommends screening for hypertensive disorders in pregnant persons with blood pressure
+      measurements throughout pregnancy.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: prevention-of-human-immunodeficiency-virus-hiv-infection-pre-exposure-prophylaxis
+  title: 'Prevention of Acquisition of HIV: Preexposure Prophylaxis'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/prevention-of-human-immunodeficiency-virus-hiv-infection-pre-exposure-prophylaxis
+  publication_date: '2023-08-22'
+  type: Preventive medication
+  age_group: Adolescent, Adult
+  category: Infectious Diseases
+  index_year: '2023'
+  recommendations:
+  - population: Adolescents and adults at increased risk of HIV
+    text: "The USPSTF recommends that clinicians prescribe preexposure prophylaxis using effective antiretroviral\
+      \ therapy to persons who are at increased risk of HIV acquisition to decrease the risk of acquiring\
+      \ HIV. \r\n\nSee the Practice Considerations section for more information about identification of\
+      \ persons at increased risk and about effective antiretroviral therapy."
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+- slug: folic-acid-for-the-prevention-of-neural-tube-defects-preventive-medication
+  title: 'Folic Acid Supplementation to Prevent Neural Tube Defects: Preventive Medication'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/folic-acid-for-the-prevention-of-neural-tube-defects-preventive-medication
+  publication_date: '2023-08-01'
+  type: Preventive medication
+  age_group: Adolescent, Adult
+  category: Development and Behavior, Obstetric and Gynecologic Conditions, Perinatal Care
+  index_year: '2023'
+  recommendations:
+  - population: Persons who plan to or could become pregnant
+    text: The USPSTF recommends that all persons planning to or who could become pregnant take a daily
+      supplement containing 0.4 to 0.8 mg (400 to 800 mcg) of folic acid.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+- slug: lipid-disorders-in-children-screening
+  title: 'Lipid Disorders in Children and Adolescents: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/lipid-disorders-in-children-screening
+  publication_date: '2023-07-18'
+  type: Screening
+  age_group: Adolescent, Pediatric
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2023'
+  recommendations:
+  - population: Asymptomatic children and adolescents 20 years or younger
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for lipid disorders in children and adolescents 20 years or younger.\r\n\
+      \nSee the Practice Considerations section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: anxiety-adults-screening
+  title: 'Anxiety Disorders in Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/anxiety-adults-screening
+  publication_date: '2023-06-20'
+  type: Screening
+  age_group: Adult, Senior
+  category: Mental Health Conditions and Substance Abuse
+  index_year: '2023'
+  recommendations:
+  - population: Adults 64 years or younger, including pregnant and postpartum persons
+    text: The USPSTF recommends screening for anxiety disorders in adults, including pregnant and postpartum
+      persons.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Older adults 65 years or older
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for anxiety disorders in older adults.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: screening-depression-suicide-risk-adults
+  title: 'Depression and Suicide Risk in Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/screening-depression-suicide-risk-adults
+  publication_date: '2023-06-20'
+  type: Screening
+  age_group: Adult, Senior
+  category: Development and Behavior, Mental Health Conditions and Substance Abuse
+  index_year: '2023'
+  recommendations:
+  - population: Adults, including pregnant and postpartum persons, and older adults (65 years or older)
+    text: The USPSTF recommends screening for depression in the adult population, including pregnant and
+      postpartum persons, as well as older adults.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Adults, including pregnant and postpartum persons, and older adults (65 years or older)
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for suicide risk in the adult population, including pregnant and postpartum
+      persons, as well as older adults.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: latent-tuberculosis-infection-screening
+  title: 'Latent Tuberculosis Infection in Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/latent-tuberculosis-infection-screening
+  publication_date: '2023-05-02'
+  type: Screening
+  age_group: Adult, Senior
+  category: Infectious Diseases
+  index_year: '2023'
+  recommendations:
+  - population: Asymptomatic adults at increased risk of latent tuberculosis infection (LTBI)
+    text: "The USPSTF recommends screening for LTBI in populations at increased risk.\r\n\nSee the \"\
+      Assessment of Risk\" section for additional information on adults at increased risk."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: skin-cancer-screening
+  title: 'Skin Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/skin-cancer-screening
+  publication_date: '2023-04-18'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2023'
+  recommendations:
+  - population: Asymptomatic adolescents and adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of visual skin examination by a clinician to screen for skin cancer in adolescents and\
+      \ adults.\r\n\nSee the Practice Considerations section for additional information regarding the\
+      \ I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: genital-herpes-serologic-screening
+  title: 'Genital Herpes Infection: Serologic Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/genital-herpes-serologic-screening
+  publication_date: '2023-02-14'
+  type: Screening
+  age_group: Adolescent, Adult
+  category: Infectious Diseases
+  index_year: '2023'
+  recommendations:
+  - population: Asymptomatic adolescents and adults, including pregnant persons
+    text: The USPSTF recommends against routine serologic screening for genital herpes simplex virus infection
+      in asymptomatic adolescents and adults, including pregnant persons.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: obstructive-sleep-apnea-in-adults-screening
+  title: 'Obstructive Sleep Apnea in Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/obstructive-sleep-apnea-in-adults-screening
+  publication_date: '2022-11-15'
+  type: Screening
+  age_group: Adult, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions, Miscellaneous
+  index_year: '2022'
+  recommendations:
+  - population: General adult population
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for obstructive sleep apnea in the general adult population.\r\nSee the\
+      \ Practice Considerations section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: menopausal-hormone-therapy-preventive-medication
+  title: 'Hormone Therapy in Postmenopausal Persons: Primary Prevention of Chronic Conditions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/menopausal-hormone-therapy-preventive-medication
+  publication_date: '2022-11-01'
+  type: Preventive medication
+  age_group: Adult, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions, Obstetric and Gynecologic Conditions
+  index_year: '2022'
+  recommendations:
+  - population: Postmenopausal persons
+    text: The USPSTF recommends against the use of combined estrogen and progestin for the primary prevention
+      of chronic conditions in postmenopausal persons.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  - population: Postmenopausal persons who have had a hysterectomy
+    text: The USPSTF recommends against the use of estrogen alone for the primary prevention of chronic
+      conditions in postmenopausal persons who have had a hysterectomy.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: screening-anxiety-children-adolescents
+  title: 'Anxiety in Children and Adolescents: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/screening-anxiety-children-adolescents
+  publication_date: '2022-10-11'
+  type: Screening
+  age_group: Adolescent, Pediatric
+  category: Development and Behavior, Mental Health Conditions and Substance Abuse
+  index_year: '2022'
+  recommendations:
+  - population: Children and adolescents aged 8 to 18 years
+    text: The USPSTF recommends screening for anxiety in children and adolescents aged 8 to 18 years.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Children 7 years or younger
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for anxiety in children 7 years or younger.\r\n\nSee the Practice Considerations\
+      \ section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: screening-depression-suicide-risk-children-adolescents
+  title: 'Depression and Suicide Risk in Children and Adolescents: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/screening-depression-suicide-risk-children-adolescents
+  publication_date: '2022-10-11'
+  type: Screening
+  age_group: Adolescent, Pediatric
+  category: Development and Behavior, Mental Health Conditions and Substance Abuse
+  index_year: '2022'
+  recommendations:
+  - population: Adolescents aged 12 to 18 years
+    text: The USPSTF recommends screening for major depressive disorder (MDD) in adolescents aged 12 to
+      18 years.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Children 11 years or younger
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for MDD in children 11 years or younger.\r\n\nSee the Practice Considerations\
+      \ section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+  - population: Children and adolescents
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for suicide risk in children and adolescents.\r\n\nSee the Practice Considerations\
+      \ section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: syphilis-infection-nonpregnant-adults-adolescents-screening
+  title: 'Syphilis Infection in Nonpregnant Adolescents and Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/syphilis-infection-nonpregnant-adults-adolescents-screening
+  publication_date: '2022-09-27'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Infectious Diseases
+  index_year: '2022'
+  recommendations:
+  - population: Asymptomatic, nonpregnant adolescents and adults who are at increased risk for syphilis
+      infection
+    text: The USPSTF recommends screening for syphilis infection in persons who are at increased risk
+      for infection.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+- slug: prediabetes-type2-diabetes-children-adolescents-screening
+  title: 'Prediabetes and Type 2 Diabetes in Children and Adolescents: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/prediabetes-type2-diabetes-children-adolescents-screening
+  publication_date: '2022-09-13'
+  type: Screening
+  age_group: Adolescent, Pediatric
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2022'
+  recommendations:
+  - population: Asymptomatic children and adolescents younger than 18 years
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for type 2 diabetes in children and adolescents.\r\n\nSee the Practice\
+      \ Considerations section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: statin-use-in-adults-preventive-medication
+  title: 'Statin Use for the Primary Prevention of Cardiovascular Disease in Adults: Preventive Medication'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/statin-use-in-adults-preventive-medication
+  publication_date: '2022-08-23'
+  type: Preventive medication
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2022'
+  recommendations:
+  - population: Adults aged 40 to 75 years who have 1 or more cardiovascular risk factors and an estimated
+      10-year cardiovascular disease (CVD) risk of 10% or greater
+    text: The USPSTF recommends that clinicians prescribe a statin for the primary prevention of CVD for
+      adults aged 40 to 75 years who have 1 or more CVD risk factors (i.e. dyslipidemia, diabetes, hypertension,
+      or smoking) and an estimated 10-year risk of a cardiovascular event of 10% or greater.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Adults aged 40 to 75 years who have 1 or more cardiovascular risk factors and an estimated
+      10-year CVD risk of 7.5% to less than 10%
+    text: The USPSTF recommends that clinicians selectively offer a statin for the primary prevention
+      of CVD for adults aged 40 to 75 years who have 1 or more CVD risk factors (i.e dyslipidemia, diabetes,
+      hypertension, or smoking) and an estimated 10-year risk of a cardiovascular event of 7.5% to less
+      than 10%. The likelihood of benefit is smaller in this group than in persons with a 10-year risk
+      of 10% or greater.
+    grade: C
+    certainty: moderate
+    grade_meaning: 中等确定性净收益小；应按个体情况选择性提供
+  - population: Adults 76 years or older
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of initiating a statin for the primary prevention of CVD events and mortality in adults
+      76 years or older.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: healthy-lifestyle-and-physical-activity-for-cvd-prevention-adults-without-known-risk-factors-behavioral-counseling
+  title: 'Healthy Diet and Physical Activity for Cardiovascular Disease Prevention in Adults Without Cardiovascular
+    Disease Risk Factors: Behavioral Counseling Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/healthy-lifestyle-and-physical-activity-for-cvd-prevention-adults-without-known-risk-factors-behavioral-counseling
+  publication_date: '2022-07-26'
+  type: Counseling
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases), Metabolic, nutritional, and Endocrine
+    Conditions
+  index_year: '2022'
+  recommendations:
+  - population: Adults 18 years or older without known cardiovascular disease risk factors
+    text: "The USPSTF recommends that clinicians individualize the decision to offer or refer adults without\
+      \ cardiovascular disease risk factors to behavioral counseling interventions to promote a healthy\
+      \ diet and physical activity. \r\n\nSee the \"Practice Considerations\" section for information\
+      \ on determining which patients may benefit most from this service."
+    grade: C
+    certainty: moderate
+    grade_meaning: 中等确定性净收益小；应按个体情况选择性提供
+- slug: vitamin-supplementation-to-prevent-cvd-and-cancer-preventive-medication
+  title: 'Vitamin, Mineral, and Multivitamin Supplementation to Prevent Cardiovascular Disease and Cancer:
+    Preventive Medication'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/vitamin-supplementation-to-prevent-cvd-and-cancer-preventive-medication
+  publication_date: '2022-06-21'
+  type: Preventive medication
+  age_group: Adult, Senior
+  category: Cancer, Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2022'
+  recommendations:
+  - population: Community-dwelling, nonpregnant adults
+    text: The USPSTF recommends against the use of beta carotene or vitamin E supplements for the prevention
+      of cardiovascular disease or cancer.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  - population: Community-dwelling, nonpregnant adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of the use of multivitamin supplements for the prevention of cardiovascular disease\
+      \ or cancer.\r\n\nSee the \"Practice Considerations\" section for additional information regarding\
+      \ the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+  - population: Community-dwelling, nonpregnant adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of the use of single or paired nutrient supplements (other than beta carotene and vitamin\
+      \ E) for the prevention of cardiovascular disease or cancer.\r\n\nSee the \"Practice Considerations\"\
+      \ section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: impaired-visual-acuity-screening-older-adults
+  title: 'Impaired Visual Acuity in Older Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/impaired-visual-acuity-screening-older-adults
+  publication_date: '2022-05-24'
+  type: Screening
+  age_group: Adult, Senior
+  category: Vision and Hearing Disorders
+  index_year: '2022'
+  recommendations:
+  - population: Asymptomatic adults 65 years or older
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for impaired visual acuity in older adults.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: primary-open-angle-glaucoma-screening
+  title: 'Primary Open-Angle Glaucoma: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/primary-open-angle-glaucoma-screening
+  publication_date: '2022-05-24'
+  type: Screening
+  age_group: Adult, Senior
+  category: Vision and Hearing Disorders
+  index_year: '2022'
+  recommendations:
+  - population: Asymptomatic adults 40 years or older
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for primary open-angle glaucoma in adults.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: chronic-obstructive-pulmonary-disease-screening
+  title: 'Chronic Obstructive Pulmonary Disease: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/chronic-obstructive-pulmonary-disease-screening
+  publication_date: '2022-05-10'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2022'
+  recommendations:
+  - population: Asymptomatic adults
+    text: The USPSTF recommends against screening for chronic obstructive pulmonary disease in asymptomatic
+      adults.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: aspirin-to-prevent-cardiovascular-disease-preventive-medication
+  title: 'Aspirin Use to Prevent Cardiovascular Disease: Preventive Medication'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/aspirin-to-prevent-cardiovascular-disease-preventive-medication
+  publication_date: '2022-04-26'
+  type: Preventive medication
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2022'
+  recommendations:
+  - population: Adults aged 40 to 59 years with a 10% or greater 10-year cardiovascular disease (CVD)
+      risk
+    text: The decision to initiate low-dose aspirin use for the primary prevention of CVD in adults aged
+      40 to 59 years who have a 10% or greater 10-year CVD risk should be an individual one. Evidence
+      indicates that the net benefit of aspirin use in this group is small. Persons who are not at increased
+      risk for bleeding and are willing to take low-dose aspirin daily are more likely to benefit.
+    grade: C
+    certainty: moderate
+    grade_meaning: 中等确定性净收益小；应按个体情况选择性提供
+  - population: Adults 60 years or older
+    text: The USPSTF recommends against initiating low-dose aspirin use for the primary prevention of
+      CVD in adults 60 years or older.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: screening-eating-disorders-adolescents-adults
+  title: 'Eating Disorders in Adolescents and Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/screening-eating-disorders-adolescents-adults
+  publication_date: '2022-03-15'
+  type: Screening
+  age_group: Adolescent, Adult
+  category: Development and Behavior, Mental Health Conditions and Substance Abuse, Metabolic, nutritional,
+    and Endocrine Conditions
+  index_year: '2022'
+  recommendations:
+  - population: Asymptomatic adolescents and adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for eating disorders in adolescents and adults.\r\n\nSee the Practice Considerations\
+      \ section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: atrial-fibrillation-screening
+  title: 'Atrial Fibrillation: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/atrial-fibrillation-screening
+  publication_date: '2022-01-25'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2022'
+  recommendations:
+  - population: Asymptomatic adults 50 years or older
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for atrial fibrillation.\r\n\nSee the Practice Considerations section for\
+      \ additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: prevention-of-dental-caries-in-children-younger-than-age-5-years-screening-and-interventions1
+  title: 'Prevention of Dental Caries in Children Younger Than 5 Years: Screening and Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/prevention-of-dental-caries-in-children-younger-than-age-5-years-screening-and-interventions1
+  publication_date: '2021-12-07'
+  type: Counseling, Screening
+  age_group: Pediatric
+  category: Miscellaneous
+  index_year: '2021'
+  recommendations:
+  - population: Children younger than 5 years
+    text: The USPSTF recommends that primary care clinicians prescribe oral fluoride supplementation starting
+      at age 6 months for children whose water supply is deficient in fluoride.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Children younger than 5 years
+    text: The USPSTF recommends that primary care clinicians apply fluoride varnish to the primary teeth
+      of all infants and children starting at the age of primary tooth eruption.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Children younger than 5 years
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of routine screening examinations for dental caries performed by primary care clinicians
+      in children younger than 5 years.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: low-dose-aspirin-use-for-the-prevention-of-morbidity-and-mortality-from-preeclampsia-preventive-medication
+  title: 'Aspirin Use to Prevent Preeclampsia and Related Morbidity and Mortality: Preventive Medication'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/low-dose-aspirin-use-for-the-prevention-of-morbidity-and-mortality-from-preeclampsia-preventive-medication
+  publication_date: '2021-09-28'
+  type: Preventive medication
+  age_group: Adult
+  category: Obstetric and Gynecologic Conditions
+  index_year: '2021'
+  recommendations:
+  - population: Pregnant persons at high risk for preeclampsia
+    text: "The USPSTF recommends the use of low-dose aspirin (81 mg/day) as preventive medication after\
+      \ 12 weeks of gestation in persons who are at high risk for preeclampsia.\r\n\nSee the Practice\
+      \ Considerations section for information on high risk and aspirin dose."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: chlamydia-and-gonorrhea-screening
+  title: 'Chlamydia and Gonorrhea: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/chlamydia-and-gonorrhea-screening
+  publication_date: '2021-09-14'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Infectious Diseases
+  index_year: '2021'
+  recommendations:
+  - population: Sexually active women, including pregnant persons
+    text: The USPSTF recommends screening for chlamydia in all sexually active women 24 years or younger
+      and in women 25 years or older who are at increased risk for infection.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Sexually active women, including pregnant persons
+    text: The USPSTF recommends screening for gonorrhea in all sexually active women 24 years or younger
+      and in women 25 years or older who are at increased risk for infection.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Sexually active men
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for chlamydia and gonorrhea in men.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: screening-for-prediabetes-and-type-2-diabetes
+  title: 'Prediabetes and Type 2 Diabetes: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/screening-for-prediabetes-and-type-2-diabetes
+  publication_date: '2021-08-24'
+  type: Screening
+  age_group: Adult, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2021'
+  recommendations:
+  - population: Asymptomatic adults aged 35 to 70 years who have overweight or obesity
+    text: The USPSTF recommends screening for prediabetes and type 2 diabetes in adults aged 35 to 70
+      years who have overweight or obesity. Clinicians should offer or refer patients with prediabetes
+      to effective preventive interventions.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: gestational-diabetes-screening
+  title: 'Gestational Diabetes: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/gestational-diabetes-screening
+  publication_date: '2021-08-10'
+  type: Screening
+  age_group: Adolescent, Adult
+  category: Obstetric and Gynecologic Conditions
+  index_year: '2021'
+  recommendations:
+  - population: Asymptomatic pregnant persons at 24 weeks of gestation or after
+    text: The USPSTF recommends screening for gestational diabetes in asymptomatic pregnant persons at
+      24 weeks of gestation or after.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Asymptomatic pregnant persons before 24 weeks of gestation
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for gestational diabetes in asymptomatic pregnant persons before 24 weeks
+      of gestation.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: healthy-weight-and-weight-gain-during-pregnancy-behavioral-counseling-interventions
+  title: 'Healthy Weight and Weight Gain In Pregnancy: Behavioral Counseling Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/healthy-weight-and-weight-gain-during-pregnancy-behavioral-counseling-interventions
+  publication_date: '2021-05-25'
+  type: Counseling
+  age_group: Adolescent, Adult
+  category: Development and Behavior, Metabolic, nutritional, and Endocrine Conditions, Obstetric and
+    Gynecologic Conditions
+  index_year: '2021'
+  recommendations:
+  - population: Pregnant persons
+    text: The USPSTF recommends that clinicians offer pregnant persons effective behavioral counseling
+      interventions aimed at promoting healthy weight gain and preventing excess gestational weight gain
+      in pregnancy.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: colorectal-cancer-screening
+  title: 'Colorectal Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/colorectal-cancer-screening
+  publication_date: '2021-05-18'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2021'
+  recommendations:
+  - population: Adults aged 50 to 75 years
+    text: "The USPSTF recommends screening for colorectal cancer in all adults aged 50 to 75 years. \r\
+      \n\nSee the \"Practice Considerations\" section and Table 1 for details about screening strategies."
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+  - population: Adults aged 45 to 49 years
+    text: "The USPSTF recommends screening for colorectal cancer in adults aged 45 to 49 years. \r\n\n\
+      See the \"Practice Considerations\" section and Table 1 for details about screening strategies."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Adults aged 76 to 85 years
+    text: The USPSTF recommends that clinicians selectively offer screening for colorectal cancer in adults
+      aged 76 to 85 years. Evidence indicates that the net benefit of screening all persons in this age
+      group is small. In determining whether this service is appropriate in individual cases, patients
+      and clinicians should consider the patient's overall health, prior screening history, and preferences.
+    grade: C
+    certainty: moderate
+    grade_meaning: 中等确定性净收益小；应按个体情况选择性提供
+- slug: hypertension-in-adults-screening
+  title: 'Hypertension in Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hypertension-in-adults-screening
+  publication_date: '2021-04-27'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2021'
+  recommendations:
+  - population: Adults 18 years or older without known hypertension
+    text: The USPSTF recommends screening for hypertension in adults 18 years or older with office blood
+      pressure measurement (OBPM). The USPSTF recommends obtaining blood pressure measurements outside
+      of the clinical setting for diagnostic confirmation before starting treatment.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+- slug: vitamin-d-deficiency-screening
+  title: 'Vitamin D Deficiency in Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/vitamin-d-deficiency-screening
+  publication_date: '2021-04-13'
+  type: Screening
+  age_group: Adult, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2021'
+  recommendations:
+  - population: Asymptomatic, community-dwelling, nonpregnant adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for vitamin D deficiency in asymptomatic adults.\r\n\nSee the Practice\
+      \ Considerations section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: hearing-loss-in-older-adults-screening
+  title: 'Hearing Loss in Older Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hearing-loss-in-older-adults-screening
+  publication_date: '2021-03-23'
+  type: Screening
+  age_group: Adult, Senior
+  category: Vision and Hearing Disorders
+  index_year: '2021'
+  recommendations:
+  - population: Asymptomatic adults 50 years or older
+    text: "The US Preventive Services Task Force (USPSTF) concludes that the current evidence is insufficient\
+      \ to assess the balance of benefits and harms of screening for hearing loss in older adults.\r\n\
+      \nSee the Practice Considerations section for additional information regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: lung-cancer-screening
+  title: 'Lung Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/lung-cancer-screening
+  publication_date: '2021-03-09'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2021'
+  recommendations:
+  - population: Adults aged 50 to 80 years who have a 20 pack-year smoking history and currently smoke
+      or have quit within the past 15 years
+    text: The USPSTF recommends annual screening for lung cancer with low-dose computed tomography (LDCT)
+      in adults aged 50 to 80 years who have a 20 pack-year smoking history and currently smoke or have
+      quit within the past 15 years. Screening should be discontinued once a person has not smoked for
+      15 years or develops a health problem that substantially limits life expectancy or the ability or
+      willingness to have curative lung surgery.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: carotid-artery-stenosis-screening
+  title: 'Asymptomatic Carotid Artery Stenosis: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/carotid-artery-stenosis-screening
+  publication_date: '2021-02-02'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2021'
+  recommendations:
+  - population: Asymptomatic adults
+    text: "The USPSTF recommends against screening for asymptomatic carotid artery stenosis in the general\
+      \ adult population.\r\n\nSee the Practice Considerations section for a description of adults at\
+      \ increased risk."
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: tobacco-use-in-adults-and-pregnant-women-counseling-and-interventions
+  title: 'Tobacco Smoking Cessation in Adults, Including Pregnant Persons: Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/tobacco-use-in-adults-and-pregnant-women-counseling-and-interventions
+  publication_date: '2021-01-19'
+  type: Counseling, Preventive medication
+  age_group: Adult, Senior
+  category: Cancer, Development and Behavior, Mental Health Conditions and Substance Abuse
+  index_year: '2021'
+  recommendations:
+  - population: Nonpregnant adults
+    text: The USPSTF recommends that clinicians ask all adults about tobacco use, advise them to stop
+      using tobacco, and provide behavioral interventions and US Food and Drug Administration (FDA)--approved
+      pharmacotherapy for cessation to nonpregnant adults who use tobacco.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+  - population: Pregnant persons
+    text: The USPSTF recommends that clinicians ask all pregnant persons about tobacco use, advise them
+      to stop using tobacco, and provide behavioral interventions for cessation to pregnant persons who
+      use tobacco.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+  - population: Pregnant persons
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of pharmacotherapy interventions for tobacco cessation in pregnant persons.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+  - population: All adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of electronic cigarettes (e-cigarettes) for tobacco cessation in adults, including pregnant\
+      \ persons. The USPSTF recommends that clinicians direct patients who use tobacco to other tobacco\
+      \ cessation interventions with proven effectiveness and established safety.\r\nSee the Practice\
+      \ Considerations section for more information on recommended behavioral interventions and pharmacotherapy\
+      \ and for suggestions for practice regarding the I statements."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: hepatitis-b-virus-infection-screening
+  title: 'Hepatitis B Virus Infection in Adolescents and Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hepatitis-b-virus-infection-screening
+  publication_date: '2020-12-15'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Infectious Diseases
+  index_year: '2020'
+  recommendations:
+  - population: Adolescents and adults at increased risk for infection
+    text: "The USPSTF recommends screening for hepatitis B virus (HBV) infection in adolescents and adults\
+      \ at increased risk for infection.\r\n\nSee the Practice Considerations section for a description\
+      \ of adolescents and adults at increased risk for infection."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: healthy-diet-and-physical-activity-counseling-adults-with-high-risk-of-cvd
+  title: 'Healthy Diet and Physical Activity for Cardiovascular Disease Prevention in Adults With Cardiovascular
+    Risk Factors: Behavioral Counseling Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/healthy-diet-and-physical-activity-counseling-adults-with-high-risk-of-cvd
+  publication_date: '2020-11-24'
+  type: Counseling
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases), Development and Behavior
+  index_year: '2020'
+  recommendations:
+  - population: Adults with cardiovascular disease risk factors
+    text: The USPSTF recommends offering or referring adults with cardiovascular disease risk factors
+      to behavioral counseling interventions to promote a healthy diet and physical activity.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: blood-pressure-in-children-and-adolescents-hypertension-screening
+  title: 'High Blood Pressure in Children and Adolescents: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/blood-pressure-in-children-and-adolescents-hypertension-screening
+  publication_date: '2020-11-10'
+  type: Screening
+  age_group: Adolescent, Pediatric
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2020'
+  recommendations:
+  - population: Children and adolescents
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for high blood pressure in children and adolescents.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: sexually-transmitted-infections-behavioral-counseling
+  title: 'Sexually Transmitted Infections: Behavioral Counseling'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/sexually-transmitted-infections-behavioral-counseling
+  publication_date: '2020-08-18'
+  type: Counseling
+  age_group: Adolescent, Adult, Senior
+  category: Infectious Diseases
+  index_year: '2020'
+  recommendations:
+  - population: Sexually active adolescents and adults at increased risk
+    text: "The USPSTF recommends behavioral counseling for all sexually active adolescents and for adults\
+      \ who are at increased risk for sexually transmitted infections (STIs).\r\n\nSee the Practice Considerations\
+      \ section for more information on populations at increased risk for acquiring STIs."
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: drug-use-illicit-screening
+  title: 'Unhealthy Drug Use: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/drug-use-illicit-screening
+  publication_date: '2020-06-09'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Development and Behavior, Mental Health Conditions and Substance Abuse
+  index_year: '2020'
+  recommendations:
+  - population: Adults age 18 years or older
+    text: "The USPSTF recommends screening by asking questions about unhealthy drug use in adults age\
+      \ 18 years or older. Screening should be implemented when services for accurate diagnosis, effective\
+      \ treatment, and appropriate care can be offered or referred. \r\n(Screening refers to asking questions\
+      \ about unhealthy drug use, not testing biological specimens.)"
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Adolescents
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for unhealthy drug use in adolescents.\r\n\nSee the \"Practice Considerations\"\
+      \ section for suggestions for practice regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: drug-use-illicit-primary-care-interventions-for-children-and-adolescents
+  title: 'Illicit Drug Use in Children, Adolescents, and Young Adults: Primary Care-Based Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/drug-use-illicit-primary-care-interventions-for-children-and-adolescents
+  publication_date: '2020-05-26'
+  type: Counseling
+  age_group: Adolescent, Pediatric
+  category: Development and Behavior, Mental Health Conditions and Substance Abuse
+  index_year: '2020'
+  recommendations:
+  - population: Children, adolescents, and young adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of primary care--based behavioral counseling interventions to prevent illicit drug use,\
+      \ including nonmedical use of prescription drugs, in children, adolescents, and young adults.\r\n\
+      \nSee the Practice Considerations section for suggestions for practice regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: tobacco-and-nicotine-use-prevention-in-children-and-adolescents-primary-care-interventions
+  title: 'Tobacco Use in Children and Adolescents: Primary Care Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/tobacco-and-nicotine-use-prevention-in-children-and-adolescents-primary-care-interventions
+  publication_date: '2020-04-28'
+  type: Counseling
+  age_group: Adolescent, Pediatric
+  category: Cancer, Development and Behavior, Mental Health Conditions and Substance Abuse, Miscellaneous
+  index_year: '2020'
+  recommendations:
+  - population: School-aged children and adolescents who have not started to use tobacco
+    text: The USPSTF recommends that primary care clinicians provide interventions, including education
+      or brief counseling, to prevent initiation of tobacco use among school-aged children and adolescents.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: School-aged children and adolescents who use tobacco
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of primary care--feasible interventions for the cessation of tobacco use among school-aged\
+      \ children and adolescents.\r\n\nSee the Practice Considerations section for more information on\
+      \ effective interventions to prevent initiation of tobacco use and for suggestions for practice\
+      \ regarding the I statement."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: bacterial-vaginosis-in-pregnancy-to-prevent-preterm-delivery-screening
+  title: 'Bacterial Vaginosis in Pregnant Persons to Prevent Preterm Delivery: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/bacterial-vaginosis-in-pregnancy-to-prevent-preterm-delivery-screening
+  publication_date: '2020-04-07'
+  type: Screening
+  age_group: Adolescent, Adult
+  category: Infectious Diseases, Obstetric and Gynecologic Conditions
+  index_year: '2020'
+  recommendations:
+  - population: Pregnant persons not at increased risk for preterm delivery
+    text: The USPSTF recommends against screening for bacterial vaginosis (BV) in pregnant persons who
+      are not at increased risk for preterm delivery.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  - population: Pregnant persons at increased risk for preterm delivery
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for BV in pregnant persons who are at increased risk for preterm delivery.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: hepatitis-c-screening
+  title: 'Hepatitis C Virus Infection in Adolescents and Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hepatitis-c-screening
+  publication_date: '2020-03-02'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Infectious Diseases
+  index_year: '2020'
+  recommendations:
+  - population: Adults aged 18 to 79 years
+    text: The USPSTF recommends screening for hepatitis C virus (HCV) infection in adults aged 18 to 79
+      years.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: cognitive-impairment-in-older-adults-screening
+  title: 'Cognitive Impairment in Older Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/cognitive-impairment-in-older-adults-screening
+  publication_date: '2020-02-25'
+  type: Screening
+  age_group: Senior
+  category: Mental Health Conditions and Substance Abuse
+  index_year: '2020'
+  recommendations:
+  - population: Older adults
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for cognitive impairment in older adults.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: abdominal-aortic-aneurysm-screening
+  title: 'Abdominal Aortic Aneurysm: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/abdominal-aortic-aneurysm-screening
+  publication_date: '2019-12-10'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2019'
+  recommendations:
+  - population: Men aged 65 to 75 years who have ever smoked
+    text: The USPSTF recommends 1-time screening for abdominal aortic aneurysm (AAA) with ultrasonography
+      in men aged 65 to 75 years who have ever smoked.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Men aged 65 to 75 years who have never smoked
+    text: The USPSTF recommends that clinicians selectively offer screening for AAA with ultrasonography
+      in men aged 65 to 75 years who have never smoked rather than routinely screening all men in this
+      group. Evidence indicates that the net benefit of screening all men in this group is small. In determining
+      whether this service is appropriate in individual cases, patients and clinicians should consider
+      the balance of benefits and harms on the basis of evidence relevant to the patient's medical history,
+      family history, other risk factors, and personal values.
+    grade: C
+    certainty: moderate
+    grade_meaning: 中等确定性净收益小；应按个体情况选择性提供
+  - population: Women who have never smoked
+    text: The USPSTF recommends against routine screening for AAA with ultrasonography in women who have
+      never smoked and have no family history of AAA.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  - population: Women aged 65 to 75 years who have ever smoked
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for AAA with ultrasonography in women aged 65 to 75 years who have ever smoked
+      or have a family history of AAA.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: asymptomatic-bacteriuria-in-adults-screening
+  title: 'Asymptomatic Bacteriuria in Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/asymptomatic-bacteriuria-in-adults-screening
+  publication_date: '2019-09-24'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Infectious Diseases, Obstetric and Gynecologic Conditions
+  index_year: '2019'
+  recommendations:
+  - population: Pregnant persons
+    text: The USPSTF recommends screening for asymptomatic bacteriuria using urine culture in pregnant
+      persons.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Nonpregnant adults
+    text: The USPSTF recommends against screening for asymptomatic bacteriuria in nonpregnant adults.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: breast-cancer-medications-for-risk-reduction
+  title: 'Breast Cancer: Medication Use to Reduce Risk'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-medications-for-risk-reduction
+  publication_date: '2019-09-03'
+  type: Preventive medication
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2019'
+  recommendations:
+  - population: Women at increased risk for breast cancer aged 35 years or older
+    text: The USPSTF recommends that clinicians offer to prescribe risk-reducing medications, such as
+      tamoxifen, raloxifene, or aromatase inhibitors, to women who are at increased risk for breast cancer
+      and at low risk for adverse medication effects.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Women not at increased risk for breast cancer aged 35 years or older
+    text: The USPSTF recommends against the routine use of risk-reducing medications, such as tamoxifen,
+      raloxifene, or aromatase inhibitors, in women who are not at increased risk for breast cancer.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: brca-related-cancer-risk-assessment-genetic-counseling-and-genetic-testing
+  title: 'BRCA-Related Cancer: Risk Assessment, Genetic Counseling, and Genetic Testing'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/brca-related-cancer-risk-assessment-genetic-counseling-and-genetic-testing
+  publication_date: '2019-08-20'
+  type: Counseling, Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2019'
+  recommendations:
+  - population: Women with a personal or family history of breast, ovarian, tubal, or peritoneal cancer
+      or an ancestry associated with BRCA1/2 gene mutation
+    text: The USPSTF recommends that primary care clinicians assess women with a personal or family history
+      of breast, ovarian, tubal, or peritoneal cancer or who have an ancestry associated with breast cancer
+      susceptibility 1 and 2 (BRCA1/2) gene mutations with an appropriate brief familial risk assessment
+      tool. Women with a positive result on the risk assessment tool should receive genetic counseling
+      and, if indicated after counseling, genetic testing.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Women whose personal or family history or ancestry is not associated with potential harmful
+      BRCA1/2 gene mutations
+    text: The USPSTF recommends against routine risk assessment, genetic counseling, or genetic testing
+      for women whose personal or family history or ancestry is not associated with potentially harmful
+      BRCA1/2 gene mutations.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: pancreatic-cancer-screening
+  title: 'Pancreatic Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/pancreatic-cancer-screening
+  publication_date: '2019-08-06'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2019'
+  recommendations:
+  - population: Adults
+    text: The USPSTF recommends against screening for pancreatic cancer in asymptomatic adults.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: hepatitis-b-virus-infection-in-pregnant-women-screening
+  title: 'Hepatitis B Virus Infection in Pregnant Women: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/hepatitis-b-virus-infection-in-pregnant-women-screening
+  publication_date: '2019-07-23'
+  type: Screening
+  age_group: Adolescent, Adult
+  category: Infectious Diseases, Obstetric and Gynecologic Conditions
+  index_year: '2019'
+  recommendations:
+  - population: Pregnant women
+    text: The USPSTF recommends screening for hepatitis B virus (HBV) infection in pregnant women at their
+      first prenatal visit
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+- slug: human-immunodeficiency-virus-hiv-infection-screening
+  title: 'Human Immunodeficiency Virus (HIV) Infection: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/human-immunodeficiency-virus-hiv-infection-screening
+  publication_date: '2019-06-11'
+  type: Screening
+  age_group: Adolescent, Adult
+  category: Infectious Diseases
+  index_year: '2019'
+  recommendations:
+  - population: Pregnant persons
+    text: The USPSTF recommends that clinicians screen for HIV infection in all pregnant persons, including
+      those who present in labor or at delivery whose HIV status is unknown.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+  - population: Adolescents and adults aged 15 to 65 years
+    text: "The USPSTF recommends that clinicians screen for HIV infection in adolescents and adults aged\
+      \ 15 to 65 years. Younger adolescents and older adults who are at increased risk of infection should\
+      \ also be screened.\r\nSee the Clinical Considerations section for more information about assessment\
+      \ of risk, screening intervals, and rescreening in pregnancy."
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+- slug: perinatal-depression-preventive-interventions
+  title: 'Perinatal Depression: Preventive Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/perinatal-depression-preventive-interventions
+  publication_date: '2019-02-12'
+  type: Counseling, Preventive medication
+  age_group: Adult
+  category: Mental Health Conditions and Substance Abuse, Obstetric and Gynecologic Conditions, Perinatal
+    Care
+  index_year: '2019'
+  recommendations:
+  - population: Pregnant and postpartum persons
+    text: The USPSTF recommends that clinicians provide or refer pregnant and postpartum persons who are
+      at increased risk of perinatal depression to counseling interventions.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: ocular-prophylaxis-for-gonococcal-ophthalmia-neonatorum-preventive-medication
+  title: 'Ocular Prophylaxis for Gonococcal Ophthalmia Neonatorum: Preventive Medication'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/ocular-prophylaxis-for-gonococcal-ophthalmia-neonatorum-preventive-medication
+  publication_date: '2019-01-29'
+  type: Preventive medication
+  age_group: Pediatric
+  category: Infectious Diseases, Obstetric and Gynecologic Conditions, Perinatal Care, Vision and Hearing
+    Disorders
+  index_year: '2019'
+  recommendations:
+  - population: Newborns
+    text: The USPSTF recommends prophylactic ocular topical medication for all newborns to prevent gonococcal
+      ophthalmia neonatorum.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+- slug: unhealthy-alcohol-use-in-adolescents-and-adults-screening-and-behavioral-counseling-interventions
+  title: 'Unhealthy Alcohol Use in Adolescents and Adults: Screening and Behavioral Counseling Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/unhealthy-alcohol-use-in-adolescents-and-adults-screening-and-behavioral-counseling-interventions
+  publication_date: '2018-11-13'
+  type: Counseling, Screening
+  age_group: Adolescent, Adult, Senior
+  category: Development and Behavior, Mental Health Conditions and Substance Abuse
+  index_year: '2018'
+  recommendations:
+  - population: Adults 18 years or older, including pregnant women
+    text: The USPSTF recommends screening for unhealthy alcohol use in primary care settings in adults
+      18 years or older, including pregnant women, and providing persons engaged in risky or hazardous
+      drinking with brief behavioral counseling interventions to reduce unhealthy alcohol use.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Adolescents aged 12 to 17 years
+    text: 'The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening and brief behavioral counseling interventions for alcohol use in primary
+      care settings in adolescents aged 12 to 17 years.
+
+
+      See the Clinical Considerations section for suggestions for practice regarding the I statement.'
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: obesity-in-adults-interventions
+  title: 'Weight Loss to Prevent Obesity-Related Morbidity and Mortality in Adults: Behavioral Interventions'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/obesity-in-adults-interventions
+  publication_date: '2018-09-18'
+  type: Counseling
+  age_group: Adult, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2018'
+  recommendations:
+  - population: Adults
+    text: The USPSTF recommends that clinicians offer or refer adults with a body mass index (BMI) of
+      30 or higher (calculated as weight in kilograms divided by height in meters squared) to intensive,
+      multicomponent behavioral interventions.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+- slug: cervical-cancer-screening
+  title: 'Cervical Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/cervical-cancer-screening
+  publication_date: '2018-08-21'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Cancer
+  index_year: '2018'
+  recommendations:
+  - population: Women aged 21 to 65 years
+    text: 'The USPSTF recommends screening for cervical cancer every 3 years with cervical cytology alone
+      in women aged 21 to 29 years. For women aged 30 to 65 years, the USPSTF recommends screening every
+      3 years with cervical cytology alone, every 5 years with high-risk human papillomavirus (hrHPV)
+      testing alone, or every 5 years with hrHPV testing in combination with cytology (cotesting).
+
+
+      See the Clinical Considerations section for the relative benefits and harms of alternative screening
+      strategies for women 21 years or older.'
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+  - population: Women younger than 21 years
+    text: The USPSTF recommends against screening for cervical cancer in women younger than 21 years.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  - population: Women who have had a hysterectomy
+    text: The USPSTF recommends against screening for cervical cancer in women who have had a hysterectomy
+      with removal of the cervix and do not have a history of a high-grade precancerous lesion (ie, cervical
+      intraepithelial neoplasia [CIN] grade 2 or 3) or cervical cancer.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  - population: Women older than 65 years
+    text: 'The USPSTF recommends against screening for cervical cancer in women older than 65 years who
+      have had adequate prior screening and are not otherwise at high risk for cervical cancer.
+
+
+      See the Clinical Considerations section for discussion of adequate prior screening and risk factors
+      that support screening after age 65 years.'
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: peripheral-artery-disease-in-adults-screening-with-the-ankle-brachial-index
+  title: 'Peripheral Artery Disease and Cardiovascular Disease: Screening and Risk Assessment With the
+    Ankle-Brachial Index'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/peripheral-artery-disease-in-adults-screening-with-the-ankle-brachial-index
+  publication_date: '2018-07-10'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2018'
+  recommendations:
+  - population: Adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for peripheral artery disease (PAD) and cardiovascular disease (CVD) risk\
+      \ with the ankle-brachial index (ABI) in asymptomatic adults.\r\n\nLiterature scans conducted in\
+      \ August 2023 in the MEDLINE database and the Cochrane Library showed a lack of new evidence to\
+      \ support an updated systematic review on the topic at this time. See the Literature Surveillance\
+      \ Report under the Supporting Evidence section of this webpage."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: cardiovascular-disease-screening-using-nontraditional-risk-assessment
+  title: 'Cardiovascular Disease: Risk Assessment With Nontraditional Risk Factors'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/cardiovascular-disease-screening-using-nontraditional-risk-assessment
+  publication_date: '2018-07-10'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2018'
+  recommendations:
+  - population: Adults
+    text: 'The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of adding the ankle-brachial index (ABI), high-sensitivity C-reactive protein (hsCRP)
+      level, or coronary artery calcium (CAC) score to traditional risk assessment for cardiovascular
+      disease (CVD) in asymptomatic adults to prevent CVD events.
+
+
+      See the Clinical Considerations section for suggestions for practice regarding the I statement.'
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: cardiovascular-disease-risk-screening-with-electrocardiography
+  title: 'Cardiovascular Disease Risk: Screening With Electrocardiography'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/cardiovascular-disease-risk-screening-with-electrocardiography
+  publication_date: '2018-06-12'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cardiovascular Disorders (Heart and Vascular Diseases)
+  index_year: '2018'
+  recommendations:
+  - population: Adults at low risk of CVD events
+    text: The USPSTF recommends against screening with resting or exercise electrocardiography (ECG) to
+      prevent cardiovascular disease (CVD) events in asymptomatic adults at low risk of CVD events.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  - population: Adults at intermediate or high risk of CVD events
+    text: 'The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening with resting or exercise ECG to prevent CVD events in asymptomatic adults
+      at intermediate or high risk of CVD events.
+
+
+      See the Clinical Considerations section for suggestions for practice regarding the I statement.'
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: prostate-cancer-screening
+  title: 'Prostate Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/prostate-cancer-screening
+  publication_date: '2018-05-08'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2018'
+  recommendations:
+  - population: Men aged 55 to 69 years
+    text: For men aged 55 to 69 years, the decision to undergo periodic prostate-specific antigen (PSA)-based
+      screening for prostate cancer should be an individual one. Before deciding whether to be screened,
+      men should have an opportunity to discuss the potential benefits and harms of screening with their
+      clinician and to incorporate their values and preferences in the decision. Screening offers a small
+      potential benefit of reducing the chance of death from prostate cancer in some men. However, many
+      men will experience potential harms of screening, including false-positive results that require
+      additional testing and possible prostate biopsy; overdiagnosis and overtreatment; and treatment
+      complications, such as incontinence and erectile dysfunction. In determining whether this service
+      is appropriate in individual cases, patients and clinicians should consider the balance of benefits
+      and harms on the basis of family history, race/ethnicity, comorbid medical conditions, patient values
+      about the benefits and harms of screening and treatment-specific outcomes, and other health needs.
+      Clinicians should not screen men who do not express a preference for screening.
+    grade: C
+    certainty: moderate
+    grade_meaning: 中等确定性净收益小；应按个体情况选择性提供
+  - population: Men 70 years and older
+    text: The USPSTF recommends against PSA-based screening for prostate cancer in men 70 years and older.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: vitamin-d-calcium-or-combined-supplementation-for-the-primary-prevention-of-fractures-in-adults-preventive-medication
+  title: 'Vitamin D, Calcium, or Combined Supplementation for the Primary Prevention of Fractures in Community-Dwelling
+    Adults: Preventive Medication'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/vitamin-d-calcium-or-combined-supplementation-for-the-primary-prevention-of-fractures-in-adults-preventive-medication
+  publication_date: '2018-04-17'
+  type: Preventive medication
+  age_group: Adult, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2018'
+  recommendations:
+  - population: Postmenopausal women
+    text: The USPSTF recommends against daily supplementation with 400 IU or less of vitamin D and 1000
+      mg or less of calcium for the primary prevention of fractures in community-dwelling, postmenopausal
+      women.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+  - population: Men and premenopausal women
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of the
+      benefits and harms of vitamin D and calcium supplementation, alone or combined, for the primary
+      prevention of fractures in men and premenopausal women.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+  - population: Postmenopausal women
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of the
+      benefits and harms of daily supplementation with doses greater than 400 IU of vitamin D and greater
+      than 1000 mg of calcium for the primary prevention of fractures in community-dwelling, postmenopausal
+      women.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: skin-cancer-counseling
+  title: 'Skin Cancer Prevention: Behavioral Counseling'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/skin-cancer-counseling
+  publication_date: '2018-03-20'
+  type: Counseling
+  age_group: Adolescent, Adult, Pediatric, Senior
+  category: Cancer
+  index_year: '2018'
+  recommendations:
+  - population: Young adults, adolescents, children, and parents of young children
+    text: The USPSTF recommends counseling young adults, adolescents, children, and parents of young children
+      about minimizing exposure to ultraviolet (UV) radiation for persons aged 6 months to 24 years with
+      fair skin types to reduce their risk of skin cancer.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Adults older than 24 years with fair skin types
+    text: 'The USPSTF recommends that clinicians selectively offer counseling to adults older than 24
+      years with fair skin types about minimizing their exposure to UV radiation to reduce risk of skin
+      cancer. Existing evidence indicates that the net benefit of counseling all adults older than 24
+      years is small. In determining whether counseling is appropriate in individual cases, patients and
+      clinicians should consider the presence of risk factors for skin cancer.
+
+
+      See the Clinical Considerations section for information on risk assessment.'
+    grade: C
+    certainty: moderate
+    grade_meaning: 中等确定性净收益小；应按个体情况选择性提供
+  - population: Adults
+    text: 'The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of counseling adults about skin self-examination to prevent skin cancer.
+
+
+      See the Clinical Considerations section for suggestions for practice regarding the I statement.'
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: ovarian-cancer-screening
+  title: 'Ovarian Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/ovarian-cancer-screening
+  publication_date: '2018-02-13'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2018'
+  recommendations:
+  - population: Asymptomatic women
+    text: 'The USPSTF recommends against screening for ovarian cancer in asymptomatic women.
+
+
+      This recommendation applies to asymptomatic women who are not known to have a high-risk hereditary
+      cancer syndrome.'
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: adolescent-idiopathic-scoliosis-screening
+  title: 'Adolescent Idiopathic Scoliosis: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/adolescent-idiopathic-scoliosis-screening
+  publication_date: '2018-01-09'
+  type: Screening
+  age_group: Adolescent, Pediatric
+  category: Musculoskeletal Disorders
+  index_year: '2018'
+  recommendations:
+  - population: Children and adolescents aged 10 to 18 years
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for adolescent idiopathic scoliosis in children and adolescents aged 10\
+      \ to 18 years.\r\n\nLiterature scans conducted in January 2025 in the MEDLINE database and the Cochrane\
+      \ Library showed a lack of new evidence to support an updated systematic review on the topic at\
+      \ this time. See the Literature Surveillance Report under the Supporting Evidence section of this\
+      \ webpage."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: vision-in-children-ages-6-months-to-5-years-screening
+  title: 'Vision in Children Ages 6 Months to 5 Years: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/vision-in-children-ages-6-months-to-5-years-screening
+  publication_date: '2017-09-05'
+  type: Screening
+  age_group: Pediatric
+  category: Vision and Hearing Disorders
+  index_year: '2017'
+  recommendations:
+  - population: Children aged 3 to 5 years
+    text: The USPSTF recommends vision screening at least once in all children aged 3 to 5 years to detect
+      amblyopia or its risk factors.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
+  - population: Children younger than 3 years
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of vision screening in children younger than 3 years.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: thyroid-cancer-screening
+  title: 'Thyroid Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/thyroid-cancer-screening
+  publication_date: '2017-05-09'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2017'
+  recommendations:
+  - population: Adults
+    text: The USPSTF recommends against screening for thyroid cancer in asymptomatic adults.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: celiac-disease-screening
+  title: 'Celiac Disease: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/celiac-disease-screening
+  publication_date: '2017-03-28'
+  type: Screening
+  age_group: Adolescent, Adult, Pediatric, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2017'
+  recommendations:
+  - population: Asymptomatic adults, adolescents, and children
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for celiac disease in asymptomatic persons.\r\n\nLiterature scans conducted\
+      \ in May 2024 in the MEDLINE and PubMed databases and the Cochrane Library showed a lack of new\
+      \ evidence to support an updated systematic review on the topic at this time. See the Literature\
+      \ Surveillance Report under the Supporting Evidence section of this webpage."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: autism-spectrum-disorder-in-young-children-screening
+  title: 'Autism Spectrum Disorder in Young Children: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/autism-spectrum-disorder-in-young-children-screening
+  publication_date: '2016-02-16'
+  type: Screening
+  age_group: Pediatric
+  category: Development and Behavior
+  index_year: '2016'
+  recommendations:
+  - population: Children aged 18 to 30 months
+    text: The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits
+      and harms of screening for autism spectrum disorder (ASD) in young children for whom no concerns
+      of ASD have been raised by their parents or a clinician.
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: iron-deficiency-anemia-in-young-children-screening
+  title: 'Iron Deficiency Anemia in Young Children: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/iron-deficiency-anemia-in-young-children-screening
+  publication_date: '2015-09-07'
+  type: Screening
+  age_group: Pediatric
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2015'
+  recommendations:
+  - population: Children ages 6 to 24 months
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for iron deficiency anemia in children ages 6 to 24 months.\r\n\nGo to\
+      \ the Clinical Considerations section for suggestions for practice regarding the I statement.\r\n\
+      \nLiterature scans conducted in July 2023 in MEDLINE and the Cochrane Database of Systematic Reviews\
+      \ showed a lack of new evidence to support an updated systematic review on the topic at this time.\
+      \ See the Literature Surveillance Report under the Supporting Evidence section of this webpage."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: thyroid-dysfunction-screening
+  title: 'Thyroid Dysfunction: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/thyroid-dysfunction-screening
+  publication_date: '2015-03-24'
+  type: Screening
+  age_group: Adult, Senior
+  category: Metabolic, nutritional, and Endocrine Conditions
+  index_year: '2015'
+  recommendations:
+  - population: Nonpregnant, asymptomatic adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for thyroid dysfunction in nonpregnant, asymptomatic adults.\r\n\nSee the\
+      \ Clinical Considerations section for suggestions for practice regarding the I statement.\r\n\n\
+      Literature scans conducted in May 2024 in the MEDLINE and PubMed databases and the Cochrane Library\
+      \ showed a lack of new evidence to support an updated systematic review on the topic at this time.\
+      \ See the Literature Surveillance Report under the Supporting Evidence section of this webpage."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: oral-cancer-screening
+  title: 'Oral Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/oral-cancer-screening
+  publication_date: '2013-11-15'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2013'
+  recommendations:
+  - population: Asymptomatic Adults
+    text: "The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for oral cancer in asymptomatic adults.\r\n\nGo to the Clinical Considerations\
+      \ section for suggestions for practice regarding the I statement.\r\n\nLiterature scans conducted\
+      \ in July 2023 in the MEDLINE database and the Cochrane Library showed a lack of new evidence to\
+      \ support an updated systematic review on the topic at this time. See the Literature Surveillance\
+      \ Report under the Supporting Evidence section of this webpage."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: bladder-cancer-in-adults-screening
+  title: 'Bladder Cancer in Adults: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/bladder-cancer-in-adults-screening
+  publication_date: '2011-08-15'
+  type: Screening
+  age_group: Adult, Senior
+  category: Cancer
+  index_year: '2011'
+  recommendations:
+  - population: Asymptomatic Adults
+    text: "The USPSTF concludes the current evidence is insufficient to assess the balance of benefits\
+      \ and harms of screening for bladder cancer in asymptomatic adults.\r\n\nLiterature scans conducted\
+      \ in July 2024 in the MEDLINE and PubMed databases and the Cochrane Library showed a lack of new\
+      \ evidence to support an updated systematic review on the topic at this time. See the Literature\
+      \ Surveillance Report under the Supporting Evidence section of this webpage."
+    grade: I
+    certainty: insufficient
+    grade_meaning: 证据不足，无法评估收益与危害的平衡
+- slug: testicular-cancer-screening
+  title: 'Testicular Cancer: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/testicular-cancer-screening
+  publication_date: '2011-04-15'
+  type: Screening
+  age_group: Adolescent, Adult, Senior
+  category: Cancer
+  index_year: '2011'
+  recommendations:
+  - population: Adolescent and Adult Men
+    text: The USPSTF recommends against screening for testicular cancer in adolescent or adult men.
+    grade: D
+    certainty: moderate
+    grade_meaning: 中等/高确定性无净收益或弊大于利；不建议提供
+- slug: rh-d-incompatibility-screening
+  title: 'Rh(D) Incompatibility: Screening'
+  url: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/rh-d-incompatibility-screening
+  publication_date: '2004-02-15'
+  type: Screening
+  age_group: Adolescent, Adult
+  category: Obstetric and Gynecologic Conditions
+  index_year: '2004'
+  recommendations:
+  - population: Pregnant women, during the first pregnancy-related care visit
+    text: The USPSTF strongly recommends Rh(D) blood typing and antibody testing for all pregnant women
+      during their first visit for pregnancy-related care.
+    grade: A
+    certainty: high
+    grade_meaning: 高确定性，净收益大
+  - population: Unsensitized Rh(D)-negative pregnant women
+    text: The USPSTF recommends repeated Rh(D) antibody testing for all unsensitized Rh(D)-negative women
+      at 24 to 28 weeks' gestation, unless the biological father is known to be Rh(D)-negative.
+    grade: B
+    certainty: moderate
+    grade_meaning: 高确定性净收益中等，或中等确定性净收益中至大
