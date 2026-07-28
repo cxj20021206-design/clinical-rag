@@ -104,6 +104,10 @@ _STRENGTH = [
 _CERTAINTY = re.compile(
     r"(?:certainty|quality|level)\s+of\s+evidence\s*[:：]?\s*"
     r"(very\s+low|low|moderate|high|none)", re.I)
+# 另一种同样常见的写法："(moderate-quality evidence; strong recommendation)"。
+# 不认它会让 evidence_certainty 白白落空——而推荐强度+证据确定性正是这条腿存在的理由。
+_CERTAINTY_INLINE = re.compile(
+    r"\b(very\s+low|low|moderate|high)[-\s]quality\s+evidence", re.I)
 # "Recommendation strength B" / "推荐强度 B" 这类字母制（韩国 CPG 用 A/B/C/E）
 _LETTER = re.compile(r"recommendation\s+strength\s+([A-E])\b", re.I)
 
@@ -142,7 +146,7 @@ def parse_grade(text: str) -> dict:
     strength = next((v for pat, v in _STRENGTH if re.search(pat, low)), None)
     m = _LETTER.search(t)
     letter = m.group(1).upper() if m else None
-    c = _CERTAINTY.search(t)
+    c = _CERTAINTY.search(t) or _CERTAINTY_INLINE.search(t)
     certainty = re.sub(r"\s+", " ", c.group(1)).lower() if c else None
     if not letter:
         m2 = _EV_LEVEL.search(t)
@@ -302,6 +306,15 @@ def _strategy_rec_tables(root) -> list[dict]:
                 if not _REC_MARKER.search(main):
                     continue
             if len(main) < MIN_TABLE_LEN:
+                continue
+            # 表内**分节小标题行**（"Recommendations: Clinical variables as predictors
+            # of functional outcome"）不是推荐。按表头列取值时它照样落在推荐列里，
+            # 不滤掉就会有一条"要求"其实只是个标题——normative 库里混进这种条目，
+            # 审稿端会拿它去要求作者做一件没有内容的事。
+            # 判推荐动词要在**去掉 "Recommendations:" 前缀之后**做——否则前缀里的
+            # "Recommendations" 自己就命中了 _REC_MARKER 的 recommend\w*，这行永远滤不掉。
+            m_hdr = re.match(r"^\s*recommendations?\s*[:：]\s*(.*)$", main, re.I | re.S)
+            if m_hdr and len(main) < 140 and not _REC_MARKER.search(m_hdr.group(1)):
                 continue
             segs = split_statements(main)
             for seg in segs:

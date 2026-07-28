@@ -1,0 +1,19 @@
+# 示例 Clinical Claim Card —— C2 回顾性外部验证，急性缺血性卒中。
+# 用途：**自动扩库腿（guideline_autocurate.py）的回归卡**。
+# 库里原本一份卒中指南都没有（4 份人工 CPG 只覆盖脓毒症/院内肺炎/创伤/新生儿 POCUS），
+# 这张卡触发自动扩库，检验"缺口 → 自动摄入 → 检索时能用上"整条闭环。
+clinical_claim:
+  disease_or_condition: "acute ischemic stroke"
+  intended_use: "AI-based outcome prognostication after acute ischemic stroke"
+  target_population: "critically ill adults admitted with acute ischemic stroke"
+  intended_user: "neurointensivists"
+  care_setting: "neurological intensive care unit"
+  model_input: "admission CT, NIHSS, EHR vital signs and laboratory results"
+  model_output: "predicted 90-day functional outcome (mRS)"
+  clinical_decision_affected: "withdrawal of life-sustaining treatment / rehabilitation planning"
+  comparator: "clinician gestalt and existing prognostic scores"
+  claimed_benefit: "more accurate neuroprognostication, better resource allocation"
+  evidence_stage: "C2"          # 回顾性外部验证
+  deployment_claim_level: "retrospective external validation only"
+  region: "US"
+  submission_date: "2026-05-01"

@@ -29,11 +29,20 @@ python3 retrieve.py --claim examples/claim_card_lung_ct.yaml --per-source 3
 ```
 指定模块：`--modules comparator_baseline endpoint_utility`
 
-三张示例卡刻意用来验证适用性门控**各个方向**都正确：
+四张示例卡刻意用来验证适用性门控**各个方向**都正确：
 ```bash
 python3 retrieve.py --claim examples/claim_card_lung_ct.yaml    # C1 影像 → CLAIM/QUADAS-3 启用，DECIDE-AI 拦截；normative 走 USPSTF
 python3 retrieve.py --claim examples/claim_card_sepsis_c3.yaml  # C3 病房 → DECIDE-AI 启用，CLAIM/QUADAS-3 拦截；normative 走韩国脓毒症 CPG
 python3 retrieve.py --claim examples/claim_card_neonatal_sepsis.yaml  # 同为 sepsis，仅人群换成新生儿 → 成人 CPG 被人群门控拦下
+python3 retrieve.py --claim examples/claim_card_stroke_c2.yaml  # 库里原本没有卒中指南 → 由自动扩库补上，记录带 🤖 标记
+```
+
+**病种没覆盖时**：自动扩库（`normative` 按病种组织，人工策展追不上论文的病种分布）
+```bash
+python3 connectors/guideline_autocurate.py --disease "heart failure"          # 只探不写（默认 dry-run）
+python3 connectors/guideline_autocurate.py --claim examples/claim_card_stroke_c2.yaml --write
+# 四道门：标题主题门 / 许可硬门 / 结构门 / 抽全性核查。产物 curated/guidelines/cpg_auto_*.yaml
+# 带 curation_level: auto（scope 为机器草稿、未经人工核验），记录写 manifest_auto.yaml，**不碰人工 manifest.yaml**
 ```
 
 ## 结构
@@ -55,9 +64,11 @@ connectors/
   guideline_fetch.py    学会/国家 CPG 取数层 (Europe PMC OA 全文 + 三种结构策略抽推荐 + GRADE 解析)
   guideline_ingest.py   按 manifest 一次性摄入 → curated/guidelines/cpg_<slug>.yaml
   curated_guidelines.py 学会/国家 CPG 连接器 (normative；病种+人群硬拦、场景软提示)
+  guideline_autocurate.py  自动扩库：按 Claim Card 病种缺口触发摄入 (四道门 + scope 草稿生成)
 curated/reporting_tools/  人工策展的报告规范清单 (yaml，带 provenance/许可/完整性标注)
 curated/guidelines/       策展摄入的临床指南 (normative)：uspstf.yaml + cpg_*.yaml
-                          manifest.yaml 记策展决定；deferred 段如实记录未摄入的指南与原因
+                          manifest.yaml 记**人工**策展决定；deferred 段如实记录未摄入的指南与原因
+                          cpg_auto_*.yaml + manifest_auto.yaml 为**自动扩库**产物，两者分开存
 examples/               示例 Clinical Claim Card
 store/                  检索记录缓存(jsonl，带日期 + query_context)
 docs/DESIGN.md          完整设计文档
@@ -103,6 +114,26 @@ docs/DESIGN.md          完整设计文档
 **关键设计：不适用时必须说明理由。** 一份清单被拦下不是静默返回空，而是打印
 "论文为 C1，CONSORT-AI 适用于 C4，套用属越级要求"。这是 C0–C4 分级的执行点——
 防止系统对一篇回顾性研究提出"你没做随机对照试验"。
+
+## 状态（2026-07-28）
+- ✅ **自动扩库（DESIGN §6e）**：`normative` 按病种组织、人工策展追不上论文病种分布，故把 §6d 的
+  摄入流水线改成**按 Claim Card 病种缺口触发**（机器那半边本来就全自动，人工只剩 manifest 的
+  slug/issuing_body/scope）。四道门：标题主题门（检索用 TITLE_ABS 要召回、准入只看 TITLE 要准确——
+  没有这道门时心衰卡"捞到"的三份文档是两份**肥胖指南**加一份肾脏病 SGLT-2 指南，只因摘要提到心衰获益，
+  而 scope 草稿会把 `heart failure` 写进它们、**从此每篇心衰论文都命中一份肥胖指南**）/ 许可硬门（同人工腿，
+  禁止从正文推断）/ 结构门（三策略 + ≥3 条，抽不出时区分 `no_fulltext` / `language` / `structure` 三种成因）/
+  **抽全性核查**（拿"结构槽位数"当上界对账，低于 60% 标 needs_review——`≥3 条`挡不住 ESPNIC 那类静默截断）。
+  产物 `curation_level: auto`、tier 降至 2、检索时打 `🤖` 并在 notes 声明"scope 未经人工核验"，
+  写 `manifest_auto.yaml` 不碰人工 manifest。
+- 📊 **实测产出率 4%**（47 候选 → 2 入库）：卒中 2/6 ✅、心衰 0/28、AKI 0/12、糖网 0/1。
+  入库的是 *Neuroprognostication in Critically ill Adults with AIS*（CC BY, 13 条，含
+  "we suggest the iScore prediction model not be used…"——正是 AI 预后论文要对齐的标准）与巴西 AIS 方案。
+  **自动化解决的是"没人去策展"，解决不了"许可拿不到"**——AHA/ACC、ESC、KDIGO、SSC 多数不是 CC-BY，
+  心衰/AKI/糖网仍是 0，要补只能换通道（WHO IRIS / VA-DoD，都需先做 PDF 解析）。
+- 🔧 实测顺带查出并修掉三个**既存**缺陷：`wses_elderly_trauma` 的裸词 `injury` 让 **AKI 卡命中老年创伤指南**
+  （ESPNIC 的裸词 `ultrasound` 同理，此前只靠人群门控兜住）；**表格策略抽出的指南写盘时被去重塌成每份 1 条**
+  （`section_page_table` 对同一张表的所有行完全相同，卒中卡 2 条→应有 8 条）；表内分节小标题行被当成推荐
+  （判推荐动词要在去掉 `Recommendations:` 前缀之后做）。
 
 ## 状态（2026-07-26）
 - ✅ 端到端跑通：注册表 / schema / 原子写 / 4 个 API 连接器 / **报告规范策展层** / predates 门控 /

@@ -1,0 +1,94 @@
+source_id: society_guidelines
+slug: auto_brazilian_public_protocol_diagnosis_treatment
+name: Brazilian Public Health System protocol for the diagnosis, treatment, and clinical monitoring of
+  acute ischemic stroke.
+short_name: 'Brazilian Public Health System protocol for the diagnosis, treatment, '
+issuing_body: Academia Brasileira de Neurologia（自动摄入：发布机构未确认，须人工核对）
+document_type: guideline
+source_role: normative
+tier: 2
+region: null
+publication_date: '2025-06-20'
+scope:
+  disease_terms:
+  - acute ischemic stroke
+  - brazilian public
+  - diagnosis treatment
+  care_settings:
+  - outpatient
+  - community
+  population: null
+  topic: Brazilian Public Health System protocol for the diagnosis, treatment, and clinical monitoring
+    of acute ischemic stroke.
+curation_note: 自动摄入（Claim Card 病种缺口触发：acute ischemic stroke）。scope 为机器生成草稿，未经人工核验。
+provenance:
+  canonical_url: https://europepmc.org/article/PMC/PMC12180950
+  pmcid: PMC12180950
+  pmid: '40541244'
+  doi: 10.1055/s-0045-1806923
+  journal: Arquivos de Neuro-Psiquiatria
+  license: cc by
+  license_note: 许可 cc by：允许逐字未改动的复制与再分发。逐字摘录、未改动、注明出处；不做演绎、不收费再分发。
+  ingested_from: Europe PMC OA fullTextXML
+  extraction_strategy: rec_tables
+  strategy_yields:
+    rec_sections: 3
+    rec_boxes: 0
+    rec_tables: 4
+  ingested_date: '2026-07-28'
+  verbatim: true
+  completeness: structured_recommendations_only
+  completeness_note: 仅摄入以结构（rec_tables）呈现的推荐条目 4 条。正文讨论中未进入推荐结构的表述不在库内，系统不得声称已覆盖全文。
+  n_recommendations: 4
+  scope_source: auto_generated_draft
+  issuer_confirmed: false
+  yield_audit:
+    slots:
+      rec_sections: 3
+      rec_boxes: 0
+      rec_tables: 4
+    extracted: 4
+    slot_of_strategy: 4
+    coverage_ratio: 1.0
+    flags: []
+  triggered_by: acute ischemic stroke
+recommendations:
+- statement: We recommend using alteplase in patients with AIS in any vascular territory with symptom
+    onset up to 4.5 hours (moderate-quality evidence; strong recommendation).
+  context: Summary of recommendations made by the panel
+  section: 表：Summary of recommendations made by the panel
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+- statement: 'We recommend using mechanical thrombectomy in patients with occlusion involving the intracranial
+    internal carotid artery, the first segment of the M1, or both, with symptom onset up to 8 hours (moderate-quality
+    evidence, strong recommendation); provided that the following criteria are met: • NIHSS ≥ 6; • mRS
+    ≤ 2 before the qualifying event.'
+  context: Summary of recommendations made by the panel
+  section: 表：Summary of recommendations made by the panel
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+- statement: 'We recommend mechanical thrombectomy in patients with a symptom onset window between 8 and
+    24 hours (moderate-quality evidence, strong recommendation); provided that the following criteria
+    are met: • NIHSS ≥ 6; • mRS ≤ 2 before the qualifying event; • Infarct volume (assessed by perfusion
+    or diffusion): - Less than 21 cm 3 (≥ 80 years; NIHSS > 10); - Less than 31 cm 3 (< 80 years; NIHSS:
+    10–19); - Less than 51 cm 3 (< 80 years; NIHSS > 20); - Less than 70 cm 3 in patients with mismatch
+    > 1.8, penumbra greater than 15 mL, and who present a symptom onset window between 8 and 16 hours.'
+  context: Summary of recommendations made by the panel
+  section: 表：Summary of recommendations made by the panel
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+- statement: We suggest using general anesthesia or conscious sedation in patients eligible for mechanical
+    thrombectomy at the discretion of the responsible team (low certainty of evidence, conditional recommendation).
+  context: Summary of recommendations made by the panel
+  section: 表：Summary of recommendations made by the panel
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+curation_level: auto

@@ -174,6 +174,8 @@ def main():
     if "society_guidelines" in CONNECTORS:
         for g in CONNECTORS["society_guidelines"].report(card):
             mark = "✅" if g["applicable"] else "⛔"
+            if g.get("curation_level") == "auto":      # 自动扩库产物必须自报身份
+                mark += "🤖" + ("⚠️" if g.get("needs_review") else "")
             print(f" {mark} {(g['name'] or g['slug'])[:34]:34s} "
                   f"({g['n_recs']}/{g['n_total']} 条推荐, {g['publication_date']}, "
                   f"{g['issuing_body'][:34]})")

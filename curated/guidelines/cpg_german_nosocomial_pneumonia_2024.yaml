@@ -35,7 +35,7 @@ provenance:
     rec_sections: 0
     rec_boxes: 0
     rec_tables: 10
-  ingested_date: '2026-07-26'
+  ingested_date: '2026-07-28'
   verbatim: true
   completeness: structured_recommendations_only
   completeness_note: 仅摄入以结构（rec_tables）呈现的推荐条目 10 条。正文讨论中未进入推荐结构的表述不在库内，系统不得声称已覆盖全文。

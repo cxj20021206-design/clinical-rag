@@ -49,7 +49,10 @@ ingested:
     region: international
     tier: 1
     scope:
-      disease_terms: [trauma, injury, "traumatic injury", frailty]
+      # 单词 `injury` 判别力太低，2026-07-28 移除：一张「acute kidney injury」卡片
+      # 会仅凭 injury 命中这份**老年创伤**指南，且人群同为成人、第二道门拦不住，
+      # 结果是拿创伤分诊标准去要求一篇 AKI 论文。多词短语才有资格当病种词。
+      disease_terms: [trauma, "traumatic injury", "major trauma", polytrauma, frailty]
       care_settings: ["emergency department", "trauma bay", "inpatient"]
       population: "elderly adult"
       topic: "老年/衰弱创伤患者的分诊激活、衰弱评估、影像与出血处理"
@@ -65,7 +68,9 @@ ingested:
     region: international
     tier: 1
     scope:
-      disease_terms: ["point of care ultrasound", pocus, ultrasound, "congenital heart",
+      # 同上：裸 `ultrasound` 会让任何超声论文命中这份**新生儿**指南，此前只靠
+      # 人群门控兜住（卡片没写明成人时就兜不住）。改为多词短语。
+      disease_terms: ["point of care ultrasound", pocus, "congenital heart",
                       "ductus arteriosus", "intraventricular haemorrhage", pneumothorax,
                       "necrotising enterocolitis", "lung ultrasound", "critical illness"]
       care_settings: ["neonatal intensive care unit", "paediatric intensive care unit", "inpatient"]

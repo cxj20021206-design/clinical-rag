@@ -1,0 +1,173 @@
+source_id: society_guidelines
+slug: auto_guidelines_neuroprognostication_critically_ill_adults
+name: Guidelines for Neuroprognostication in Critically ill Adults with Acute Ischemic Stroke.
+short_name: Guidelines for Neuroprognostication in Critically ill Adults with Acut
+issuing_body: 未知（自动摄入：发布机构未确认，须人工核对）
+document_type: guideline
+source_role: normative
+tier: 2
+region: null
+publication_date: '2026-04-06'
+scope:
+  disease_terms:
+  - acute ischemic stroke
+  - critically ill adults
+  care_settings:
+  - intensive care unit
+  population: adult
+  topic: Guidelines for Neuroprognostication in Critically ill Adults with Acute Ischemic Stroke.
+curation_note: 自动摄入（Claim Card 病种缺口触发：acute ischemic stroke）。scope 为机器生成草稿，未经人工核验。
+provenance:
+  canonical_url: https://europepmc.org/article/PMC/PMC13249629
+  pmcid: PMC13249629
+  pmid: '41942818'
+  doi: 10.1007/s12028-026-02486-3
+  journal: Neurocritical Care
+  license: cc by
+  license_note: 许可 cc by：允许逐字未改动的复制与再分发。逐字摘录、未改动、注明出处；不做演绎、不收费再分发。
+  ingested_from: Europe PMC OA fullTextXML
+  extraction_strategy: rec_tables
+  strategy_yields:
+    rec_sections: 0
+    rec_boxes: 0
+    rec_tables: 13
+  ingested_date: '2026-07-28'
+  verbatim: true
+  completeness: structured_recommendations_only
+  completeness_note: 仅摄入以结构（rec_tables）呈现的推荐条目 13 条。正文讨论中未进入推荐结构的表述不在库内，系统不得声称已覆盖全文。
+  n_recommendations: 13
+  scope_source: auto_generated_draft
+  issuer_confirmed: false
+  yield_audit:
+    slots:
+      rec_sections: 0
+      rec_boxes: 0
+      rec_tables: 15
+    extracted: 13
+    slot_of_strategy: 15
+    coverage_ratio: 0.8666666666666667
+    flags: []
+  triggered_by: acute ischemic stroke
+recommendations:
+- statement: When counseling critically ill adults with AIS or their surrogates, we suggest age alone
+    not be considered a reliable predictor of poor functional outcome assessed at 3 months or later (weak
+    recommendation; very low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+- statement: When counseling critically ill adults with AIS or their surrogates, we suggest the admission
+    National Institutes of Health Stroke Scale (NIHSS) alone not be considered a reliable predictor of
+    poor functional outcome assessed at 3 months or later (weak recommendation; very low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest hemorrhagic
+    transformation alone not be considered a reliable predictor of poor functional outcome assessed at
+    3 months or later (weak recommendation; very low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest infarct
+    size alone not be considered a reliable predictor of poor functional outcome assessed at 3 months
+    or later (weak recommendation; very low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+- statement: When counseling of critically ill patients with AIS or their surrogates, we suggest a history
+    of previous stroke alone not be considered a reliable predictor of poor functional outcome assessed
+    at 3 months or later (weak recommendation; very low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest successful
+    revascularization alone not be considered a reliable predictor of good functional outcome assessed
+    at 3 months or later (weak recommendation; moderate quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest early neurological
+    improvement (ENI) assessed 24 h following revascularization, or 24 h following admission for patients
+    who are not candidates for revascularization, be considered a moderately reliable predictor of good
+    functional outcome assessed at 3 months or later. A good outcome is expected in patients with recovery
+    to an NIHSS of 0 to 1 at 24 h (weak recommendation; low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: low
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest admission
+    hyperglycemia alone not be considered a reliable predictor of poor functional outcome assessed at
+    3 months or later (weak recommendation; very low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest cerebral
+    collateral circulation status alone not be considered a reliable predictor of poor functional outcome
+    assessed at 3 months or later (weak recommendation; very low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest the Acute
+    Stroke Registry and Analysis of Lausanne (ASTRAL) score not be considered a reliable predictor of
+    poor functional outcome assessed at 3 months or later (weak recommendation; moderate quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest the Dense
+    Artery, mRS, Age, Glucose, Onset-to-Treatment, and NIHSS (DRAGON), MR-DRAGON, and MT-DRAGON scores
+    not be considered reliable predictors of poor functional outcome assessed at 3 months or later (weak
+    recommendation; very low quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest the Ischemic
+    Stroke Predictive Risk Score (iScore) prediction model not be considered a reliable predictor of poor
+    functional outcome assessed at 3 months or later (weak recommendation; moderate quality evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+- statement: When counseling critically ill patients with AIS or their surrogates, we suggest the Totaled
+    Health Risks in Vascular Events (THRIVE), THRIVE-c, and THRIVE-EVT scores not be considered reliable
+    predictors of good functional outcome assessed at 3 months or later (weak recommendation; low quality
+    evidence)
+  context: 'Recommendations: guidelines for neuroprognostication in acute ischemic stroke'
+  section: '表：Recommendations: guidelines for neuroprognostication in acut'
+  recommendation_strength: weak
+  grade_letter: null
+  evidence_certainty: low
+  agreement: null
+curation_level: auto

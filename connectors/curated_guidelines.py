@@ -193,6 +193,12 @@ class CuratedGuidelinesConnector(Connector):
                 "applicable": ok, "reason": why,
                 "n_recs": len(recs) if ok else 0,
                 "n_total": len(recs),
+                # curated=人工确认过 scope 与发布机构；auto=自动扩库产物（见
+                # guideline_autocurate.py）。许可与逐字原文两条腿一样硬，差别在
+                # scope 是机器草稿——必须让下游看得见，不能混作一谈。
+                "curation_level": d.get("curation_level", "curated"),
+                "needs_review": bool(((d.get("provenance") or {})
+                                      .get("yield_audit") or {}).get("flags")),
                 "completeness": (d.get("provenance") or {}).get("completeness"),
                 "setting_note": setting_note(card, d.get("scope") or {}) if ok else None,
             })
@@ -209,6 +215,13 @@ class CuratedGuidelinesConnector(Connector):
             prov = d.get("provenance") or {}
             recs = d.get("recommendations") or []
             picked = rank_recommendations(card, recs, limit)
+            # 条目在本指南推荐列表里的序号。用来给 section_page_table 兜底唯一性：
+            # 表格策略抽出的条目，section 是「表：caption」、context 也是同一个 caption，
+            # 整张表所有行的 section_page_table 完全相同 → retrieve.py 的
+            # (source_id, url, section_page_table) 去重会把**整份指南塌成 1 条**
+            # （脓毒症卡 4 条其实是 4 份指南各剩 1 条，不是取了 4 条推荐）。
+            # 与 §6b 报告清单当初加 section_page_table 是同一个坑的另一半。
+            order = {id(r): i for i, r in enumerate(recs)}
             s_note = setting_note(card, d.get("scope") or {})
             pub = d.get("publication_date")
             predates = compute_predates(pub, submission_date)
@@ -231,6 +244,14 @@ class CuratedGuidelinesConnector(Connector):
                 if not strength:
                     notes.append("⚠️ 该条未解析出推荐强度 —— 原文未在推荐句内给 GRADE 标注，"
                                  "不得替它假定强度。")
+                if d.get("curation_level") == "auto":
+                    aud = (prov.get("yield_audit") or {})
+                    notes.append(
+                        "🤖 自动扩库产物：许可与逐字原文与人工腿同标准，但**适用范围"
+                        "（scope：病种/人群/场景）为机器生成草稿，未经人工核验**，"
+                        "发布机构亦未确认。据此提出的要求应标为待核实，不可作为"
+                        "已确认的规范依据。" +
+                        (f" 抽取覆盖率告警：{aud['flags']}" if aud.get("flags") else ""))
                 out.append(ExternalStandard(
                     source_id=self.source_id,
                     issuing_body=d.get("issuing_body") or self.issuing_body,
@@ -248,7 +269,8 @@ class CuratedGuidelinesConnector(Connector):
                     recommendation_strength=strength,
                     evidence_certainty=r.get("evidence_certainty"),
                     passage=r.get("statement"),          # 逐字原文
-                    section_page_table=f"{r.get('section')} | {(r.get('context') or '')[:60]}",
+                    section_page_table=(f"{r.get('section')} | 第 {order[id(r)] + 1} 条 | "
+                                        f"{(r.get('context') or '')[:60]}"),
                     license=prov.get("license"),
                     machine_access=self.machine_access,
                     source_role=self.source_role,

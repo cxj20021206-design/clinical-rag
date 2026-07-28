@@ -1,0 +1,85 @@
+# 自动扩库（guideline_autocurate.py）的产物记录 —— **与人工 manifest.yaml 分开**。
+# 这里的 scope 是机器生成草稿；needs_review=true 的必须人工比对原文后才可信。
+# 许可门与人工腿完全相同（Europe PMC 结构化 license 字段，空 = 未授权）。
+
+auto_ingested:
+- pmcid: PMC13249629
+  slug: auto_guidelines_neuroprognostication_critically_ill_adults
+  issuing_body: 未知（自动摄入：发布机构未确认，须人工核对）
+  short_name: Guidelines for Neuroprognostication in Critically ill Adults with Acut
+  region: null
+  tier: 2
+  scope:
+    disease_terms:
+    - acute ischemic stroke
+    - critically ill adults
+    care_settings:
+    - intensive care unit
+    population: adult
+    topic: Guidelines for Neuroprognostication in Critically ill Adults with Acute Ischemic Stroke.
+  notes: 自动摄入（Claim Card 病种缺口触发：acute ischemic stroke）。scope 为机器生成草稿，未经人工核验。
+  yield_audit:
+    slots:
+      rec_sections: 0
+      rec_boxes: 0
+      rec_tables: 15
+    extracted: 13
+    slot_of_strategy: 15
+    coverage_ratio: 0.8666666666666667
+    flags: []
+  issuer_confirmed: false
+  needs_review: true
+- pmcid: PMC12180950
+  slug: auto_brazilian_public_protocol_diagnosis_treatment
+  issuing_body: Academia Brasileira de Neurologia（自动摄入：发布机构未确认，须人工核对）
+  short_name: 'Brazilian Public Health System protocol for the diagnosis, treatment, '
+  region: null
+  tier: 2
+  scope:
+    disease_terms:
+    - acute ischemic stroke
+    - brazilian public
+    - diagnosis treatment
+    care_settings:
+    - outpatient
+    - community
+    population: null
+    topic: Brazilian Public Health System protocol for the diagnosis, treatment, and clinical monitoring
+      of acute ischemic stroke.
+  notes: 自动摄入（Claim Card 病种缺口触发：acute ischemic stroke）。scope 为机器生成草稿，未经人工核验。
+  yield_audit:
+    slots:
+      rec_sections: 3
+      rec_boxes: 0
+      rec_tables: 4
+    extracted: 4
+    slot_of_strategy: 4
+    coverage_ratio: 1.0
+    flags: []
+  issuer_confirmed: false
+  needs_review: true
+auto_deferred:
+- pmcid: PMC13277412
+  title: '2025 Korean Guidelines for Cardiopulmonary Resuscitation: Part 11. First aid.'
+  blocker: topic_mismatch
+  reason: 病种短语 ['acute ischemic stroke'] 未出现在标题中，仅摘要提及；不得据此赋予它该病种的 normative 身份
+- pmcid: PMC8829490
+  title: '2022 Update of the Korean Clinical Practice Guidelines for Stroke: Antithrombotic Therapy for
+    Patients with Acute Ischemic Stroke or Transient Ischemic Attack.'
+  blocker: structure
+  license: cc by-nc
+  language: en
+  reason: '全文可得（47156 字符、英语）但无推荐节/推荐框/推荐汇总表 —— 推荐散在正文里，关键词抓句会把转述他人指南的句子抓成本文推荐，不降级处理。 抽取产量 {''rec_sections'':
+    0, ''rec_boxes'': 0, ''rec_tables'': 0}。'
+- pmcid: PMC6549067
+  title: 2019 Update of the Korean Clinical Practice Guidelines of Stroke for Endovascular Recanalization
+    Therapy in Patients with Acute Ischemic Stroke.
+  blocker: structure
+  license: cc by-nc
+  language: en
+  reason: '全文可得（43865 字符、英语）但无推荐节/推荐框/推荐汇总表 —— 推荐散在正文里，关键词抓句会把转述他人指南的句子抓成本文推荐，不降级处理。 抽取产量 {''rec_sections'':
+    0, ''rec_boxes'': 0, ''rec_tables'': 0}。'
+- pmcid: PMC7272487
+  title: Guidelines for the Acute Treatment of Cerebral Edema in Neurocritical Care Patients.
+  blocker: topic_mismatch
+  reason: 病种短语 ['acute ischemic stroke'] 未出现在标题中，仅摘要提及；不得据此赋予它该病种的 normative 身份

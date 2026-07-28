@@ -473,6 +473,116 @@ comparator_baseline / endpoint_utility / workflow_deployment 三个模块。
 覆盖只有 4 份指南，远谈不上"全"；但架构上 `normative` 从"USPSTF 一个源"变成了
 **多源角色**，多源打架的处理（全收、标明发布方与适用地区、如实呈现分歧）沿用 §6c 末尾的定调。
 
+## 6e. 已实现（自动扩库）：Claim Card 驱动的指南策展 —— 2026-07-28
+
+`connectors/guideline_autocurate.py`。要解决的是 §6d 留下的**覆盖面**问题：`normative`
+按病种组织，而人工一份一份加永远追不上论文的病种分布（4 份 CPG 只覆盖脓毒症/院内肺炎/
+创伤/新生儿 POCUS，心衰、卒中、糖网、AKI 一份都没有）。
+
+### 关键认识：机器那半边本来就是全自动的
+
+§6d 的流水线里，**候选检索 / 许可判定 / 全文抓取 / 三策略抽取 / GRADE 解析**全都不需要人
+（`guideline_fetch.py`）；人工的只剩 manifest 里的 `slug / issuing_body / scope`。所以自动
+扩库**不是新架构**，是把 manifest 从"人手写条目触发"改成"**按 Claim Card 的病种缺口触发**"：
+
+```
+读卡 → 查本地覆盖(复用检索时同一套门控) → 无覆盖则按病种短语检索 OA 指南候选
+     → 标题主题门 → 许可硬门 → 抓全文抽推荐 → 抽全性核查 → scope 草稿
+     → cpg_auto_*.yaml + manifest_auto.yaml（默认 dry-run，`--write` 才写盘）
+```
+
+新增的只有三件事：**覆盖检测、抽全性核查、scope 草稿生成**。
+
+### 四道门（前三道硬拦，第四道标记）
+
+1. **标题主题门**（`title_covers`）——检索用 `TITLE_ABS`（要召回），准入只看 **TITLE**（要准确）。
+   第一版没有这道门，心衰卡捞回的三份"可入库"文档是两份**肥胖药物治疗指南**和一份 **UK 肾脏病
+   SGLT-2 指南**——它们只在摘要里提到心衰获益。更糟的是 scope 草稿会把 `heart failure` 写进
+   这三份的 `disease_terms`，从此**任何心衰论文都会命中一份肥胖指南**，且是以 normative
+   （"你应该做到什么"）的身份。**自动腿把错误固化进库，比人工腿漏一份指南严重得多。**
+2. **许可门**——与人工腿完全相同（Europe PMC 结构化 `license` 字段，空 = 未授权）。
+   **禁止从正文/页脚推断许可**：判错许可的后果是法律的，不是召回率的。
+3. **结构门**——沿用 §6d 的三策略 + `MIN_YIELD=3`，不做关键词抓句降级。
+   抽不出时**区分三种成因**（`fulltext_diagnosis`），因为处置完全不同：
+   `no_fulltext`（EPMC 标 OA 但只有摘要/译文摘要、或 fullTextXML 404）/
+   `language`（全文在但非英语，同德国 S3 的缺口）/ `structure`（全文在、英语、就是没有推荐结构）。
+   全归为一类会让缺口报告变成误导——同 `guideline_ingest.py`「取不到书目记录 ≠ 许可不合格」。
+4. **抽全性核查**（`yield_audit`）——`recommendation_count_minimum: 3` **挡不住静默截断**：
+   ESPNIC 那次错误实现抽 10 条、正确实现 41 条，两个都 ≥3、都过门、都不报错。跨策略产量比较
+   也救不了（错的是同一策略内部的过滤器）。唯一能发现它的是拿**结构槽位数**（不带内容过滤地数
+   "本文有多少个看起来该是推荐的位置"）当上界对账，低于 60% 标 `needs_review`。
+
+### 自动摄入必须自报身份
+
+产物带 `curation_level: auto`，`provenance` 里记 `scope_source: auto_generated_draft` /
+`issuer_confirmed` / `yield_audit`。`curated_guidelines.py` 检索时在 notes 里写明
+「适用范围为机器生成草稿、未经人工核验，据此提出的要求应标为待核实」，`retrieve.py`
+打 `🤖`（有告警再加 `⚠️`），tier 一律降到 2。产物写 **`manifest_auto.yaml`**，不碰人工的
+`manifest.yaml`——两条腿混在一个文件里就分不清哪条 scope 是人确认过的（也避开 7-26
+那次并行会话事故的同类风险）。**铁律靠"如实标注"守，不靠"不确定就排除"**，后者的实际后果
+是 normative 永远只有 4 个病种。
+
+`scope` 草稿的三条生成规则（判错 scope 的后果是**召回**，不是失真——原文仍逐字、许可仍合规，
+所以它可以自动生成 + 事后抽查，而许可那道门不行）：`disease_terms` **只从标题取**（一份肥胖
+指南的推荐里满是 "heart failure"，那是获益描述不是适用病种）；`population` 只在证据单向时
+才写，两可就留空（`check_population` 只在明确冲突时硬拦，留空 = 不拦，是安全侧；乱写会把整份
+指南永久拦死）；`care_settings` 宁多勿少（它只做软提示，写少了反而丢掉"场景外推"警告）。
+
+### 实测产出率（2026-07-28，四个未覆盖病种）
+
+| Claim Card 病种 | EPMC OA 指南候选 | 可入库 | 拦截分布 |
+|---|---|---|---|
+| heart failure | 28 | **0** | topic_mismatch 22 / structure 4 / language 1(es) / no_fulltext 1 |
+| acute ischemic stroke | 6 | **2** | topic_mismatch 2 / structure 2 |
+| acute kidney injury | 12 | **0** | topic_mismatch 8 / structure 4 |
+| diabetic retinopathy | 1 | **0** | topic_mismatch 1 |
+
+**47 篇候选 → 2 份入库（4%）。**入库的两份是 *Guidelines for Neuroprognostication in
+Critically ill Adults with Acute Ischemic Stroke*（2026-04-06, CC BY, 13 条）与
+*Brazilian Public Health System protocol for AIS*（2025-06-20, CC BY, 4 条）；前者含
+**"we suggest the Ischemic Stroke Predictive Risk Score (iScore) prediction model not be
+used…"**——正是一篇 AI 预后论文必须对齐的现实标准。卒中卡端到端跑通：命中 2 份自动指南
+共 8 条记录、`predates=true`、其余 4 份人工 CPG 各自给出不匹配理由、USPSTF 被场景门控拦下。
+
+**结论要诚实**：自动化解决的是"**没人去策展**"，解决不了"**许可拿不到**"。供给量探查
+（`PUB_TYPE:"Guideline" AND OPEN_ACCESS:y`）：stroke 58 / heart failure 28 / sepsis 23 /
+AKI 12 / **diabetic retinopathy 仅 1**。AHA/ACC、ESC、KDIGO、SSC 这些最权威的指南大多不是
+CC-BY，它们不会因为这个脚本进库。跑完之后缺口报告不会消失，只会从"这个病种没人管过"
+变成"这个病种只有二线指南可用"。
+
+### 顺带查出并修掉的三个既存缺陷（都由这次实测暴露）
+
+- **`wses_elderly_trauma_2023` 的 `scope.disease_terms` 含裸词 `injury`** ——
+  一张 `acute kidney injury` 卡片仅凭 `injury` 就命中这份**老年创伤**指南，人群同为成人、
+  第二道门拦不住，结果是拿创伤分诊标准去要求一篇 AKI 论文。已改为多词短语
+  （`trauma / traumatic injury / major trauma / polytrauma / frailty`）；ESPNIC 的裸词
+  `ultrasound` 同理移除（此前只靠人群门控兜住，卡片没写明成人时就兜不住）。
+  这正是"scope 依赖人工策展是否准确"的具体形态。
+- **表格策略抽出的指南，写盘时被去重塌成每份 1 条** —— `section_page_table` 由
+  `section | context` 拼成，而表格条目的 `section` 是「表：caption」、`context` 也是同一个
+  caption，整张表所有行完全相同，`(source_id, url, section_page_table)` 去重于是把整份指南
+  塌成一条。这是 §6b 当初为报告清单加 `section_page_table` 时同一个坑的另一半。已加条目序号
+  （卒中卡由此从 2 条恢复为应有的 8 条）。此前三张卡都没暴露，是因为表格策略的指南从没通过过病种门。
+- **表内分节小标题行被当成推荐**（"Recommendations: Clinical variables as predictors of
+  functional outcome"）—— 判推荐动词必须在**去掉 `Recommendations:` 前缀之后**做，
+  否则前缀里的 "Recommendations" 自己命中 `recommend\w*`，这行永远滤不掉。
+  另补 `_CERTAINTY_INLINE`（"moderate-quality evidence" 这种写法此前解析不出确定性）。
+
+### 已知限制
+
+- **泛病种指南 vs 亚型卡片**：`acute ischemic stroke` 卡匹配不上标题只写 `Stroke` 的泛指南
+  （*Canadian Stroke Best Practice Recommendations* 因此落榜）。放宽到单判别词命中标题会
+  立刻引回 `injury` 那类错误，故**维持严格**并记为限制——normative 错误的代价高于漏掉，
+  而漏掉在缺口报告里是可见的。
+- **CQ/Answer 结构未支持**：日本 AKI CPG 2016（29 万字符全文）用
+  "CQ → Answer → Summary of evidence → Commentary" 体例，三策略产量均为 0。
+  这是继"推荐节/推荐框/推荐汇总表"之后值得加的**第四种结构**（日韩指南常见）。
+- **发布机构多半认不出**：`guess_issuer` 只按标题里的学会名正则（NCS 那份标题不含机构名
+  即告失败），退回期刊/出版商并显式标"未确认"。manifest.yaml 头部要求 issuing_body 由人确认，
+  自动腿不能假装做到了。
+- **scope 草稿含噪声短语**（`brazilian public` / `diagnosis treatment` / `critically ill adults`）
+  ——人工复核时应删。`critically ill adults` 这类尤其要留意：它会让任何以此为病种字段的卡片命中。
+
 ## 7. 未来工作
 
 0. ~~报告规范清单策展层~~ —— ✅ 2026-07-24 完成，见 §6b。`reporting_tool` 缺口已闭合。
@@ -480,9 +590,11 @@ comparator_baseline / endpoint_utility / workflow_deployment 三个模块。
    （§6d，急重症/治疗，经 Europe PMC OA 通道摄入 4 份）。`normative` 从"零连接器"变成多源角色。
    NICE 因条款明令「在 NICE 内容上使用 AI 须另行取得许可」+ 国际使用收费 → **不可行**
    （见 [RELATED_WORK.md](RELATED_WORK.md) §7）。**剩余工作**：
-   1a. **扩摄入面**：现有 4 份 CPG 只覆盖脓毒症/院内肺炎/创伤/新生儿 POCUS，
-       常见 MedAI 病种（心衰、卒中、糖网、AKI…）尚无对应指南；WHO IRIS（CC BY-NC-SA 3.0 IGO，
-       许可最干净）与 VA/DoD（纯 PDF，许可无碍）仍未接。
+   1a. **扩摄入面**：🟡 2026-07-28 起有了自动扩库（§6e），卒中已补上 2 份；但实测产出率
+       只有 4%（47 候选 → 2 入库），**心衰 / AKI / 糖网仍然是 0**——瓶颈已从"没人去策展"
+       变成"Europe PMC OA 里没有许可合格且有推荐结构的该病种指南"。要真正补上这几个病种，
+       只能换通道：WHO IRIS（CC BY-NC-SA 3.0 IGO，许可最干净）与 VA/DoD（纯 PDF，许可无碍）
+       仍未接，两者都要先做 PDF 解析。另可加 CQ/Answer 第四种结构策略（日韩指南常见）。
    1b. **德语等非英语 GRADE 策略**：德国 2025 脓毒症 S3 许可合规却因语言+结构落榜（§6d）。
    1c. **SSC 许可**：脓毒症最权威指南因 Europe PMC 无许可标注而缺席，若日后取得许可应优先补。
    1d. **长文档分块检索仍未做**：USPSTF 与 CPG 都是靠结构化表格/推荐节躲过去的，
