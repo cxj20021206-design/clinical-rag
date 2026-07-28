@@ -19,7 +19,7 @@ import re
 
 import yaml
 
-from base import Connector, discriminative_terms, expand_plural
+from base import Connector, discriminative_terms, exclusion_overlap, expand_plural
 from schema import ExternalStandard, compute_predates
 
 CURATED = os.path.join(
@@ -38,8 +38,28 @@ _PREV_KW = ("screening", "screen", "prevention", "preventive", "early detection"
             "primary care", "counseling", "prophylaxis")
 
 
+# 分层卡的受控任务字段 → 是否属 USPSTF 职权。它取代"扫 intended_use 有没有急重症词"
+# 这种脆弱做法：实测反例 ③——一篇糖网**筛查**论文，只因 intended_use 写了
+# "triage referrals to ophthalmology"，USPSTF 就被整个拦下。
+_TASK_APPLICABLE = {"screening", "prevention"}
+_TASK_BLOCKED = {"diagnosis", "triage", "prognostication", "treatment_selection",
+                 "monitoring", "documentation"}
+
+
 def check_setting(card: dict) -> tuple[bool, str]:
-    """场景门控：这篇论文是不是预防/筛查类问题。"""
+    """场景门控：这篇论文是不是预防/筛查类问题。
+
+    有受控 `clinical_task` 就以它为准；旧式扁平卡（或 risk_stratification 这种两可的
+    任务）才退回关键词启发式。
+    """
+    task = str(card.get("clinical_task") or "").strip().lower()
+    if task in _TASK_APPLICABLE:
+        return True, f"场景适用：clinical_task={task}（受控字段，不靠关键词猜）。"
+    if task in _TASK_BLOCKED:
+        return False, (f"场景不匹配：clinical_task={task} 属诊疗/分诊类任务，"
+                       f"USPSTF 职权仅限预防服务（筛查/预防用药/行为咨询）。"
+                       f"套用属越权外推，须改由学会指南/WHO 等 normative 源承担。")
+
     blob = " ".join(str(card.get(k) or "") for k in (
         "intended_use", "care_setting", "clinical_decision_affected",
         "deployment_claim_level", "model_output", "disease_or_condition")).lower()
@@ -88,6 +108,9 @@ def match_topics(card: dict, doc: dict, limit: int = 4) -> tuple[list[tuple[dict
                        ("title", "category", "slug", "age_group")).lower()
         hit = {w for w in gate if re.search(rf"\b{re.escape(w)}", hay)}
         if not hit:                      # 病种词一个都没命中 → 不准入
+            continue
+        # 主题标题命中的是本卡明确排除的病种（"…excluding hemorrhagic stroke"）→ 不准入
+        if exclusion_overlap([t.get("title") or ""], card):
             continue
         extra = {w for w in bonus if re.search(rf"\b{re.escape(w)}", hay)}
         scored.append((t, len(hit) * 10 + len(extra), hit | extra))

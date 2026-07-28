@@ -485,8 +485,8 @@ def main():
     a = ap.parse_args()
 
     if a.claim:
-        card = yaml.safe_load(open(a.claim))
-        card = card.get("clinical_claim", card)
+        from claim_card import load_card               # 分层卡/旧扁平卡都收
+        card = load_card(a.claim).legacy
     elif a.disease:
         card = {"disease_or_condition": a.disease,
                 "target_population": a.population, "care_setting": a.setting}

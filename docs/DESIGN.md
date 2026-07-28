@@ -14,17 +14,70 @@ MedAI 审稿有两个证据通道，**必须严格分工，不能混**：
 
 一句话：**外部证据定义"应该证明什么"，论文内部证据决定"作者有没有证明"。**
 
-## 2. 输入：Clinical Claim Card
+## 2. 输入：Clinical Claim Card（分层结构，2026-07-28 改造）
 
-外部系统的输入是一张结构化的 Claim Card（PICO / intended-use）。示例见
-`examples/claim_card_lung_ct.yaml`。字段（对应上游架构文档）：
+外部系统的输入是一张结构化的 Claim Card（PICO / intended-use）。定义与校验在
+`claim_card.py`，示例见 `examples/claim_card_*.yaml`。
 
+### 为什么分层：细节在扁平卡里会**翻转门控**
+
+原来的卡是一层扁平自由文本，每个字段同时干两件互相冲突的事：既当门控的匹配依据，
+又当内容描述。所以"把卡写详细"并不减少误判——2026-07-28 用库里真实指南实测出三个反例：
+
+| 反例 | 现象 |
+|---|---|
+| ① `disease="acute kidney injury in critical illness"` | 因 `critical illness` 命中 **ESPNIC 新生儿 POCUS 指南**；`target_population` 写 "ICU patients" 不含 adult 字样，人群门控没兜住 → 成人 AKI 论文被要求对齐新生儿床旁超声指南。**比 `"acute kidney injury"` 这张简陋卡更糟。** |
+| ② `disease="acute ischemic stroke, excluding hemorrhagic stroke and congenital heart disease"` | `congenital heart` 命中 ESPNIC —— 卡里明写"排除"，词面匹配当成"包含"。 |
+| ③ `intended_use="automated grading to triage referrals to ophthalmology"` | `triage` 命中急重症词表 → USPSTF 被整个拦下。一篇糖网**筛查**论文因为把决策写清楚了，反而拿不到筛查指南。 |
+
+所以卡切成三层，规矩只有一条：**只有 `gating` 层参与准入**。
+
+```yaml
+claim_card:
+  submission_date / region
+  gating:            # 少、受控（枚举/受控词表），决定"哪份指南适用"
+    condition:
+      primary: {label, codes}        # 只有它进病种匹配
+      qualifiers: {acuity, subtype}
+      comorbid_context: [...]        # 语境，**不参与病种准入**（修 ①）
+      excluded: [...]                # 论文明确排除的病种（修 ②）
+    population: {age_group, special} # age_group 受控枚举（修 ① 的人群侧）
+    care_setting: icu|nicu|primary_care|…   # 枚举，落回自然语言与指南 scope 对齐
+    clinical_task: screening|triage|prognostication|…   # 取代关键词猜测（修 ③）
+    evidence_stage: C0..C4
+    study_design: []                 # 留空=推断；词表沿用报告清单层
+  descriptive:       # 多、详细、自由文本，供下游阅读与相关度排序，**不参与准入**
+    intended_use / model_input / model_output / comparator / claimed_benefit /
+    clinical_decision_affected / target_population / clinical_context
+  provenance:        # 每个字段来自论文哪句话
+    condition.primary: {section, quote, confidence}
+    comparator: {status: absent}     # 论文没写(absent) ≠ 没抽出来(not_extracted)
 ```
-disease_or_condition / intended_use / target_population / intended_user /
-care_setting / model_input / model_output / clinical_decision_affected /
-comparator / claimed_benefit / claimed_harm_reduction /
-evidence_stage(C0-C4) / deployment_claim_level / region / submission_date
-```
+
+**"把论文里涉及医学的内容都写进去"写在 `descriptive.clinical_context`**——它对下游审稿
+模型有用，但一个字都不进匹配层。
+
+三点设计理由：
+
+- **`status: absent` 与 `not_extracted` 必须分开**。"论文没写对照"是**审稿发现**，
+  "我没抽出来"是**系统故障**。混为一谈会让"弃权/缺口报告率"这个指标失去意义
+  （[RELATED_WORK.md](RELATED_WORK.md) §2：LLM 评委 κ 接近医生，但**弃权率为零**）。
+- **校验门禁先于抽卡器**。抽卡器是 LLM，会产出
+  `disease_or_condition: "AI-assisted low-dose CT interpretation"` 这种卡——判别词一个
+  都抽不出、不报错、不命中，**所有门控静默失效**。`validate_card()` 把"病种字段混入
+  ML 词/模态词/任务词/修饰词"做成硬错误。
+- **`study_design` 沿用报告清单层已有词表**，不另起一套：`infer_study_designs` 里
+  "显式声明时以声明为准"是**整体替换**推断结果的。改造中一度自造
+  `retrospective_development` 等值，肺癌卡的记录数从 105 条掉到 15 条——清单全体静默关闭。
+
+### 兼容与回归
+
+`load_card()` 同时接受分层卡与旧式扁平卡；`ClaimCard.legacy` 输出扁平视图，**所有连接器
+无需改动**，区别只在门控键由受控的 gating 层生成。四张示例卡迁移后端到端记录数
+**与改造前完全一致**（105 / 141 / 137 / 110），即：门控语义修好了，现有输出没被改坏。
+
+`python3 check_gates.py` 是门控回归（不联网、秒级），打印所有示例卡的准入矩阵 +
+上面三个反例的新旧对照。门控失败是静默的，改任何门控逻辑前后都该跑一次。
 
 **证据阶段 C0–C4**（决定"用什么标准审"，避免拿临床试验要求苛责一个基础方法）：
 - C0 基础方法，无明确临床效用主张 —— 不应因没临床试验被判低分

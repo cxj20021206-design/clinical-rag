@@ -2,18 +2,42 @@
 # 用途：验证 normative 层的**人群门控**。病种同为 sepsis，人群从成人换成新生儿后，
 # 成人 CPG（韩国脓毒症指南，scope.population=adult）必须被拦下并说明理由 ——
 # 成人脓毒症的复苏与抗生素标准不能拿来要求一篇新生儿论文（NICU 是另一套标准）。
-clinical_claim:
-  disease_or_condition: "neonatal sepsis"
-  intended_use: "AI early warning system for late-onset neonatal sepsis"
-  target_population: "preterm and term neonates in the neonatal intensive care unit"
-  intended_user: "neonatologists and NICU nurses"
-  care_setting: "neonatal intensive care unit"
-  model_input: "continuous vital signs, heart rate variability, laboratory results"
-  model_output: "neonatal sepsis onset risk score"
-  clinical_decision_affected: "blood culture sampling / empiric antibiotic initiation"
-  comparator: "clinician judgement with routine monitoring"
-  claimed_benefit: "earlier recognition, lower mortality"
-  evidence_stage: "C3"
-  deployment_claim_level: "prospective silent deployment in one NICU"
-  region: "US"
+#
+# 迁移要点：age_group=neonate 是**受控值**，不再依赖从 target_population 自由文本里
+# 扫出 neonate/preterm 字样——旧卡若把人群写成 "NICU patients" 就扫不出来，人群门控
+# 会静默失效（实测反例 ①：写 "ICU patients" 的成人 AKI 卡就没被拦住）。
+claim_card:
   submission_date: "2025-09-15"
+  region: "US"
+
+  gating:
+    condition:
+      primary:
+        label: "neonatal sepsis"
+        codes: {mesh: "D058586"}
+      qualifiers: {acuity: acute, subtype: "late-onset"}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: neonate
+      special: ["preterm"]
+    care_setting: nicu
+    clinical_task: triage
+    evidence_stage: "C3"
+    study_design: []
+
+  descriptive:
+    intended_use: "AI early warning system for late-onset neonatal sepsis"
+    target_population: "preterm and term neonates in the neonatal intensive care unit"
+    intended_user: "neonatologists and NICU nurses"
+    model_input: "continuous vital signs, heart rate variability, laboratory results"
+    model_output: "neonatal sepsis onset risk score"
+    clinical_decision_affected: "blood culture sampling / empiric antibiotic initiation"
+    comparator: "clinician judgement with routine monitoring"
+    claimed_benefit: "earlier recognition, lower mortality"
+    deployment_claim_level: "prospective silent deployment in one NICU"
+    clinical_context: |
+      胎龄/出生体重分层、血培养采样口径、经验性抗生素方案等写在这里。不参与门控。
+
+  provenance:
+    source: synthetic_example

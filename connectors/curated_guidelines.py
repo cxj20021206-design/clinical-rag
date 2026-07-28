@@ -23,7 +23,7 @@ import re
 
 import yaml
 
-from base import Connector, discriminative_terms, expand_plural
+from base import Connector, discriminative_terms, exclusion_overlap, expand_plural
 from schema import ExternalStandard, compute_predates
 
 GUIDE_DIR = os.path.join(
@@ -171,6 +171,12 @@ class CuratedGuidelinesConnector(Connector):
 
     def _judge(self, card: dict, doc: dict) -> tuple[bool, str, set]:
         scope = doc.get("scope") or {}
+        terms = [str(t).lower() for t in (scope.get("disease_terms") or [])]
+        excl_ov = exclusion_overlap(terms, card)
+        if excl_ov and len(excl_ov) == len(terms):        # 整份指南管的就是论文排除的病
+            return False, (f"该指南 scope {terms} 全部落在本卡明确排除的病种 "
+                           f"{card.get('excluded_conditions')} 内 —— 论文既已排除，"
+                           f"不得据此提要求"), set()
         hits = match_disease(card, scope)
         if not hits:
             return False, (f"病种不匹配：本卡判别词与该指南 scope.disease_terms "
@@ -178,7 +184,11 @@ class CuratedGuidelinesConnector(Connector):
         ok, why = check_population(card, scope)
         if not ok:
             return False, why, hits
-        return True, f"病种命中 {sorted(hits)}；{why}", hits
+        note = ""
+        if excl_ov:                                       # 部分重叠 → 提示不硬拦
+            note = (f"；⚠️ 该指南 scope 还覆盖本卡明确排除的病种 {excl_ov}，"
+                    f"引用其推荐时须确认不是针对被排除人群的那部分")
+        return True, f"病种命中 {sorted(hits)}；{why}{note}", hits
 
     def report(self, card: dict) -> list[dict]:
         out = []

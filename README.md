@@ -29,6 +29,13 @@ python3 retrieve.py --claim examples/claim_card_lung_ct.yaml --per-source 3
 ```
 指定模块：`--modules comparator_baseline endpoint_utility`
 
+**Claim Card 是分层的**（`gating` / `descriptive` / `provenance`，见 DESIGN §2）——只有
+`gating` 层参与准入，"把论文里涉及医学的内容都写进去"写在 `descriptive.clinical_context`。
+```bash
+python3 claim_card.py examples/claim_card_stroke_c2.yaml   # 校验一张卡并打印它的门控视图
+python3 check_gates.py                                     # 门控回归：准入矩阵 + 三个误判反例对照
+```
+
 四张示例卡刻意用来验证适用性门控**各个方向**都正确：
 ```bash
 python3 retrieve.py --claim examples/claim_card_lung_ct.yaml    # C1 影像 → CLAIM/QUADAS-3 启用，DECIDE-AI 拦截；normative 走 USPSTF
@@ -55,6 +62,9 @@ python3 retrieve.py --claim examples/claim_card_stroke_c2.yaml --auto-curate
 ```
 clinical_sources.yaml   源注册表：41 个源 + 角色/地域/access_class/machine_access
                         + module_routing(8模块) + retrieval_order + exclusions + deferred_sources
+claim_card.py           Claim Card 分层结构(gating/descriptive/provenance) + 校验门禁 + 兼容视图
+                        只有 gating 层参与准入；详细内容进 descriptive，一个字都不进匹配层
+check_gates.py          门控回归（不联网、秒级）：示例卡准入矩阵 + 三个已修复误判反例的新旧对照
 schema.py               ExternalStandard 记录契约(§5) + validate + compute_predates + 原子写
 retrieve.py             路由层：Claim Card → 模块路由 → 连接器(各调一次) → 分配到模块 → 写 store
 connectors/
@@ -122,6 +132,19 @@ docs/DESIGN.md          完整设计文档
 防止系统对一篇回顾性研究提出"你没做随机对照试验"。
 
 ## 状态（2026-07-28）
+- ✅ **Claim Card 分层改造（DESIGN §2）**：卡切成 `gating`（少、受控、决定准入）/
+  `descriptive`（多、详细、只供阅读与排序）/ `provenance`（每字段的原文出处）。起因是实测发现
+  **"把卡写详细"在扁平结构下会翻转门控**：`disease="acute kidney injury in critical illness"`
+  因 `critical illness` 命中新生儿 POCUS 指南（比简陋卡更糟）；写了"excluding …"反被当成命中；
+  `intended_use` 里一个 `triage` 就把糖网**筛查**论文的 USPSTF 整个拦下。
+  对应三个修复：合并症语境单列不参与病种准入 / `excluded` 受控字段 + 指南 scope 反向检查 /
+  受控 `clinical_task` 取代关键词猜测。`validate_card()` 把"病种字段混入 ML 词/模态词/任务词"
+  做成硬错误——抽卡器上线前必须先有它，否则 `"AI-assisted low-dose CT interpretation"` 这种卡
+  会让所有门控**静默失效**。
+  兼容旧扁平卡；四张示例卡迁移后端到端记录数与改造前**完全一致**（105/141/137/110）。
+  新增 `check_gates.py` 门控回归（不联网、秒级）。
+
+## 状态（2026-07-28 · 自动扩库）
 - ✅ **自动扩库（DESIGN §6e）**：`normative` 按病种组织、人工策展追不上论文病种分布，故把 §6d 的
   摄入流水线改成**按 Claim Card 病种缺口触发**（机器那半边本来就全自动，人工只剩 manifest 的
   slug/issuing_body/scope）。四道门：标题主题门（检索用 TITLE_ABS 要召回、准入只看 TITLE 要准确——

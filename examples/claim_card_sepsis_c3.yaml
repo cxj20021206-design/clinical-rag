@@ -1,18 +1,43 @@
 # 示例 Clinical Claim Card —— C3 前瞻部署（与 C1 肺癌 CT 卡对照，用于验证适用性门控）
 # 一篇声称"AI 脓毒症早期预警系统已在真实病房前瞻运行"的论文。
-clinical_claim:
-  disease_or_condition: "sepsis"
-  intended_use: "AI early warning system for sepsis onset"
-  target_population: "adult inpatients on general medical wards"
-  intended_user: "ward nurses and physicians"
-  care_setting: "inpatient ward"
-  model_input: "EHR vital signs, laboratory results, nursing observations"
-  model_output: "sepsis onset risk score with alert threshold"
-  clinical_decision_affected: "escalation of care / initiation of sepsis bundle"
-  comparator: "NEWS2 standard early warning score"
-  claimed_benefit: "earlier recognition, shorter time to antibiotics, lower mortality"
-  claimed_harm_reduction: "fewer missed deteriorations"
-  evidence_stage: "C3"          # 前瞻/静默部署验证
-  deployment_claim_level: "prospective silent-then-live deployment in two hospitals"
-  region: "US"
+#
+# 迁移要点：care_setting "inpatient ward" → inpatient_ward（受控枚举，落回自然语言时
+# 仍是 "inpatient ward"，与指南 scope.care_settings 的词重叠不变）；
+# clinical_task=triage 让 USPSTF 的场景门不再依赖"扫 intended_use 里有没有急重症词"。
+claim_card:
   submission_date: "2025-09-15"
+  region: "US"
+
+  gating:
+    condition:
+      primary:
+        label: "sepsis"
+        codes: {mesh: "D018805"}
+      qualifiers: {acuity: acute, subtype: null}
+      comorbid_context: []
+      excluded: ["neonatal sepsis"]   # 本卡是成人卡，明确排除新生儿脓毒症
+    population:
+      age_group: adult
+      special: []
+    care_setting: inpatient_ward
+    clinical_task: triage             # 报警→升级处置，属分诊/恶化识别，不是筛查
+    evidence_stage: "C3"              # 前瞻/静默部署验证
+    study_design: []            # 留空 → 由 C3 推断出 prospective_deployment 等
+
+  descriptive:
+    intended_use: "AI early warning system for sepsis onset"
+    target_population: "adult inpatients on general medical wards"
+    intended_user: "ward nurses and physicians"
+    model_input: "EHR vital signs, laboratory results, nursing observations"
+    model_output: "sepsis onset risk score with alert threshold"
+    clinical_decision_affected: "escalation of care / initiation of sepsis bundle"
+    comparator: "NEWS2 standard early warning score"
+    claimed_benefit: "earlier recognition, shorter time to antibiotics, lower mortality"
+    claimed_harm_reduction: "fewer missed deteriorations"
+    deployment_claim_level: "prospective silent-then-live deployment in two hospitals"
+    clinical_context: |
+      报警阈值与升级流程、抗生素给药时机口径、bundle 依从性定义等写在这里。
+      本字段不参与任何门控。
+
+  provenance:
+    source: synthetic_example

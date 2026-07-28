@@ -1,18 +1,49 @@
-# 示例 Clinical Claim Card (对应架构文档的 clinical_claim 结构)
+# 示例 Clinical Claim Card —— 分层结构（gating / descriptive / provenance，见 claim_card.py）
 # 一篇声称"AI 辅助低剂量 CT 改善早期肺癌筛查"的 MedAI 论文。
-clinical_claim:
-  disease_or_condition: "lung cancer screening"
-  intended_use: "AI-assisted low-dose CT interpretation"
-  target_population: "high-risk adults eligible for lung cancer screening"
-  intended_user: "radiologist"
-  care_setting: "screening"
-  model_input: "low-dose chest CT"
-  model_output: "nodule detection and malignancy risk"
-  clinical_decision_affected: "recall / follow-up imaging / biopsy referral"
-  comparator: "unaided radiologist (standard of care)"
-  claimed_benefit: "higher early-stage detection, lower false positives"
-  claimed_harm_reduction: "reduced unnecessary invasive procedures"
-  evidence_stage: "C1"          # C0..C4 (回顾性开发/内部测试)
-  deployment_claim_level: "assistive, retrospective"
+#
+# 迁移要点（对照旧扁平卡）：
+#   disease "lung cancer screening" → condition="lung cancer" + clinical_task=screening
+#     （任务词从病种字段里拿出来。判别词仍是 lung，USPSTF 命中不变。）
+#   care_setting "screening" → community（筛查发生在社区/初级保健，"筛查"是任务不是场景）
+#   target_population "high-risk adults…" → age_group=adult（受控）+ 原文留在 descriptive
+#     （"high-risk"/"low-dose" 这类修饰词曾把子痫前期阿司匹林配给肺癌卡，见 uspstf._MODIFIER）
+claim_card:
+  submission_date: "2024-05-01"      # predates 门控基准
   region: "US"
-  submission_date: "2024-05-01"  # predates 门控基准
+
+  gating:                            # ← 只有这一层参与准入
+    condition:
+      primary:
+        label: "lung cancer"
+        codes: {mesh: "D008175"}     # Lung Neoplasms；可留空
+      qualifiers: {acuity: null, subtype: null}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: adult
+      special: []
+    care_setting: community
+    clinical_task: screening
+    evidence_stage: "C1"             # 回顾性开发/内部测试
+    # study_design 留空 = 按证据阶段+模态推断（imaging/prediction/diagnostic）。
+    # 显式声明会**整体替换**推断结果，词表见 claim_card.py: STUDY_DESIGNS；
+    # 只有 clinical_trial_protocol 永不推断、必须显式声明。
+    study_design: []
+
+  descriptive:                       # ← 自由文本，供下游阅读与相关度排序，不参与准入
+    intended_use: "AI-assisted low-dose CT interpretation"
+    target_population: "high-risk adults eligible for lung cancer screening"
+    intended_user: "radiologist"
+    model_input: "low-dose chest CT"
+    model_output: "nodule detection and malignancy risk"
+    clinical_decision_affected: "recall / follow-up imaging / biopsy referral"
+    comparator: "unaided radiologist (standard of care)"
+    claimed_benefit: "higher early-stage detection, lower false positives"
+    claimed_harm_reduction: "reduced unnecessary invasive procedures"
+    deployment_claim_level: "assistive, retrospective"
+    clinical_context: |
+      论文里涉及医学的内容都写在这里（纳排标准、结节分级口径、随访方案、
+      读片流程与基线…）。本字段**不参与任何门控**。
+
+  provenance:
+    source: synthetic_example        # 手写示例卡；真实抽卡必须逐字段给 quote

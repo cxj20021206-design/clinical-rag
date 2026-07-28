@@ -15,6 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "connectors"))
 from schema import ExternalStandard, atomic_write_jsonl  # noqa: E402
+from claim_card import load_card                          # noqa: E402
 from clinicaltrials import ClinicalTrialsConnector       # noqa: E402
 from europepmc import EuropePMCConnector                 # noqa: E402
 from who_gho import WHOGHOConnector                       # noqa: E402
@@ -56,7 +57,9 @@ def claim_to_query(card: dict) -> dict:
     return {
         "condition": card.get("disease_or_condition", ""),
         "intervention": card.get("intended_use") or card.get("model_output", ""),
-        "population": card.get("target_population", ""),
+        # 检索侧要召回，用描述层的人群原文；门控侧要准确，用受控的 target_population。
+        # 二者刻意不同源——这正是分层卡要解决的问题（见 claim_card.py 头部）。
+        "population": card.get("population_description") or card.get("target_population", ""),
         "outcome": card.get("claimed_benefit", ""),
         "setting": card.get("care_setting", ""),
         "region": card.get("region", ""),
@@ -136,8 +139,13 @@ def main():
                          "会随运行日期变化，三臂对比就不可比了。单篇/演示时才打开。")
     args = ap.parse_args()
 
-    card = yaml.safe_load(open(args.claim))
-    card = card.get("clinical_claim", card)  # 兼容带/不带顶层键
+    # 分层卡（gating/descriptive/provenance）与旧式扁平卡都收；连接器拿到的始终是
+    # 扁平视图，区别在于分层卡的**门控键由受控的 gating 层生成**（见 claim_card.py）。
+    _c = load_card(args.claim)
+    if _c.legacy_input:
+        print("  ⚠️ 旧式扁平卡：门控行为同改造前。建议迁移到分层结构"
+              "（python3 claim_card.py <卡> 可看门控视图）")
+    card = _c.legacy
     submission = card.get("submission_date")
     registry = load_registry()
 

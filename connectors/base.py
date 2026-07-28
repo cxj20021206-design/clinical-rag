@@ -88,6 +88,37 @@ def discriminative_terms(*texts) -> set[str]:
     return out
 
 
+def exclusion_overlap(scope_terms, card: dict) -> list[str]:
+    """指南 scope 里落在本卡 `excluded_conditions` 内、且不属于主病种的词。
+
+    词面匹配读不出否定：卡里写 "acute ischemic stroke, **excluding** hemorrhagic
+    stroke and congenital heart disease"，`congenital heart` 照样命中 ESPNIC 新生儿
+    POCUS 指南——明写"排除"却被当成"包含"（2026-07-28 实测反例 ②）。分层卡把排除项
+    放进受控字段后，那条路径已由结构堵死（排除项不再进入病种文本）；这里是**第二道
+    防线**，管的是另一件事：**指南自己的适用范围覆盖了论文明确排除的病种**。
+
+    - scope 全部落在排除项内 → 硬拦（这份指南管的就是论文不做的那个病）；
+    - 部分落在排除项内 → 只提示（指南同时管着主病种，推荐仍可用，但引用要当心）。
+
+    判定时先排掉**主病种自身或其上位词**（scope 词是主病种的子串）：主病种
+    "acute ischemic stroke" 与排除项 "hemorrhagic stroke" 共享 `stroke`，一刀切会把
+    泛卒中指南也拦掉。反过来，比主病种更长的词（"neonatal sepsis" vs 主病种 "sepsis"）
+    **不能**放过——那正是要拦的东西。
+    """
+    excl = [str(e).lower() for e in (card.get("excluded_conditions") or [])]
+    if not excl:
+        return []
+    primary = str(card.get("disease_or_condition") or "").lower()
+    out = []
+    for t in (scope_terms or []):
+        t = str(t).lower().strip()
+        if not t or t in primary:
+            continue
+        if any(t in e or e in t for e in excl):
+            out.append(t)
+    return out
+
+
 def expand_plural(terms: list[str]) -> list[str]:
     """adult ↔ adults：卡里写单数、文献写复数（或反之）不该漏掉。"""
     out = list(terms)
