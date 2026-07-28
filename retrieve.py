@@ -130,12 +130,28 @@ def main():
     ap.add_argument("--out", default=os.path.join(HERE, "store", "retrieved.jsonl"))
     ap.add_argument("--modules", nargs="*", default=None)
     ap.add_argument("--per-source", type=int, default=4)
+    ap.add_argument("--auto-curate", action="store_true",
+                    help="normative 无覆盖时联网自动扩库(guideline_autocurate.py)后再检索。"
+                         "**默认关闭**：批量评测必须跑在冻结的库上，否则同一篇论文的检索结果"
+                         "会随运行日期变化，三臂对比就不可比了。单篇/演示时才打开。")
     args = ap.parse_args()
 
     card = yaml.safe_load(open(args.claim))
     card = card.get("clinical_claim", card)  # 兼容带/不带顶层键
     submission = card.get("submission_date")
     registry = load_registry()
+
+    # 自动扩库要在 retrieve() 之前跑完，新摄入的指南才能进入本次检索。
+    # autocurate 内部先做覆盖检测，已有覆盖就直接返回——"库里没有才去找"这条语义在它那儿。
+    if args.auto_curate:
+        from guideline_autocurate import autocurate            # 惰性导入：默认路径不碰网络栈
+        res = autocurate(card, write=True)
+        if res["ingested"]:
+            c = CuratedGuidelinesConnector()                   # 重建连接器以加载新文件
+            if c.available():
+                CONNECTORS["society_guidelines"] = c
+            print(f"\n  → 本次检索已纳入新摄入的 {len(res['ingested'])} 份指南"
+                  f"（curation_level=auto，记录带 🤖 标记）")
 
     results, gaps = retrieve(card, submission, args.modules, args.per_source, registry)
 

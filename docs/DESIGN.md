@@ -528,6 +528,21 @@ comparator_baseline / endpoint_utility / workflow_deployment 三个模块。
 才写，两可就留空（`check_population` 只在明确冲突时硬拦，留空 = 不拦，是安全侧；乱写会把整份
 指南永久拦死）；`care_settings` 宁多勿少（它只做软提示，写少了反而丢掉"场景外推"警告）。
 
+### 两种触发方式
+
+```bash
+python3 connectors/guideline_autocurate.py --claim <card> --write   # 独立跑，可先 dry-run 看产出
+python3 retrieve.py --claim <card> --auto-curate                    # 检索时按需补库，默认关闭
+```
+
+`--auto-curate` 在 `retrieve()` **之前**执行：覆盖检测 → 无覆盖才联网摄入 → 重建
+`CuratedGuidelinesConnector` → 新指南进入**本次**检索（卒中卡实测：库里删空后一条命令
+跑完拿到 8 条 society_guidelines 记录、schema 零错；再跑一次则报"已有覆盖，不触发"）。
+
+**默认关闭是刻意的**：库会随运行日期变化，同一篇论文两次跑出的结果不同，§8 的三臂对比
+就不可比了。批量评测的正确做法是**先预热扩库 → 人工扫一遍 scope → 评测跑在冻结的库上**；
+`--auto-curate` 留给单篇分析和演示。
+
 ### 实测产出率（2026-07-28，四个未覆盖病种）
 
 | Claim Card 病种 | EPMC OA 指南候选 | 可入库 | 拦截分布 |

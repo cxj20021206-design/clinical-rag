@@ -43,7 +43,13 @@ python3 connectors/guideline_autocurate.py --disease "heart failure"          # 
 python3 connectors/guideline_autocurate.py --claim examples/claim_card_stroke_c2.yaml --write
 # 四道门：标题主题门 / 许可硬门 / 结构门 / 抽全性核查。产物 curated/guidelines/cpg_auto_*.yaml
 # 带 curation_level: auto（scope 为机器草稿、未经人工核验），记录写 manifest_auto.yaml，**不碰人工 manifest.yaml**
+
+# 或者让检索自己补：normative 无覆盖 → 扩库 → 纳入本次检索（默认关闭）
+python3 retrieve.py --claim examples/claim_card_stroke_c2.yaml --auto-curate
 ```
+⚠️ `--auto-curate` **批量评测时务必关闭**：库会随运行日期变化，同一篇论文两次跑出的结果不同，
+三臂对比（Direct / Paper-only-QA / Paper+RAG-QA）就不可比了。正确做法是先批量预热扩库、
+人工扫一遍 scope、然后评测跑在**冻结的库**上。
 
 ## 结构
 ```
