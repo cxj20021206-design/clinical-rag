@@ -361,6 +361,14 @@ def main():
                   "target_population", "care_setting", "clinical_task",
                   "evidence_stage", "study_design", "submission_date"):
             print(f"  {k:24s} {lg.get(k)!r}")
+        if not c.legacy_input:
+            # 分层卡才有这几个字段。它们**不参与检索**（只接入不消费，见 SPEC §11），
+            # 但决定了"没命中"该怎么读 —— 所以诊断视图必须显示，否则人看不出
+            # 一次空结果到底是缺口还是不适用。
+            print(f"  {'scope_type':24s} {c.scope_type!r}"
+                  f"{'  ← 病种门控不适用（不计入缺口）' if not c.disease_gating_applicable else ''}")
+            print(f"  {'intended_context':24s} {c.intended_context!r}")
+            print(f"  {'finding_direction':24s} {c.finding_direction!r}")
 
 
 if __name__ == "__main__":
