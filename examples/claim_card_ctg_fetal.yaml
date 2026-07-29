@@ -1,0 +1,44 @@
+# 示例 Clinical Claim Card —— C2 回顾性验证，连续胎心监护（CTG）的 AI 判读。
+# 用途：**WHO IRIS 腿（§6f）的正向回归卡**。库里原本没有任何产科规范来源。
+#
+# 这张卡的审稿价值在于它会撞上一条"否定式规范"：WHO 2018 产程照护指南
+# RECOMMENDATION 17 明确 "Continuous cardiotocography is **not recommended** for
+# assessment of fetal well-being in healthy pregnant women"。一篇"用 AI 判读连续
+# CTG"的论文，其 claimed_benefit 必须先回答"这项检查本身在健康产妇中并不被推荐"
+# 这个前提——外部通道要说的正是这件事，而不是替论文判断它做到没做到。
+claim_card:
+  submission_date: "2026-03-15"
+  region: "EU"
+
+  gating:
+    condition:
+      primary:
+        label: "fetal well-being"
+        codes: {}
+      qualifiers: {modality: cardiotocography}
+      comorbid_context: []
+      excluded: ["congenital anomaly"]
+    population:
+      age_group: adult                 # 产妇；指南 population 留空故不触发人群门
+      special: ["pregnant"]
+    care_setting: inpatient_ward
+    clinical_task: monitoring
+    evidence_stage: "C2"
+    study_design: []
+
+  descriptive:
+    intended_use: "AI interpretation of continuous cardiotocography during labour"
+    target_population: "pregnant women in labour at term, low-risk pregnancies"
+    intended_user: "midwives and obstetricians on the labour ward"
+    model_input: "continuous CTG traces (fetal heart rate and uterine contractions)"
+    model_output: "risk score for fetal hypoxia / suspicious-pathological trace class"
+    clinical_decision_affected: "escalation to obstetric review, expedited birth (instrumental or caesarean)"
+    comparator: "clinician visual interpretation per FIGO categories"
+    claimed_benefit: "fewer missed hypoxia events and fewer unnecessary caesarean sections"
+    deployment_claim_level: "retrospective validation on archived traces"
+    clinical_context: |
+      产程分期与入组窗口、trace 质量控制、结局判定（脐动脉血气/Apgar/NICU 入住）、
+      评定者间一致性、低危与高危产妇的构成比例等写在这里。本字段不参与任何门控。
+
+  provenance:
+    source: synthetic_example

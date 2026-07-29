@@ -50,12 +50,19 @@ sources:
     clinical_domains: [all]
     document_types: [guideline]
     access_class: B
-    machine_access: [html, pdf, oai_pmh]   # IRIS 部分支持 OAI-PMH
+    machine_access: [curated, rest_api]    # DSpace 7.6 REST；策展摄入非在线检索
+    connector: connectors/who_iris_fetch.py + who_iris_ingest.py   # ✅ 2026-07-29 已通
     license_review_required: true
-    license: "常见 CC BY-NC-SA 3.0 IGO，逐文档核对"
+    license: "CC BY-NC-SA 3.0 IGO（dc.rights 结构化字段，逐条目核对；空 = 未授权）"
     url: "https://iris.who.int/"
-    modules: [clinical_question, comparator_baseline, endpoint_utility, safety_harm_equity]
-    notes: "第一优先；保存推荐原文/证据确定性/发布日期/适用国家"
+    modules: [clinical_question, comparator_baseline, endpoint_utility, safety_harm_equity,
+              population_generalization, workflow_deployment]
+    notes: >-
+      **本库第一个接通的 tier1 源**（此前四个已通 API 源 tier 为 3/3/3/5）。
+      经 DSpace TEXT bundle + 编号锚点抽取，不需要 PDF 解析，见 DESIGN §6f。
+      已摄入 3 份 98 条（RF/RHD 2024、TB module3 诊断 2025、产程照护 2018）。
+      **覆盖面受限于文档体例而非许可**：WHO 的 operational handbook / policy
+      statement / 培训材料没有编号推荐结构，一律不摄入；心衰、糖网在 IRIS 内无解。
 
   - id: nice_guidance
     name: NICE Guidance

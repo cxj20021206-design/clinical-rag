@@ -81,10 +81,15 @@ connectors/
   guideline_ingest.py   按 manifest 一次性摄入 → curated/guidelines/cpg_<slug>.yaml
   curated_guidelines.py 学会/国家 CPG 连接器 (normative；病种+人群硬拦、场景软提示)
   guideline_autocurate.py  自动扩库：按 Claim Card 病种缺口触发摄入 (四道门 + scope 草稿生成)
+  who_iris_fetch.py     WHO IRIS 取数层 (DSpace REST + TEXT bundle + 编号锚点抽取，不需 PDF 解析)
+  who_iris_ingest.py    按 manifest_who 摄入 → curated/guidelines/cpg_who_<slug>.yaml
+                        (--discover <病种> 可先看 IRIS 有什么，供策展决定)
 curated/reporting_tools/  人工策展的报告规范清单 (yaml，带 provenance/许可/完整性标注)
 curated/guidelines/       策展摄入的临床指南 (normative)：uspstf.yaml + cpg_*.yaml
                           manifest.yaml 记**人工**策展决定；deferred 段如实记录未摄入的指南与原因
                           cpg_auto_*.yaml + manifest_auto.yaml 为**自动扩库**产物，两者分开存
+                          cpg_who_*.yaml + manifest_who.yaml 为 **WHO IRIS** 产物（通道不同、
+                          同为人工确认 scope；门控与 cpg_*.yaml 共用）
 examples/               示例 Clinical Claim Card
 store/                  检索记录缓存(jsonl，带日期 + query_context)
 docs/DESIGN.md          完整设计文档
@@ -106,8 +111,13 @@ docs/DESIGN.md          完整设计文档
      实际通道是 **Europe PMC OA 全文 XML**（发现层 §6a.1 自动产出候选清单 → 策展层核许可与结构）。
      已摄入 4 份（韩国脓毒症 / 德国院内肺炎 S3 / WSES 老年创伤 / ESPNIC 新生儿 POCUS），
      未摄入 6 份连原因记在 `curated/guidelines/manifest.yaml: deferred`。
-   **仍待策展**：WHO IRIS（CC BY-NC-SA 3.0 IGO，许可最干净）、VA/DoD（纯 PDF 但许可无障碍）、
-   更多病种的学会指南。
+   - **WHO IRIS**（2026-07-29，§6f）：**本库第一个接通的 tier1 源**（此前四个已通 API 源
+     tier 为 3/3/3/5）。原以为要先接 PDF 解析，实测 DSpace 自带 `TEXT` bundle 且 WHO 指南在
+     纯文本里保留编号锚点，不需要 GPU。已摄入 3 份 98 条（RF/RHD 2024 / TB module3 诊断 2025 /
+     产程照护 2018），5 份连原因记在 `manifest_who.yaml: deferred`。
+
+   **仍待策展**：VA/DoD（纯 PDF 但许可无障碍）、SSC（等许可）、更多病种的学会指南。
+   **心衰 / AKI / 糖网三个缺口两条通道都补不上**（EPMC 侧许可拿不到，IRIS 侧无推荐结构）。
 
 ## 报告规范清单策展层（`curated/reporting_tools/`）
 
@@ -143,6 +153,25 @@ docs/DESIGN.md          完整设计文档
   会让所有门控**静默失效**。
   兼容旧扁平卡；四张示例卡迁移后端到端记录数与改造前**完全一致**（105/141/137/110）。
   新增 `check_gates.py` 门控回归（不联网、秒级）。
+
+## 状态（2026-07-29 · WHO IRIS）
+- ✅ **WHO IRIS 接通（DESIGN §6f）**：normative 第三个源族，**本库第一个 tier1 源**。
+  摄入 3 份 98 条（RF/RHD 2024 · 28 条含 6 条 No recommendation / TB module3 诊断 2025 · 17 条 /
+  产程照护 2018 · 53 条含 **21 条 Not recommended**）。四张既有卡记录数**完全不变**
+  （105/141/137/110，零误命中）；新增正向回归卡 `claim_card_ctg_fetal.yaml` → normative 排第一的正是
+  *"Continuous cardiotocography is **not recommended** for assessment of fetal well-being in
+  healthy pregnant women"*（predates=true）——**"否定式规范"是本源族最独特的产出**。
+- 🔑 **不需要 PDF 解析**（推翻原计划）：DSpace 为每个条目预抽了 `TEXT` bundle，WHO 指南在纯文本里
+  仍保留编号锚点（`Recommendation N` + GRADE 尾括号），故新增第四种抽取策略 `rec_numbered`，整条腿无 GPU。
+- ⚠️ **瓶颈从"许可"变成"文档体例"**：IRIS 许可干净（`dc.rights` 给 CC BY-NC-SA 3.0 IGO），但
+  operational handbook / policy statement / 培训材料 / TPP 都没有编号推荐结构。**心衰、糖网 IRIS 也补不上。**
+  新增第四种 blocker 成因 `text_quality`：设计排版 PDF 抽出的文本会丢连字（software→soware），
+  摄入等于把错字写进库并让 `verbatim: true` 变成假声明——WHO 结核 CAD 政策（主题最相关的一份）正栽在这。
+- 🔧 修掉三个**既存**缺陷：`parse_grade` 认不出 WHO 的 `moderate certainty (of) evidence` 写法
+  （确定性字段会整批静默留空）；`curated_guidelines.py` 硬编码 `source_id` 会把 WHO 指南标成
+  `society_guidelines`；`No recommendation` 条目被 `_STRENGTH` 误判成 `strong`（"无法推荐"却带强推荐，
+  自相矛盾且危险）。另：**同一个坑踩了两次**——判推荐动词必须先剥掉 `Recommendations` 标签前缀，
+  否则前缀里的 `recommend` 自己命中（§6e 已在表格小标题上记过这条）。
 
 ## 状态（2026-07-28 · 自动扩库）
 - ✅ **自动扩库（DESIGN §6e）**：`normative` 按病种组织、人工策展追不上论文病种分布，故把 §6d 的

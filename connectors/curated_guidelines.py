@@ -263,7 +263,11 @@ class CuratedGuidelinesConnector(Connector):
                         "已确认的规范依据。" +
                         (f" 抽取覆盖率告警：{aud['flags']}" if aud.get("flags") else ""))
                 out.append(ExternalStandard(
-                    source_id=self.source_id,
+                    # 每份文档带自己的 source_id：本连接器同时投放学会/国家 CPG
+                    # （society_guidelines，走 Europe PMC）与 WHO IRIS 指南
+                    # （who_guidelines，§6f）。门控逻辑共用是对的，但**溯源不能共用** ——
+                    # 把 WHO 指南标成 society_guidelines 会让 tier 与出处对不上。
+                    source_id=d.get("source_id") or self.source_id,
                     issuing_body=d.get("issuing_body") or self.issuing_body,
                     document_type="guideline",
                     title=f"{d.get('short_name') or d.get('name')} — "

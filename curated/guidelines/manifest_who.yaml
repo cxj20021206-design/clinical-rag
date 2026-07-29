@@ -1,0 +1,129 @@
+# WHO IRIS 指南的策展清单 —— source_role = normative，source_id = who_guidelines
+#
+# 与 manifest.yaml（学会/国家 CPG，走 Europe PMC）分开的理由是**通道不同而非可信度
+# 不同**：这里的条目同样经人工确认 scope，curation_level 也是 curated。产物命名
+# cpg_who_*.yaml，被 curated_guidelines.py 的 cpg_*.yaml glob 直接吃到，门控共用。
+#
+# 入选条件（三条同时满足，与 §6d 一致）：
+#   ① dc.rights 在许可白名单内 —— **空 = 未授权**，不是"待查"；
+#   ② 有英文 TEXT bundle（DSpace 预抽文本）；
+#   ③ 推荐以编号锚点结构呈现（Recommendation N / Good practice statement /
+#      No recommendation），抽出 ≥3 条。不满足的记入 deferred 并写明成因，
+#      **不做关键词抓句降级**。
+#
+# scope 由人工确认：它决定系统拿这份指南去要求论文做什么。disease_terms 避免裸词
+# （§6e 的教训：wses 的裸词 injury 让「acute kidney injury」卡命中老年创伤指南）；
+# population 两可时留空 —— 留空 = 不拦，是安全侧，写错会把整份指南永久拦死。
+
+ingested:
+  - uuid: ba46e5c8-21e3-4d23-82d7-7bfb8a22f56c
+    slug: rheumatic_heart_disease_2024
+    short_name: "WHO RF/RHD guideline 2024"
+    issuing_body: "World Health Organization"
+    tier: 1
+    region: null                      # WHO 指南面向全球，留空即不限地区
+    scope:
+      disease_terms:
+        - "rheumatic fever"
+        - "rheumatic heart disease"
+        - "group A streptococcal pharyngitis"
+        - "streptococcal pharyngitis"
+        - "GAS pharyngitis"
+      care_settings: ["primary care", "outpatient", "community", "inpatient"]
+      population: null                # 覆盖 children/adolescents/adults 三段，留空不拦
+      topic: "GAS 咽炎的诊断与抗生素治疗、超声心动图筛查（含简化方案）、BPG 二级预防"
+    notes: >-
+      对**心脏超声 AI 筛查**类论文最直接的规范来源：Recommendation 1–3（诊断章）
+      明确了在什么人群、用什么设备做超声心动图筛查，以及证据确定性；论文若声称
+      "AI 心超筛查 RHD"，其目标人群与设备档次必须对得上这几条。另含 6 条
+      "No recommendation"（WHO 明示无法作出推荐），对"能力边界"审查尤其有用。
+
+  - uuid: af9ab127-3184-4102-9745-60c604bc2aa1
+    slug: tb_module3_diagnosis_2025
+    short_name: "WHO TB guidelines module 3: diagnosis (2025)"
+    issuing_body: "World Health Organization"
+    tier: 1
+    region: null
+    scope:
+      disease_terms:
+        - tuberculosis
+        - "pulmonary tuberculosis"
+        - "drug-resistant tuberculosis"
+        - "rifampicin-resistant tuberculosis"
+        - "MDR/RR-TB"
+      care_settings: ["primary care", "outpatient", "inpatient", "laboratory"]
+      population: null                # adults / adolescents / children 均有条目
+      topic: "结核的分子诊断与耐药检测（低/中复杂度自动化 NAAT、LPA、靶向测序）的适用人群与替代关系"
+    notes: >-
+      结核诊断 AI 论文的对照标准来源：这些推荐规定了**新检测该跟谁比**
+      （"may be used as a replacement test for sputum-smear microscopy"、
+      "rather than culture-based phenotypic DST"），正是 comparator_baseline
+      模块要对齐的现实基线。
+
+  - uuid: 8132c5ef-0f8e-40f0-9d4d-1f596271695d
+    slug: intrapartum_care_2018
+    short_name: "WHO intrapartum care recommendations 2018"
+    issuing_body: "World Health Organization"
+    tier: 1
+    region: null
+    scope:
+      disease_terms:
+        - "intrapartum care"
+        - "labour and childbirth"
+        - childbirth
+        - "fetal well-being"
+        - cardiotocography
+        - "fetal monitoring"
+      care_settings: ["inpatient", "labour ward", "health facility", "hospital"]
+      population: null                # 产妇为成人，但含新生儿条目（如吸引清理），留空不拦
+      topic: "正常产程与分娩照护：产程定义与进展、胎儿监护方式、产程干预的适用与不适用"
+    notes: >-
+      对**胎心监护（CTG）AI** 类论文价值极高：RECOMMENDATION 17 明确
+      "Continuous cardiotocography is not recommended for assessment of fetal
+      well-being in healthy pregnant women"。一篇做"AI 分析连续 CTG"的论文
+      必须先回答"WHO 不推荐常规做这项检查"这个前提。全份 53 条里有 21 条是
+      **Not recommended**，是"不该做什么"这一侧最密集的规范来源。
+      注意本指南用 WHO 母婴健康自己的分级体系（Recommended / Not recommended /
+      Context-specific），不是 GRADE strong/conditional，未做归一化。
+
+# 探查过但未摄入 —— 成因分类与 §6e 一致（处置方式不同，不能混为一类）
+deferred:
+  - uuid: 52a214c3-2837-482b-ac32-fb603c8549f9
+    title: "Use of computer-aided detection software for tuberculosis screening: WHO policy statement (2025)"
+    blocker: text_quality
+    reason: >-
+      **本条腿最可惜的一份**：主题与本项目高度相关（WHO 对结核胸片 CAD 软件的官方
+      政策）。但这是设计排版的政策简报，DSpace 抽出的文本连字全丢
+      （software→soware、specific→specic），甚至把设计模板的 Lorem ipsum 占位符
+      也抽了进来，且全文无 GRADE 结构。摄入等于把错字写进 normative 库，
+      并让 provenance.verbatim 变成假声明。**须改用 PDF 版面解析（MinerU）后重试**，
+      是接 PDF 解析腿的第一优先目标。
+
+  - uuid: df63e63f-f3f7-4a40-bd24-bc9cdeffb807
+    title: "WHO consolidated guidelines on tuberculosis: module 6: TB and comorbidities (2024)"
+    blocker: structure
+    reason: >-
+      有编号锚点且抽出 21 条，但该文档把推荐标题、证据综述与推荐正文混排
+      （"Recommendation 2: WHO-recommended four symptom screen  The 2020 IPD
+      meta-analysis included 23 studies…"），抽出的条目多是证据叙述而非推荐本身，
+      21 条中 8 条已被"非推荐"过滤器剔除。**抽得出 ≠ 抽对了**，不摄入。
+
+  - uuid: d4de6181-8e6f-4de5-8abc-0a9d1e4917ca
+    title: "Diabetic retinopathy screening: a short guide (2020)"
+    blocker: structure
+    reason: >-
+      糖网是 §6e 实测 0 产出的缺口病种，许可（CC BY-NC-SA 3.0 IGO）与全文都没问题，
+      但这是叙述性的操作指南，没有编号推荐条目 —— **IRIS 补不上糖网这个缺口**。
+
+  - uuid: 67b4a09d-4bcd-487e-9433-82cb588f41cf
+    title: "Strengthening diagnosis and treatment of Diabetic Retinopathy in SEA Region (2020)"
+    blocker: structure
+    reason: 区域会议报告，无推荐结构。同上，糖网缺口在 IRIS 内无解。
+
+  - uuid: null
+    title: "（病种级结论）heart failure"
+    blocker: no_candidate
+    reason: >-
+      IRIS 全库检索心衰，标题门通过 0 条 —— WHO 不出心衰临床管理指南（那是
+      AHA/ACC 与 ESC 的范围，二者均非 CC-BY）。**心衰缺口 IRIS 也补不上**，
+      结论与 §6e 一致：自动化解决"没人去策展"，解决不了"许可拿不到"。

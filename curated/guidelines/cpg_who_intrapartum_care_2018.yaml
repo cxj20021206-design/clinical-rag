@@ -1,0 +1,566 @@
+source_id: who_guidelines
+slug: intrapartum_care_2018
+name: 'WHO recommendations: intrapartum care for a positive childbirth experience'
+short_name: WHO intrapartum care recommendations 2018
+issuing_body: World Health Organization
+document_type: guideline
+source_role: normative
+tier: 1
+region: null
+publication_date: '2018-02-14'
+scope:
+  disease_terms:
+  - intrapartum care
+  - labour and childbirth
+  - childbirth
+  - fetal well-being
+  - cardiotocography
+  - fetal monitoring
+  care_settings:
+  - inpatient
+  - labour ward
+  - health facility
+  - hospital
+  population: null
+  topic: 正常产程与分娩照护：产程定义与进展、胎儿监护方式、产程干预的适用与不适用
+curation_note: 对**胎心监护（CTG）AI** 类论文价值极高：RECOMMENDATION 17 明确 "Continuous cardiotocography is not recommended
+  for assessment of fetal well-being in healthy pregnant women"。一篇做"AI 分析连续 CTG"的论文 必须先回答"WHO 不推荐常规做这项检查"这个前提。全份
+  53 条里有 21 条是 **Not recommended**，是"不该做什么"这一侧最密集的规范来源。 注意本指南用 WHO 母婴健康自己的分级体系（Recommended / Not recommended
+  / Context-specific），不是 GRADE strong/conditional，未做归一化。
+provenance:
+  canonical_url: https://iris.who.int/handle/10665/260178
+  iris_uuid: 8132c5ef-0f8e-40f0-9d4d-1f596271695d
+  isbn: '9789241550215'
+  license: CC BY-NC-SA 3.0 IGO
+  license_note: 许可 cc by-nc-sa 3.0 igo：允许逐字未改动的复制与再分发。逐字摘录、未改动、注明出处；不做演绎、不收费再分发。
+  ingested_from: WHO IRIS TEXT bundle（DSpace 预抽文本，9789241550215-eng.pdf.txt）
+  extraction_strategy: rec_numbered
+  strategy_yields:
+    rec_numbered: 53
+  text_normalization: 接合跨行连字符（保留连字符本身）、剔除纯页码行与目录行、空白规范化；不改写任何词句
+  ingested_date: '2026-07-29'
+  verbatim: true
+  completeness: structured_recommendations_only
+  completeness_note: 仅摄入以编号锚点（Recommendation N / Good practice statement / No recommendation）呈现的条目 53
+    条。正文讨论、证据综述与 GRADE 证据表中的表述不在库内，系统不得声称已按全文核查。
+  n_recommendations: 53
+  n_no_recommendation: 0
+  yield_audit:
+    anchors: 56
+    extracted: 53
+    coverage_ratio: 0.946
+    flags: []
+recommendations:
+- statement: RECOMMENDATION 1 Respectful maternity care – which refers to care organized for and provided
+    to all women in a manner that maintains their dignity, privacy and confidentiality, ensures freedom
+    from harm and mistreatment, and enables informed choice and continuous support during labour and childbirth
+    – is recommended. (Recommended)
+  context: 3.1.1 Respectful maternity care
+  section: RECOMMENDATION 1
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 2 Effective communication between maternity care providers and women in labour,
+    using simple and culturally acceptable methods, is recommended. (Recommended)
+  context: 3.1.2 Effective communication
+  section: RECOMMENDATION 2
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 3 A companion of choice is recommended for all women throughout labour and
+    childbirth. (Recommended)
+  context: 3.1.3 Companionship during labour and childbirth
+  section: RECOMMENDATION 3
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 4 Midwife-led continuity-of-care models, in which a known midwife or small
+    group of known midwives supports a woman throughout the antenatal, intrapartum and postnatal continuum,
+    are recommended for pregnant women in settings with well functioning midwifery programmes. (Context-specific
+    recommendation)
+  context: 3.1.4 Continuity of care
+  section: RECOMMENDATION 4
+  recommendation_strength: who_context_specific
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 5 The use of the following definitions of the latent and active first stages
+    of labour is recommended for practice. — The latent first stage is a period of time characterized
+    by painful uterine contractions and variable changes of the cervix, including some degree of effacement
+    and slower progression of dilatation up to 5 cm for first and subsequent labours. (Recommended) —
+    The active first stage is a period of time characterized by regular painful uterine contractions,
+    a substantial degree of cervical effacement and more rapid cervical dilatation from 5 cm until full
+    dilatation for first and subsequent labours. (Recommended)
+  context: 3.2.1 Definitions of the latent and active first stages of labour
+  section: RECOMMENDATION 5
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 6 Women should be informed that a standard duration of the latent first stage
+    has not been established and can vary widely from one woman to another. However, the duration of active
+    first stage (from 5 cm until full cervical dilatation) usually does not extend beyond 12 hours in
+    first labours, and usually does not extend beyond 10 hours in subsequent labours. (Recommended)
+  context: 3.2.2 Duration of the first stage of labour
+  section: RECOMMENDATION 6
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 7 For pregnant women with spontaneous labour onset, the cervical dilatation
+    rate threshold of 1 cm/hour during active first stage (as depicted by the partograph alert line) is
+    inaccurate to identify women at risk of adverse birth outcomes and is therefore not recommended for
+    this purpose. (Not recommended)
+  context: 3.2.3 Progress of the first stage of labour
+  section: RECOMMENDATION 7
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 8 A minimum cervical dilatation rate of 1 cm/hour throughout active first
+    stage of labour is unrealistically fast for some women and is therefore not recommended for identification
+    of normal labour progression. A slower than 1-cm/hour cervical dilatation rate alone should not be
+    an indication for obstetric intervention. (Not recommended)
+  context: S
+  section: RECOMMENDATION 8
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 9 Labour may not naturally accelerate until a cervical dilatation threshold
+    of 5 cm is reached. Therefore the use of medical interventions to accelerate labour and birth (such
+    as oxytocin augmentation or caesarean section) before this threshold is not recommended, provided
+    fetal and maternal conditions are reassuring. (Not recommended)
+  context: for obstetric intervention. (Not recommended)
+  section: RECOMMENDATION 9
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 10 For healthy pregnant women presenting in spontaneous labour, a policy of
+    delaying labour ward admission until active first stage is recommended only in the context of rigorous
+    research. (Research-context recommendation)
+  context: 3.2.4 Labour ward admission policy
+  section: RECOMMENDATION 10
+  recommendation_strength: null
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 11 Routine clinical pelvimetry on admission in labour is not recommended for
+    healthy pregnant women. (Not recommended)
+  context: 3.2.5 Clinical pelvimetry on admission
+  section: RECOMMENDATION 11
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 13 Auscultation using a Doppler ultrasound device or Pinard fetal stethoscope
+    is recommended for the assessment of fetal well-being on labour admission. (Recommended)
+  context: admission in healthy pregnant women presenting in spontaneous labour. (Not recommended)
+  section: RECOMMENDATION 13
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 14 Routine perineal/pubic shaving prior to giving vaginal birth is not recommended.
+    (Not recommended)
+  context: 3.2.7 Perineal/pubic shaving
+  section: RECOMMENDATION 14
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 15 Administration of an enema for reducing the use of labour augmentation
+    is not recommended. (Not recommended)
+  context: 3.2.8 Enema on admission
+  section: RECOMMENDATION 15
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 16 Digital vaginal examination at intervals of four hours is recommended for
+    routine assessment of active first stage of labour in low-risk women. (Recommended)
+  context: 3.2.9 Digital vaginal examination
+  section: RECOMMENDATION 16
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 17 Continuous cardiotocography is not recommended for assessment of fetal
+    well-being in healthy pregnant women undergoing spontaneous labour. (Not recommended)
+  context: 3.2.10 Continuous cardiotocography (CTG) during labour
+  section: RECOMMENDATION 17
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 18 Intermittent auscultation of the fetal heart rate with either a Doppler
+    ultrasound device or a Pinard fetal stethoscope is recommended for healthy pregnant women in labour.
+    (Recommended)
+  context: 3.2.11 Intermittent fetal heart rate auscultation during labour
+  section: RECOMMENDATION 18
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 19 Epidural analgesia is recommended for healthy pregnant women requesting
+    pain relief during labour, depending on a woman’s preferences. (Recommended)
+  context: 3.2.12 Epidural analgesia for pain relief
+  section: RECOMMENDATION 19
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 20 Parenteral opioids, such as fentanyl, diamorphine and pethidine, are recommended
+    options for healthy pregnant women requesting pain relief during labour, depending on a woman’s preferences.
+    (Recommended)
+  context: 3.2.13 Opioid analgesia for pain relief
+  section: RECOMMENDATION 20
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 21 Relaxation techniques, including progressive muscle relaxation, breathing,
+    music, mindfulness and other techniques, are recommended for healthy pregnant women requesting pain
+    relief during labour, depending on a woman’s preferences. (Recommended)
+  context: 3.2.14 Relaxation techniques for pain management
+  section: RECOMMENDATION 21
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 22 Manual techniques, such as massage or application of warm packs, are recommended
+    for healthy pregnant women requesting pain relief during labour, depending on a woman’s preferences.
+    (Recommended)
+  context: 3.2.15 Manual techniques for pain management
+  section: RECOMMENDATION 22
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 23 Pain relief for preventing delay and reducing the use of augmentation in
+    labour is not recommended. (Not recommended)
+  context: 3.2.16 Pain relief for preventing labour delay
+  section: RECOMMENDATION 23
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 24 For women at low risk, oral fluid and food intake during labour is recommended.
+    (Recommended)
+  context: 3.2.17 Oral fluid and food
+  section: RECOMMENDATION 24
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 25 Encouraging the adoption of mobility and an upright position during labour
+    in women at low risk is recommended. (Recommended)
+  context: 3.2.18 Maternal mobility and position
+  section: RECOMMENDATION 25
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 26 Routine vaginal cleansing with chlorhexidine during labour for the purpose
+    of preventing infectious morbidities is not recommended. (Not recommended)
+  context: 3.2.19 Vaginal cleansing
+  section: RECOMMENDATION 26
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 27 A package of care for active management of labour for prevention of delay
+    in labour is not recommended. (Not recommended)
+  context: 3.2.20 Active management of labour
+  section: RECOMMENDATION 27
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 28 The use of amniotomy alone for prevention of delay in labour is not recommended.
+    (Not recommended)
+  context: 3.2.21 Routine amniotomy
+  section: RECOMMENDATION 28
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 29 The use of early amniotomy with early oxytocin augmentation for prevention
+    of delay in labour is not recommended. (Not recommended)
+  context: 3.2.22 Early amniotomy and oxytocin
+  section: RECOMMENDATION 29
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 30 The use of oxytocin for prevention of delay in labour in women receiving
+    epidural analgesia is not recommended. (Not recommended)
+  context: 3.2.23 Oxytocin for women with epidural analgesia
+  section: RECOMMENDATION 30
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 31 The use of antispasmodic agents for prevention of delay in labour is not
+    recommended. (Not recommended)
+  context: 3.2.24 Antispasmodic agents
+  section: RECOMMENDATION 31
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 32 The use of intravenous fluids with the aim of shortening the duration of
+    labour is not recommended. (Not recommended)
+  context: 3.2.25 Intravenous fluids for preventing labour delay
+  section: RECOMMENDATION 32
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 33 The use of the following definition and duration of the second stage of
+    labour is recommended for practice. — The second stage is the period of time between full cervical
+    dilatation and birth of the baby, during which the woman has an involuntary urge to bear down, as
+    a result of expulsive uterine contractions. (Recommended) — Women should be informed that the duration
+    of the second stage varies from one woman to another. In first labours, birth is usually completed
+    within 3 hours whereas in subsequent labours, birth is usually completed within 2 hours. (Recommended)
+  context: 3.3.1 Definition and duration of the second stage of labour
+  section: RECOMMENDATION 33
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 34 For women without epidural analgesia, encouraging the adoption of a birth
+    position of the individual woman’s choice, including upright positions, is recommended. (Recommended)
+  context: 3.3.2 Birth position for women without epidural analgesia
+  section: RECOMMENDATION 34
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 35 For women with epidural analgesia, encouraging the adoption of a birth
+    position of the individual woman’s choice, including upright birth positions, is recommended. (Recommended)
+  context: 3.3.3 Birth position for women with epidural analgesia
+  section: RECOMMENDATION 35
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 36 Women in the expulsive phase of the second stage of labour should be encouraged
+    and supported to follow their own urge to push. (Recommended)
+  context: 3.3.4 Method of pushing
+  section: RECOMMENDATION 36
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 37 For women with epidural analgesia in the second stage of labour, delaying
+    pushing for one to two hours after full dilatation or until the woman regains the sensory urge to
+    bear down is recommended in the context where resources are available for longer stay in second stage
+    and perinatal hypoxia can be adequately assessed and managed. (Context-specific recommendation)
+  context: 3.3.5 Method of pushing for women with epidural analgesia
+  section: RECOMMENDATION 37
+  recommendation_strength: who_context_specific
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 38 For women in the second stage of labour, techniques to reduce perineal
+    trauma and facilitate spontaneous birth (including perineal massage, warm compresses and a “hands
+    on” guarding of the perineum) are recommended, based on a woman’s preferences and available options.
+    (Recommended)
+  context: 3.3.6 Techniques for preventing perineal trauma
+  section: RECOMMENDATION 38
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 39 Routine or liberal use of episiotomy is not recommended for women undergoing
+    spontaneous vaginal birth. (Not recommended)
+  context: 3.3.7 Episiotomy policy
+  section: RECOMMENDATION 39
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 40 Application of manual fundal pressure to facilitate childbirth during the
+    second stage of labour is not recommended. (Not recommended)
+  context: 3.3.8 Fundal pressure
+  section: RECOMMENDATION 40
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 41 The use of uterotonics for the prevention of postpartum haemorrhage (PPH)
+    during the third stage of labour is recommended for all births. (Recommended)
+  context: 3.4.1 Prophylactic uterotonics
+  section: RECOMMENDATION 41
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 42 Oxytocin (10 IU, IM/IV) is the recommended uterotonic drug for the prevention
+    of postpartum haemorrhage (PPH). (Recommended)
+  context: labour is recommended for all births. (Recommended)
+  section: RECOMMENDATION 42
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 43 In settings where oxytocin is unavailable, the use of other injectable
+    uterotonics (if appropriate, ergometrine/methylergometrine, or the fixed drug combination of oxytocin
+    and ergometrine) or oral misoprostol (600 µg) is recommended. (Recommended)
+  context: haemorrhage (PPH). (Recommended)
+  section: RECOMMENDATION 43
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 44 Delayed umbilical cord clamping (not earlier than 1 minute after birth)
+    is recommended for improved maternal and infant health and nutrition outcomes. (Recommended)
+  context: 3.4.4 Delayed umbilical cord clamping
+  section: RECOMMENDATION 44
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 45 In settings where skilled birth attendants are available, controlled cord
+    traction (CCT) is recommended for vaginal births if the care provider and the parturient woman regard
+    a small reduction in blood loss and a small reduction in the duration of the third stage of labour
+    as important. (Recommended)
+  context: 3.4.6 Controlled cord traction (CCT)
+  section: RECOMMENDATION 45
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 46 Sustained uterine massage is not recommended as an intervention to prevent
+    postpartum haemorrhage (PPH) in women who have received prophylactic oxytocin. (Not recommended)
+  context: 3.4.7 Uterine massage
+  section: RECOMMENDATION 46
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 47 In neonates born through clear amniotic fluid who start breathing on their
+    own after birth, suctioning of the mouth and nose should not be performed. (Not recommended)
+  context: 3.5.1 Routine nasal or oral suction
+  section: RECOMMENDATION 47
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 48 Newborns without complications should be kept in skin-to-skin contact (SSC)
+    with their mothers during the first hour after birth to prevent hypothermia and promote breastfeeding.
+    (Recommended)
+  context: 3.5.2 Skin-to-skin contact
+  section: RECOMMENDATION 48
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 49 All newborns, including low-birth-weight (LBW) babies who are able to breastfeed,
+    should be put to the breast as soon as possible after birth when they are clinically stable, and the
+    mother and baby are ready. (Recommended)
+  context: 3.5.3 Breastfeeding
+  section: RECOMMENDATION 49
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 50 All newborns should be given 1 mg of vitamin K intramuscularly after birth
+    (i.e. after the first hour by which the infant should be in skin-to-skin contact with the mother and
+    breastfeeding should be initiated). (Recommended)
+  context: 3.5.4 Haemorrhagic disease prophylaxis using vitamin K
+  section: RECOMMENDATION 50
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 52 Postpartum abdominal uterine tonus assessment for early identification
+    of uterine atony is recommended for all women. (Recommended)
+  context: 3.6.1 Uterine tonus assessment
+  section: RECOMMENDATION 52
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 53 Routine antibiotic prophylaxis is not recommended for women with uncomplicated
+    vaginal birth. (Not recommended)
+  context: 3.6.2 Antibiotics for uncomplicated vaginal birth
+  section: RECOMMENDATION 53
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 54 Routine antibiotic prophylaxis is not recommended for women with episiotomy.
+    (Not recommended)
+  context: 3.6.3 Routine antibiotic prophylaxis for episiotomy
+  section: RECOMMENDATION 54
+  recommendation_strength: who_not_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: RECOMMENDATION 56 After an uncomplicated vaginal birth in a health care facility, healthy
+    mothers and newborns should receive care in the facility for at least 24 hours after birth. (Recommended)
+  context: 3.6.5 Postnatal discharge following uncomplicated vaginal birth
+  section: RECOMMENDATION 56
+  recommendation_strength: who_recommended
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false

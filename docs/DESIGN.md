@@ -518,10 +518,9 @@ comparator_baseline / endpoint_utility / workflow_deployment 三个模块。
   ——它说的是专家投票有多齐，不是证据有多硬。故单列 `agreement` 字段、在 notes 里写明
   "不可当作 GRADE 强度使用"，并对解析不出强度的条目显式提示"不得替它假定强度"。
   跨源归一化会抹掉各家方法学差异，等于替指南做了它没做的判断。
-- **WHO IRIS 探过但没接**：DSpace REST API 可用
-  （`/server/api/discover/search/objects`，sepsis 相关 1941 条，`dc.rights` 直接给出
-  CC BY-NC-SA 3.0 IGO，许可是所有 normative 源里最干净的），但正文是 PDF ——
-  只拿题录就只能算 discovery，按铁律不得冒充 normative。要进这条腿必须先接 PDF 解析。
+- **WHO IRIS 探过但没接** —— ✅ 已于 2026-07-29 接通，见 §6f。当时判断"正文是 PDF、
+  必须先接 PDF 解析"是错的：DSpace 为每个条目预抽了 `TEXT` bundle，WHO 指南在纯文本里
+  仍保留编号锚点，不需要 GPU。
 
 覆盖只有 4 份指南，远谈不上"全"；但架构上 `normative` 从"USPSTF 一个源"变成了
 **多源角色**，多源打架的处理（全收、标明发布方与适用地区、如实呈现分歧）沿用 §6c 末尾的定调。
@@ -651,6 +650,113 @@ CC-BY，它们不会因为这个脚本进库。跑完之后缺口报告不会消
 - **scope 草稿含噪声短语**（`brazilian public` / `diagnosis treatment` / `critically ill adults`）
   ——人工复核时应删。`critically ill adults` 这类尤其要留意：它会让任何以此为病种字段的卡片命中。
 
+## 6f. 已实现（规范指南第三个源族）：WHO IRIS —— 2026-07-29
+
+`connectors/who_iris_fetch.py`（检索/许可/抽取）+ `who_iris_ingest.py`（摄入）
++ `curated/guidelines/manifest_who.yaml`（策展清单）。产物 `cpg_who_*.yaml`。
+
+**这是本库第一个接通的 tier1 源** —— 此前四个已通 API 源的 tier 是 3/3/3/5。
+
+### 为什么单开一条腿，以及它补的是什么
+
+前两个 normative 源族够不到 WHO 自己的规范指南：USPSTF 只管美国预防服务；学会/国家 CPG
+走 Europe PMC 期刊通道，而 WHO 指南是机构出版物、不发期刊、不在 EPMC 里。§6e 实测已证明
+覆盖面的真正瓶颈是"许可拿不到"（心衰 0/28、AKI 0/12、糖网 0/1，因为 AHA/ESC/KDIGO 多不是
+CC-BY），IRIS 是少数**许可预先干净**的规范源。
+
+### 关键实测发现：不需要 PDF 解析（推翻原计划）
+
+原计划（§7 里写的）是"IRIS 正文是 PDF，须先接 MinerU"。实测发现 DSpace 为每个条目预抽了
+`TEXT` bundle，而 WHO 正式指南在纯文本里**仍保留编号锚点**：
+
+```
+Recommendation 6
+An oral penicillin test dose may be given prior to IM BPG administration ...
+(Conditional recommendation, low certainty evidence)
+```
+
+于是新增第四种抽取策略 `rec_numbered`，整条腿不需要 GPU。**这不是被禁的"关键词抓句降级"**：
+抓句是扫全文找含 recommend 的句子（会把"美国癌症协会建议…"这类转述句记成本指南推荐），
+这里锚定的是作者排版的编号条目，块边界由编号与 GRADE 尾括号界定。区别是"有没有作者给的
+结构标记"，不是严格程度。
+
+### 检索与准入（沿用 §6e 的分工）
+
+- `itemtype=Publications` 必须筛：IRIS 收录量最大的是 `Journal articles`（WHO Bulletin
+  转载，不是规范文件，且多无 dc.rights），不筛的话 "sepsis" 检回 813 篇期刊文章。
+- **检索用全文要召回，准入只看标题要准确**：IRIS 默认全文松散匹配，"heart failure" 会命中
+  *Urban HEART*（城市健康公平评估工具，纯字面）和清洁家用能源报告。
+- 许可门与另两条腿完全一致：`dc.rights` 为空 = 未授权，不是"待查"。
+
+### PDF 文本特有的坑（JATS XML 都没有，六个，全是实测撞出来的）
+
+1. **跨行连字符**：删连字符能把 `recommen-\ndation` 修好，但会把 `middle-\nincome` 毁成
+   `middleincome`（实测 2 处），而医学文本里跨行复合词（low-income / point-of-care /
+   first-line）远比断字词常见。**造出原文不存在的词是 verbatim 违规，留下可辨认的排版伪影
+   不是** → 保留连字符只消换行。处理记入 `provenance.text_normalization`，不偷偷做。
+2. **编号跨章重复**：同一份指南 Recommendation 1 出现 6 次（执行摘要一遍、正文一遍，每章
+   重编）→ 去重键必须是正文哈希，不能是编号。
+3. **块长失控**：块边界只能取到下一个锚点，而推荐之后还有 Remarks/证据表/参考文献 ——
+   实测结核指南单块 9.7 万字符、内含 77 个编号。不收缩就没法安全切分：要么切出满是噪声的
+   77 条，要么整块算一条、把真正的第 2、3 条推荐丢掉。用原文给的 `Remarks` 等小标题作语义
+   边界（比长度可靠），MAX_BLOCK 兜底。
+4. **一节多条推荐**：WHO 结核指南体例是 `Recommendations 1. … 2. … 3. …`，每条自带**无括号**
+   的 GRADE 尾巴。不切开时 parse_grade 会跨条目取值，实测把一条 moderate 标成了 high ——
+   同 §6d `split_statements` 的教训：**绑错强度比不给更糟**。
+   切分判据用"多数子条目自带 GRADE"，不用个数或长度：WHO 多条体例里每条都有强度，而推荐正文
+   里的普通枚举（剂量/疗程）没有。用错判据的代价实测过：RHD 被切碎成 149 条（正确值 28）。
+   **切分必须在块尾截断之前做**，否则第 2、3 条先被砍掉。
+5. **页眉残留**：章标题 "Recommendations" + 页码撞成锚点，把定义段落当推荐。过滤时
+   **必须先剥掉标签前缀再判推荐动词** —— `_MODAL` 里的 `recommend\w*` 会命中标签里的
+   "Recommendations" 一词，于是任何以该标签开头的段落都被认成推荐。§6e 在表格分节小标题上
+   踩过完全相同的坑（`Recommendations: Clinical variables…`），**同一个坑踩了两次**。
+6. **连字（ligature）丢失** —— 新增第四种 blocker 成因 `text_quality`：设计排版的 PDF 抽出的
+   文本会整体丢掉 fi/fl/ft 合字（software→soware、specific→specic），甚至把设计模板的
+   Lorem ipsum 占位符也抽进来。这类文本**不能摄入**：逐字保存的前提是那些字确实是原文的字，
+   摄入等于把错字写进 normative 库，并让 `provenance.verbatim` 变成假声明。
+
+### 不做跨源分级归一化（§6d 原则的又一次应用）
+
+WHO 母婴健康类指南用的不是 GRADE strong/conditional，而是 `(Recommended)` /
+`(Not recommended)` / `(Context-specific recommendation)`。保留它自己的取值
+（`who_recommended` / `who_not_recommended` / …），不映射成 strong/conditional。
+
+**认它是安全关键**：不认的话 "Not recommended" 条目的强度字段是空的，一条"不推荐做 X"在下游
+看起来跟一条中性推荐一样 —— 比没有分级更危险。否定式必须先匹配（"Not recommended" 里含有
+"recommended"，顺序反了会把"不推荐"读成"推荐"）。
+
+`No recommendation` 条目**强制清空强度**：正文里的 "…does not recommend either for or
+against…" 会被 `_STRENGTH` 误判成 strong，而"无法推荐"却标着强推荐是自相矛盾的。同 USPSTF
+I 级：证据不足是结论本身，不是一个弱一点的推荐。
+
+### 实测（3 份 98 条摄入，5 份如实记 deferred）
+
+| 文档 | 条数 | 对 MedAI 审稿的用处 |
+|---|---|---|
+| WHO RF/RHD 指南 2024 | 28（含 6 条 No recommendation） | 心脏超声 AI 筛查的目标人群与设备档次 |
+| WHO TB 指南 module 3 诊断 2025 | 17 | 结核诊断 AI 的 **comparator**（"rather than culture-based phenotypic DST"） |
+| WHO 产程照护推荐 2018 | 53（含 **21 条 Not recommended**） | CTG AI 的前提：连续胎心监护本身就不被推荐 |
+
+正向回归卡 `examples/claim_card_ctg_fetal.yaml`（CTG AI 判读）→ normative 排第一的正是
+**RECOMMENDATION 17 "Continuous cardiotocography is not recommended for assessment of fetal
+well-being in healthy pregnant women"**，predates=true。一篇"AI 判读连续 CTG"的论文必须先
+回答这个前提 —— 这类"否定式规范"是本源族最独特的产出，另两条腿都很少给出。
+
+### 覆盖边界（重要）
+
+- **瓶颈从"许可"变成了"文档体例"**。IRIS 的许可是干净的，但 WHO 大量出版物没有编号推荐结构：
+  operational handbook、policy statement、培训材料、区域会议报告、target product profile
+  一律抽不出（全部如实记 deferred 并分成 `structure` / `text_quality` / `no_fulltext` 三种
+  成因，处置方式不同，不能混为一类）。
+- **最可惜的一份**：`Use of computer-aided detection software for tuberculosis screening:
+  WHO policy statement (2025)` —— 主题与本项目高度相关（WHO 对结核胸片 CAD 软件的官方政策），
+  但栽在连字丢失上。**这是接 PDF 版面解析（MinerU）的第一优先目标。**
+- **心衰、糖网 IRIS 也补不上**：心衰标题门通过 0 条（WHO 不出心衰管理指南，那是 AHA/ESC 的
+  范围）；糖网两份许可全文都没问题，但是叙述性操作指南无推荐结构。§6e 的结论继续成立 ——
+  自动化与新通道都解决"没人去策展"，解决不了"这份文档根本没有可摘的推荐条目"。
+- 执行摘要与正文的**近似重复**（全称 vs 缩写，如 "IM benzathine benzylpenicillin (BPG)" vs
+  "IM BPG"）哈希去重抓不到。不引入模糊匹配去猜该保留哪个版本 —— 逐字原则下两个都是原文。
+
 ## 7. 未来工作
 
 0. ~~报告规范清单策展层~~ —— ✅ 2026-07-24 完成，见 §6b。`reporting_tool` 缺口已闭合。
@@ -659,10 +765,12 @@ CC-BY，它们不会因为这个脚本进库。跑完之后缺口报告不会消
    NICE 因条款明令「在 NICE 内容上使用 AI 须另行取得许可」+ 国际使用收费 → **不可行**
    （见 [RELATED_WORK.md](RELATED_WORK.md) §7）。**剩余工作**：
    1a. **扩摄入面**：🟡 2026-07-28 起有了自动扩库（§6e），卒中已补上 2 份；但实测产出率
-       只有 4%（47 候选 → 2 入库），**心衰 / AKI / 糖网仍然是 0**——瓶颈已从"没人去策展"
-       变成"Europe PMC OA 里没有许可合格且有推荐结构的该病种指南"。要真正补上这几个病种，
-       只能换通道：WHO IRIS（CC BY-NC-SA 3.0 IGO，许可最干净）与 VA/DoD（纯 PDF，许可无碍）
-       仍未接，两者都要先做 PDF 解析。另可加 CQ/Answer 第四种结构策略（日韩指南常见）。
+       只有 4%（47 候选 → 2 入库）。**2026-07-29 又接了 WHO IRIS（§6f，+3 份 98 条，
+       本库第一个 tier1 源）**，补上风湿性心脏病/结核诊断/产程照护三个方向。
+       **但心衰 / AKI / 糖网依然是 0**：IRIS 里心衰标题门 0 通过（WHO 不出心衰管理指南）、
+       糖网两份无推荐结构。瓶颈至此分成两层——EPMC 侧是"许可拿不到"，IRIS 侧是
+       "文档体例里根本没有可摘的推荐条目"。剩余通道：VA/DoD（纯 PDF，许可无碍，须先做
+       PDF 解析）、SSC（等许可）。另可加 CQ/Answer 第四种结构策略（日韩指南常见）。
    1b. **德语等非英语 GRADE 策略**：德国 2025 脓毒症 S3 许可合规却因语言+结构落榜（§6d）。
    1c. **SSC 许可**：脓毒症最权威指南因 Europe PMC 无许可标注而缺席，若日后取得许可应优先补。
    1d. **长文档分块检索仍未做**：USPSTF 与 CPG 都是靠结构化表格/推荐节躲过去的，

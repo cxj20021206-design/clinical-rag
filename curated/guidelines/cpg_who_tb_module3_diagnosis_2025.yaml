@@ -1,0 +1,237 @@
+source_id: who_guidelines
+slug: tb_module3_diagnosis_2025
+name: 'WHO consolidated guidelines on tuberculosis: module 3: diagnosis'
+short_name: 'WHO TB guidelines module 3: diagnosis (2025)'
+issuing_body: World Health Organization
+document_type: guideline
+source_role: normative
+tier: 1
+region: null
+publication_date: '2025-04-04'
+scope:
+  disease_terms:
+  - tuberculosis
+  - pulmonary tuberculosis
+  - drug-resistant tuberculosis
+  - rifampicin-resistant tuberculosis
+  - MDR/RR-TB
+  care_settings:
+  - primary care
+  - outpatient
+  - inpatient
+  - laboratory
+  population: null
+  topic: 结核的分子诊断与耐药检测（低/中复杂度自动化 NAAT、LPA、靶向测序）的适用人群与替代关系
+curation_note: 结核诊断 AI 论文的对照标准来源：这些推荐规定了**新检测该跟谁比** （"may be used as a replacement test for sputum-smear
+  microscopy"、 "rather than culture-based phenotypic DST"），正是 comparator_baseline 模块要对齐的现实基线。
+provenance:
+  canonical_url: https://iris.who.int/handle/10665/381003
+  iris_uuid: af9ab127-3184-4102-9745-60c604bc2aa1
+  isbn: 9789240107984 (electronic version)
+  license: CC BY-NC-SA 3.0 IGO
+  license_note: 许可 cc by-nc-sa 3.0 igo：允许逐字未改动的复制与再分发。逐字摘录、未改动、注明出处；不做演绎、不收费再分发。
+  ingested_from: WHO IRIS TEXT bundle（DSpace 预抽文本，9789240107984-eng.pdf.txt）
+  extraction_strategy: rec_numbered
+  strategy_yields:
+    rec_numbered: 17
+  text_normalization: 接合跨行连字符（保留连字符本身）、剔除纯页码行与目录行、空白规范化；不改写任何词句
+  ingested_date: '2026-07-29'
+  verbatim: true
+  completeness: structured_recommendations_only
+  completeness_note: 仅摄入以编号锚点（Recommendation N / Good practice statement / No recommendation）呈现的条目 17
+    条。正文讨论、证据综述与 GRADE 证据表中的表述不在库内，系统不得声称已按全文核查。
+  n_recommendations: 17
+  n_no_recommendation: 0
+  yield_audit:
+    anchors: 14
+    extracted: 17
+    coverage_ratio: 1.214
+    flags: []
+recommendations:
+- statement: Recommendations 1. For adults and adolescents with signs or symptoms of TB or who screened
+    positive for pulmonary TB, low-complexity automated NAATs should be used on respiratory samples as
+    initial diagnostic tests for TB rather than smear microscopy or culture. (Strong recommendation, high
+    certainty of evidence)
+  context: 2. Recommendations for diagnosis of TB disease 11
+  section: Recommendations 1
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: high
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendation 5. In people with signs and symptoms of pulmonary TB, moderate complexity
+    automated NAATs may be used on respiratory samples for the detection of pulmonary TB, and of rifampicin
+    and isoniazid rsesistance, rather than culture and phenotypic DST. (Conditional recommendation, moderate
+    certainty of evidence for diagnostic accuracy)
+  context: 2. Recommendations for diagnosis of TB disease 25
+  section: Recommendation 5
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendations 6. For adults and adolescents with signs or symptoms or who screen positive
+    for pulmonary TB, low-complexity manual NAATs should be used on respiratory samples as initial diagnostic
+    tests for TB rather than smear microscopy or culture. (Strong recommendation, high certainty of evidence)
+  context: 'The publication WHO operational handbook on tuberculosis. Module 3: Diagnosis describes'
+  section: Recommendations 6
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: high
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendations 7. For adults and adolescents with HIV who have signs or symptoms of TB,
+    screen positive for TB, are seriously ill or have advanced HIV disease, concurrent testing using low-complexity
+    automated NAATs on respiratory samples and LF-LAM on urine should be used as the initial diagnostic
+    strategy for diagnosing TB rather than low-complexity automated NAATs on respiratory samples alone.
+    (Strong recommendation, low certainty of evidence)
+  context: 2.3.1 Concurrent use of tests in people living with HIV
+  section: Recommendations 7
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: low
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendations 8. For children who are HIV-negative or have an unknown HIV status, who have
+    signs or symptoms or screen positive for pulmonary TB, concurrent testing using low-complexity automated
+    NAATs on respiratory and stool samples should be used as the initial diagnostic strategy for diagnosing
+    TB rather than low-complexity automated NAATs on respiratory or stool samples alone. (Strong recommendation,
+    low certainty of evidence for test accuracy)
+  context: or with unknown HIV status
+  section: Recommendations 8
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: low
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendations 9. For children with HIV who have signs or symptoms or screen positive for
+    pulmonary TB, concurrent testing using low-complexity automated NAATs on respiratory and stool samples
+    and LF-LAM on urine may be used as the initial diagnostic strategy for diagnosing TB rather than low-complexity
+    automated NAATs on respiratory or stool samples alone. (Conditional recommendation, low certainty
+    of evidence for test accuracy)
+  context: 2.3.3 Concurrent use of tests in children with HIV
+  section: Recommendations 9
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: low
+  agreement: null
+  is_no_recommendation: false
+- statement: In people with bacteriologically confirmed pulmonary TB, low complexity automated NAATs may
+    be used on sputum for the initial detection of resistance to isoniazid and fluoroquinolones, rather
+    than culture-based phenotypic DST. (Conditional recommendation, moderate certainty of evidence for
+    diagnostic accuracy)
+  context: other anti-TB agents, particularly the new and repurposed medicines such as bedaquiline
+  section: Recommendations 10
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+  is_no_recommendation: false
+- statement: In people with bacteriologically confirmed pulmonary TB and resistance to rifampicin, low
+    complexity automated NAATs may be used on sputum for the initial detection of resistance to ethionamide,
+    rather than DNA sequencing of the inhA promoter. (Conditional recommendation, very low certainty of
+    evidence for diagnostic accuracy)
+  context: other anti-TB agents, particularly the new and repurposed medicines such as bedaquiline
+  section: Recommendations 10
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+  is_no_recommendation: false
+- statement: In people with bacteriologically confirmed pulmonary TB and resistance to rifampicin, low
+    complexity automated NAATs may be used on sputum for the initial detection of resistance to amikacin,
+    rather than culture-based phenotypic DST. (Conditional recommendation, low certainty of evidence for
+    diagnostic accuracy)
+  context: other anti-TB agents, particularly the new and repurposed medicines such as bedaquiline
+  section: Recommendations 10
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: low
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendation 13. For persons with a sputum smear-positive specimen or a cultured isolate
+    of MTBC, commercial molecular LPAs may be used as the initial test instead of phenotypic culture-based
+    DST to detect resistance to rifampicin and isoniazid. (Conditional recommendation, moderate certainty
+    in the evidence for the test’s accuracy)
+  context: 'WHO consolidated guidelines on tuberculosis: Fourth edition84'
+  section: Recommendation 13
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: For patients with confirmed MDR/RR-TB, SL-LPA may be used as the initial test, instead of
+    phenotypic culture-based DST, to detect resistance to fluoroquinolones. (conditional recommendation,
+    moderate certainty in the evidence for test accuracy)
+  context: genes plus gyrB and the eis promoter for version 2.0). The presence of mutations in these
+  section: Recommendations 14
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: For patients with confirmed MDR/RR-TB, SL-LPA may be used as the initial test, instead of
+    phenotypic culture-based DST, to detect resistance to the SLIDs. (conditional recommendation, low
+    certainty in the evidence for test accuracy)
+  context: genes plus gyrB and the eis promoter for version 2.0). The presence of mutations in these
+  section: Recommendations 14
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendation 16. In people with bacteriologically confirmed TB, high complexity reverse
+    hybridization-based NAATs may be used on Mtb culture isolates for detection of pyrazinamide resistance
+    rather than culture-based phenotypic DST. (Conditional recommendation, very low certainty of evidence
+    for diagnostic accuracy)
+  context: of pyrazinamide resistance so that clinicians can make an informed decision on whether to
+  section: Recommendation 16
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: very low
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendations 17. In people with bacteriologically confirmed pulmonary TB disease, targeted
+    next-generation sequencing technologies may be used on respiratory samples to diagnose resistance
+    to rifampicin, isoniazid, fluoroquinolones, pyrazinamide and ethambutol rather than culture-based
+    phenotypic drug susceptibility testing. (Conditional recommendation, certainty of evidence moderate
+    [isoniazid and pyrazinamide],low [rifampicin, fluoroquinolones and ethambutol])
+  context: can detect resistance to new and repurposed drugs that are not currently included in any
+  section: Recommendations 17
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: moderate
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendation 18. Mycobacterium tuberculosis antigen-based skin tests (TBSTs) may be used
+    to test for TB infection. (Conditional recommendation for the intervention, very low certainty of
+    the evidence)
+  context: policy is incorporated into the WHO TB Knowledge Sharing Platform – an online reference
+  section: Recommendation 18
+  recommendation_strength: conditional
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendation 19. Either a tuberculin skin test (TST) or interferon-gamma release assays
+    (IGRAs) can be used to test for TB infection. (Strong recommendation, very low certainty of the evidence)
+  context: 'WHO consolidated guidelines on tuberculosis: Fourth edition140'
+  section: Recommendation 19
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false
+- statement: Recommendation 20. Interferon-gamma release assays (IGRAs) (and the tuberculin skin test
+    [TST]) should not be used in low- and middle-income countries for the diagnosis of pulmonary or extrapulmonary
+    TB, or for the diagnostic work-up of adults (including people living with HIV) suspected of active
+    TB in these settings (strong recommendation) The Guideline Development Group concluded that both the
+    sensitivity and specificity of IGRAs in detecting active TB among individuals presumed of having TB
+    were suboptimal and the quality of evidence was low.
+  context: assays for the diagnosis of TB disease
+  section: Recommendation 20
+  recommendation_strength: strong
+  grade_letter: null
+  evidence_certainty: null
+  agreement: null
+  is_no_recommendation: false

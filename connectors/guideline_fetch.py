@@ -106,8 +106,14 @@ _CERTAINTY = re.compile(
     r"(very\s+low|low|moderate|high|none)", re.I)
 # 另一种同样常见的写法："(moderate-quality evidence; strong recommendation)"。
 # 不认它会让 evidence_certainty 白白落空——而推荐强度+证据确定性正是这条腿存在的理由。
+# WHO 指南用 "certainty" 而非 "quality"，且连字符可有可无
+# （"(Strong recommendation, moderate certainty evidence)"）——两种词都收，
+# 否则整批 WHO IRIS 指南的确定性字段会**静默留空**（实测 parse_grade 对
+# WHO 的 4 种写法强度全对、确定性全 None，见 DESIGN §6f）。
+# 末尾的可选 "of"：WHO 结核指南写 "moderate certainty of evidence for diagnostic
+# accuracy"，比 _CERTAINTY 少了倒装、比上面的写法多了一个 of，两条都不认它。
 _CERTAINTY_INLINE = re.compile(
-    r"\b(very\s+low|low|moderate|high)[-\s]quality\s+evidence", re.I)
+    r"\b(very\s+low|low|moderate|high)[-\s](?:quality|certainty)(?:\s+of)?\s+evidence", re.I)
 # "Recommendation strength B" / "推荐强度 B" 这类字母制（韩国 CPG 用 A/B/C/E）
 _LETTER = re.compile(r"recommendation\s+strength\s+([A-E])\b", re.I)
 
