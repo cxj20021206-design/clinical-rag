@@ -68,3 +68,9 @@ claim_card:
       evidence_stage:
         quote: "Using longitudinal plasma %p-tau217 ... from two independent cohorts (n = 258 and n = 345)"
         locator: abstract
+      population.age_group:
+        status: inferred
+        note: "AD 前驱期队列，论文未给年龄纳入标准；按成人推断。"
+      clinical_task:
+        quote: "Predicting not just if, but also when, cognitively unimpaired individuals are likely to develop onset of Alzheimer's disease (AD) symptoms"
+        locator: abstract

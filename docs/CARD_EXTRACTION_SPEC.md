@@ -157,6 +157,30 @@ clinical practice" —— 它当下的用途是**临床试验富集**，不是�
   常常写得含糊。抽卡器上线前需要一份更细的判定表。
 - **一篇论文出多张卡的自动拆分未验证**：本版 6 篇里只有 `llm_chatbot_transitions_rct`
   真正需要拆（问诊 / 开单 / 转诊报告三个任务），gold 里先只出了主卡。
-- **`condition.breadth` / `scope_type` / `intended_context` / `finding_direction` 四个
-  新字段只写进 gold，尚未接入 `claim_card.py` 的校验与 legacy 视图**。接之前不要让
-  抽卡器产出它们，否则会走 `study_design` 那个坑的老路（自造字段静默改变下游行为）。
+- ~~四个新字段尚未接入 `claim_card.py`~~ —— ✅ 2026-07-29 已接入。三处放宽 + 四个受控枚举
+  （`CONDITION_BREADTH` / `SCOPE_TYPES` / `INTENDED_CONTEXTS` / `FINDING_DIRECTIONS`）
+  + `PROVENANCE_STATUS`。**刻意只接入不消费**：新字段通过 `ClaimCard.scope_type` /
+  `disease_gating_applicable` / `intended_context` / `finding_direction` 暴露，但不改变
+  任何检索行为 —— `study_design` 那次的教训是引入受控字段前必须先查既有消费方。
+  回归证明零副作用：`check_gates` 输出**逐字一致**，五张示例卡记录数不变
+  （105/141/137/110/105）。
+- **`not_extracted` 现在是硬错误**（而非警告）：它表示抽卡器没找到，是系统故障。放它过去，
+  故障会被下游当成"论文没写"记进缺口报告 —— 系统的问题算成论文的缺陷，分数反而更好看。
+  确认论文确实没写请改标 `absent`。另新增第三种状态 `inferred`（没明写但可合理推断，
+  可接受但必须标出来；6 张 gold 里有 4 处用到，全部是年龄纳入标准）。
+
+## 12. gold 卡跑出来的第一批真实结果（2026-07-29）
+
+两张 gold 卡端到端跑通，**这是本系统第一次在"不知道答案"的输入上运行**：
+
+- `febrile_children_referral` → 101 条，schema 零错，**normative 命中 0 条**。
+  这是真实缺口而非故障：论文以 **WHO danger signs（IMCI 体系）** 为对照基线，而库里
+  没有 IMCI。registry 侧检回了高度切题的同类研究（*Electronic Algorithms Based on Host
+  Biomarkers to Manage Febrile Children*、*Validation of a CDSA Strategy to Reduce
+  Antibiotic Prescription in Senegal*）。
+  → **WHO IMCI 成为第一个由真实论文驱动、而非按病种猜测得出的摄入目标。**
+- `pathology_fm_benchmark`（C0 / research_only） → 100 条。CONSORT-AI、DECIDE-AI、
+  QUADAS-3、SPIRIT-AI **全部因证据阶段不匹配被拦截并打印理由**（"对 C0 论文套用本清单
+  属越级要求"），TRIPOD+AI 52 条与 PROBAST+AI 34 条正确启用，normative 为空。
+  与本卡 `expected_external_behaviour` 里预先写下的期望**逐条吻合** —— 这是 gold 卡
+  第一次发挥"可对照的预期"作用，而不是事后解释。

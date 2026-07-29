@@ -70,3 +70,10 @@ claim_card:
       evidence_stage:
         quote: "PreA was tested in a randomized controlled trial involving 111 specialists from 24 medical disciplines across two health centers"
         locator: abstract
+      population.age_group:
+        status: inferred
+        note: "论文只给了性别构成（1,141 women; 928 men），未给年龄纳入标准；按成人专科门诊推断。"
+      clinical_task:
+        quote: "significantly reduced physician consultation duration"
+        locator: abstract
+        note: "主要终点检验的是问诊/文书负担，故 task=documentation（SPEC §4）。"

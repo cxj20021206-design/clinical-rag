@@ -72,6 +72,38 @@ CLINICAL_TASKS = ("screening", "prevention", "diagnosis", "triage", "prognostica
                   "documentation")
 EVIDENCE_STAGES = ("C0", "C1", "C2", "C3", "C4")
 
+# —— 以下四组来自 docs/CARD_EXTRACTION_SPEC.md，2026-07-29 人工拆解 6 篇真实论文得出。
+# 六篇里**没有一篇**是"单病种 + 单任务 + 人群整齐"的，而此前 5 张合成示例卡全是这样。
+
+# 病种宽度。cardiac MRI 那篇覆盖 39 种心血管疾病，但对任一种都无单独临床声明。
+# 判据不是病种数量，而是"论文自己是否为该病种做了单独的临床声明"（SPEC §1/§2）。
+CONDITION_BREADTH = ("narrow", "broad")
+
+# 论文管的是病、是流程、还是人群健康。**这个字段决定病种门控的"空"该怎么读**：
+#   disease + 无匹配        → 不匹配 → 计入 normative 缺口报告（该补库）
+#   care_process            → **不适用** → 不计入缺口
+# 混淆二者会让缺口报告失真：流程类论文会撑大"normative 覆盖不足"的数字，
+# 掩盖真正缺指南的病种（SPEC §3）。
+SCOPE_TYPES = ("disease", "care_process", "population_health")
+
+# 用途语境。ptau217 那篇明写 "useful to clinical trials and **eventually** clinical
+# practice" —— 当下用途是试验富集，不是临床决策。对这类论文硬套临床服务类推荐
+# （USPSTF 的预防服务职权）属越级要求，同 §6b「论文 C1 却拿 CONSORT-AI 要求它」（SPEC §6）。
+INTENDED_CONTEXTS = ("clinical_care", "clinical_trial", "research_only")
+
+# 论文结论方向。外部通道该检索什么标准与结论方向无关（阴性与阳性的分诊 RCT 要对齐
+# 同一批标准），但**审稿重点不同**：阴性结果论文要查的是结论是否被过度外推（SPEC §8）。
+FINDING_DIRECTIONS = ("positive", "negative", "mixed", "not_applicable")
+
+# provenance 里每个 gating 字段的取得方式。
+#   quote 存在        → 有原文，最佳
+#   absent            → 论文确实没写。**这是审稿发现**
+#   inferred          → 论文没明写，由上下文合理推断（可接受，但必须标出来）
+#   not_extracted     → 抽卡器没找到。**这是系统故障，硬错误，不得进入检索**
+# 混掉 absent 与 not_extracted 会让"弃权/缺口报告率"指标失效：系统的故障被记成
+# 论文的缺陷，分数看起来反而更好（SPEC §9，docs/RELATED_WORK.md §2）。
+PROVENANCE_STATUS = ("absent", "inferred", "not_extracted")
+
 # 研究设计**沿用报告清单层已有的词表**（curated/reporting_tools/*.yaml 的
 # applicability.study_designs），不另起一套——`infer_study_designs` 里"卡里显式声明
 # 时以声明为准"是**整体替换**推断结果的，词表对不上会让所有清单静默失效
@@ -114,11 +146,24 @@ def validate_card(doc: dict) -> tuple[list[str], list[str]]:
     """返回 (errors, warnings)。errors 非空 = 不得进入检索。"""
     errs, warns = [], []
     g = doc.get("gating") or {}
-    cond = (g.get("condition") or {}).get("primary") or {}
+    condition = g.get("condition") or {}
+    cond = condition.get("primary") or {}
     label = str(cond.get("label") or "").strip()
+    scope_type = condition.get("scope_type") or "disease"
+
+    if scope_type not in SCOPE_TYPES:
+        errs.append(f"gating.condition.scope_type={scope_type!r} 不在受控枚举 {SCOPE_TYPES}")
+    breadth = condition.get("breadth") or "narrow"
+    if breadth not in CONDITION_BREADTH:
+        errs.append(f"gating.condition.breadth={breadth!r} 不在受控枚举 {CONDITION_BREADTH}")
 
     if not label:
-        errs.append("gating.condition.primary.label 缺失 —— 没有病种就没有门控依据")
+        # scope_type=care_process 的论文本就没有病种（跨 24 个专科的转诊流程研究），
+        # 强行要求一个 label 只会逼出编造的病种。但 disease 类必须有——否则门控无依据。
+        if scope_type == "disease":
+            errs.append("gating.condition.primary.label 缺失 —— 没有病种就没有门控依据。"
+                        "若论文本就不针对病种（流程/人群健康类），"
+                        "请显式声明 gating.condition.scope_type")
     else:
         toks = {t.strip(".,;/:") for t in label.lower().replace("/", " ").split()}
         for group, name in ((NON_CLINICAL, "ML 术语"), (_MODALITY_WORDS, "影像/数据模态词"),
@@ -133,10 +178,20 @@ def validate_card(doc: dict) -> tuple[list[str], list[str]]:
     pop = g.get("population") or {}
     if pop.get("age_group") not in AGE_GROUPS:
         errs.append(f"gating.population.age_group={pop.get('age_group')!r} 不在受控枚举 {AGE_GROUPS}")
-    if g.get("care_setting") not in CARE_SETTINGS:
+    # care_setting / clinical_task 允许为空，但**空必须有交代**（provenance 里标 absent）。
+    # 理由：ptau217 明说用途是临床试验、pathology benchmark 全文无临床用途主张，
+    # 为了填满枚举而硬编一个场景，等于把编造的门控依据固化进卡（SPEC §6/§7）。
+    # 空值本身在 legacy 视图里落成空串，现有连接器行为不变（不匹配→不提示，非误拦）。
+    if g.get("care_setting") is not None and g.get("care_setting") not in CARE_SETTINGS:
         errs.append(f"gating.care_setting={g.get('care_setting')!r} 不在受控枚举 {sorted(CARE_SETTINGS)}")
-    if g.get("clinical_task") not in CLINICAL_TASKS:
+    if g.get("clinical_task") is not None and g.get("clinical_task") not in CLINICAL_TASKS:
         errs.append(f"gating.clinical_task={g.get('clinical_task')!r} 不在受控枚举 {CLINICAL_TASKS}")
+    ic = doc.get("intended_context") or (g.get("intended_context") or "clinical_care")
+    if ic not in INTENDED_CONTEXTS:
+        errs.append(f"intended_context={ic!r} 不在受控枚举 {INTENDED_CONTEXTS}")
+    fd = doc.get("finding_direction") or (g.get("finding_direction"))
+    if fd is not None and fd not in FINDING_DIRECTIONS:
+        errs.append(f"finding_direction={fd!r} 不在受控枚举 {FINDING_DIRECTIONS}")
     if g.get("evidence_stage") not in EVIDENCE_STAGES:
         errs.append(f"gating.evidence_stage={g.get('evidence_stage')!r} 不在 {EVIDENCE_STAGES}")
     sd = g.get("study_design") or []
@@ -148,12 +203,23 @@ def validate_card(doc: dict) -> tuple[list[str], list[str]]:
     if not doc.get("submission_date"):
         errs.append("submission_date 缺失 —— predates 门控是全系统唯一的硬门控，不能没有它")
 
-    # provenance：合成示例卡可豁免，真实抽取的卡必须给出处
+    # provenance：合成示例卡可豁免，真实抽取的卡必须给出处。
+    # 字段可写在 provenance.fields.<key>（推荐，gold 卡用这种）或直接 provenance.<key>。
     prov = doc.get("provenance") or {}
+    fields = prov.get("fields") or {}
     if prov.get("source") != "synthetic_example":
         for key in ("condition.primary", "population.age_group", "care_setting", "clinical_task"):
-            p = prov.get(key) or {}
-            if not (p.get("quote") or p.get("status")):
+            p = fields.get(key) or prov.get(key) or {}
+            status = p.get("status")
+            if status and status not in PROVENANCE_STATUS:
+                errs.append(f"provenance[{key}].status={status!r} 不在 {PROVENANCE_STATUS}")
+            elif status == "not_extracted":
+                # **这是硬错误而不是警告**：not_extracted 表示抽卡器没找到，是系统故障。
+                # 放它过去，故障就会被下游当成"论文没写"记进缺口报告——系统的问题被
+                # 算成论文的缺陷，分数反而更好看（SPEC §9）。
+                errs.append(f"provenance[{key}].status=not_extracted —— 这是抽取故障而非"
+                            f"审稿发现，不得进入检索。确认论文确实没写请改标 absent。")
+            elif not (p.get("quote") or status):
                 errs.append(f"provenance[{key}] 缺失 —— 抽卡器会幻觉，gating 字段必须可回溯到原文")
     d = doc.get("descriptive") or {}
     for k in ("comparator", "claimed_benefit", "intended_use"):
@@ -183,6 +249,32 @@ class ClaimCard:
     @property
     def descriptive(self) -> dict:
         return self.doc.get("descriptive") or {}
+
+    # —— 以下四个属性只**暴露**新字段，本版不改变任何检索行为（SPEC §2/§11）。
+    # 刻意先接入不消费：`study_design` 那次的教训是引入受控字段前必须先查既有消费方，
+    # 否则自造值会静默改变下游（肺癌卡 105→15 条、所有报告清单静默关闭）。
+    @property
+    def scope_type(self) -> str:
+        return ((self.gating.get("condition") or {}).get("scope_type")) or "disease"
+
+    @property
+    def disease_gating_applicable(self) -> bool:
+        """病种门控是否适用于本卡。
+
+        **`不适用` 与 `不匹配` 必须分开**（SPEC §3）：前者是"论文本就不针对病种"
+        （跨 24 个专科的转诊流程研究），不该计入 normative 缺口；后者是"有病种但
+        库里没有对应指南"，正是缺口报告要抓的。混掉会让缺口数字被流程类论文撑大。
+        """
+        return self.scope_type == "disease" and bool(self.legacy.get("disease_or_condition"))
+
+    @property
+    def intended_context(self) -> str:
+        return (self.doc.get("intended_context")
+                or self.gating.get("intended_context") or "clinical_care")
+
+    @property
+    def finding_direction(self) -> str | None:
+        return self.doc.get("finding_direction") or self.gating.get("finding_direction")
 
     @property
     def legacy(self) -> dict:

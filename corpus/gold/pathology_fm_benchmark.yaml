@@ -79,3 +79,6 @@ claim_card:
         locator: abstract
         note: "'clinically relevant tasks' 指标签的临床相关性，不等于主张临床部署——
                这个区分是本卡的关键判断，抽卡器最容易在此误判为 clinical_care。"
+      population.age_group:
+        status: inferred
+        note: "成人实体瘤队列（肺/结直肠/胃/乳腺癌），论文未给年龄纳入标准。"

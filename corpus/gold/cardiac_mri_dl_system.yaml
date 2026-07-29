@@ -67,3 +67,6 @@ claim_card:
       population.age_group:
         status: inferred
         note: "论文未给年龄纳入标准；成人心脏 MRI 队列，标 inferred。"
+      clinical_task:
+        quote: "the diagnosis of 39 different conditions such as cardiac amyloidosis and hypertrophic cardiomyopathy"
+        locator: abstract
