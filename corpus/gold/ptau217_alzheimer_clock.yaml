@@ -1,0 +1,70 @@
+# GOLD 卡（人工拆解，2026-07-29）
+# 论文：Predicting onset of symptomatic Alzheimer's disease with plasma p-tau217 clocks.
+#       Nat Med 2026. DOI: 10.1038/s41591-026-04206-y
+#
+# 本卡演示的规则：§6（用途语境 = clinical_trial，不要为填满 care_setting 而硬编临床场景）
+claim_card:
+  submission_date: "2025-07-06"
+  region: null
+
+  gating:
+    condition:
+      primary: {label: "Alzheimer's disease", codes: {}}
+      breadth: narrow
+      scope_type: disease
+      qualifiers: {target_event: "onset of symptomatic AD", baseline_state: "cognitively unimpaired"}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: adult
+      age_range_text: null
+      special: ["cognitively_unimpaired", "asymptomatic"]   # 无症状人群——预防/筛查侧的标志
+    care_setting: null               # §6：**不硬填**。论文说用途是临床试验，
+                                     # 并未声明在哪个临床场景使用
+    clinical_task: prognostication
+    evidence_stage: "C2"             # 两个独立队列（n=258 与 n=345）
+    study_design: []
+    intended_context: clinical_trial # §6：明写 "useful to clinical trials and,
+                                     # **eventually**, clinical practice" ——
+                                     # 当下用途是试验富集，不是临床决策。
+                                     # 后果：临床服务类 normative（USPSTF 预防服务职权）
+                                     # 不应硬套，否则属越级要求。
+    finding_direction: positive
+
+  descriptive:
+    intended_use: "Plasma %p-tau217 clock models to predict not just if but when cognitively unimpaired individuals will develop AD symptoms"
+    target_population: "Cognitively unimpaired individuals with longitudinal plasma %p-tau217 measured at least 1 year apart (n=258 and n=345)"
+    intended_user: "clinical trial designers; eventually clinicians"
+    model_input: "longitudinal plasma %p-tau217 (phosphorylated/non-phosphorylated tau at position 217)"
+    model_output: "predicted time to onset of symptomatic AD"
+    clinical_decision_affected: "trial enrichment / participant selection; eventually counselling and treatment timing"
+    comparator: "amyloid and tau PET-based clock models"
+    secondary_tasks: []
+    claimed_benefit: "a plasma-based model would be more accessible than PET-based clock models"
+    deployment_claim_level: "development and validation in two independent cohorts; no clinical deployment"
+    clinical_context: |
+      对照的是已有的基于淀粉样蛋白与 tau PET 的 clock 模型；论文主张血浆方案更易获得。
+      人群为认知未受损者（无症状），预测目标是症状出现的**时间**而非是否发生。
+      本字段不参与任何门控。
+
+  provenance:
+    source: "corpus/text/ptau217_alzheimer_clock.txt"
+    extraction: manual_gold
+    fields:
+      condition.primary:
+        quote: "Predicting onset of symptomatic Alzheimer's disease with plasma p-tau217 clocks"
+        locator: title
+      intended_context:
+        quote: "would be useful to clinical trials and, eventually, clinical practice"
+        locator: abstract
+        note: "'eventually' 是关键词：它把临床实践放在未来，故当下 intended_context=clinical_trial。
+               抽卡器极易忽略这个副词而误判为 clinical_care。"
+      care_setting:
+        status: absent
+        note: "论文未声明临床使用场景（与 intended_context=clinical_trial 一致）。"
+      population.special:
+        quote: "cognitively unimpaired individuals are likely to develop onset of Alzheimer's disease (AD) symptoms"
+        locator: abstract
+      evidence_stage:
+        quote: "Using longitudinal plasma %p-tau217 ... from two independent cohorts (n = 258 and n = 345)"
+        locator: abstract

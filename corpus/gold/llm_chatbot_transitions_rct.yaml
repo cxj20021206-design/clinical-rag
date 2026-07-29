@@ -1,0 +1,72 @@
+# GOLD 卡（人工拆解，2026-07-29）
+# 论文：An LLM chatbot to facilitate primary-to-specialist care transitions: a randomized
+#       controlled trial. Nat Med 2026. DOI: 10.1038/s41591-025-04176-7
+#
+# 本卡演示的规则：§3（无病种论文 → scope_type=care_process，病种门控"不适用"而非"不匹配"）、
+# §4（多任务时主任务由主要终点决定）、§1（这是六篇里唯一真正该拆多张卡的）
+claim_card:
+  submission_date: "2025-06-03"
+  region: null
+
+  gating:
+    condition:
+      primary: null                  # §3：跨 24 个专科的转诊流程研究，**没有特定病种**
+      breadth: broad
+      scope_type: care_process       # ← 关键：病种门控结果应为「不适用」，
+                                     # **不计入 normative 缺口报告**（否则会撑大缺口数字、
+                                     # 掩盖真正缺指南的病种）
+      qualifiers: {process: "primary-to-specialist referral"}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: adult
+      age_range_text: null
+      special: []
+    care_setting: primary_care       # 干预发生在专科就诊**之前**的初级保健侧
+    clinical_task: documentation     # §4：主要终点是医生问诊时长、照护协调评分、
+                                     # 患者沟通便利度 —— 检验的是"问诊与转诊报告的生成
+                                     # 是否替代了医生的文书与问诊工作"。
+                                     # 按"模型在做什么"会填 diagnosis（它确实出初步诊断），
+                                     # 但主要终点并未检验诊断准确性。
+    evidence_stage: "C4"
+    study_design: []
+    intended_context: clinical_care
+    finding_direction: positive
+
+  descriptive:
+    intended_use: "Patient-facing LLM chatbot (PreA) performing history-taking, preliminary diagnosis and test ordering before specialist consultation, and generating referral reports"
+    target_population: "2,069 patients (1,141 women; 928 men) referred to 111 specialists across 24 disciplines at two health centers"
+    intended_user: "patients (autonomous use) and support staff"
+    model_input: "patient-reported history via chat dialogue"
+    model_output: "preliminary diagnosis, test orders, referral report for the specialist"
+    clinical_decision_affected: "which tests are ordered before specialist visit; content of the referral"
+    comparator: "no chatbot (No-PreA); and chatbot with staff support (PreA-human)"
+    secondary_tasks: ["diagnosis", "treatment_selection"]   # 初步诊断、检查开单
+    claimed_benefit: "reduced physician consultation duration, improved care coordination and patient-reported communication ease"
+    deployment_claim_level: "randomized controlled trial in routine referral workflow"
+    clinical_context: |
+      三臂随机（PreA-only / PreA-human / No-PreA）。主要终点达成：PreA-only 组医生问诊时长
+      较 No-PreA 减少 28.7%（3.14±2.25 vs 4.41±2.77 min, P<0.001），照护协调评分提升 113.1%，
+      患者沟通便利度提升 16.0%。PreA-only 与 PreA-human 结果等价，支持自主运行能力。
+      本字段不参与任何门控。
+
+  # §1：本篇真正应拆为多张卡（问诊 / 初步诊断与开单 / 转诊报告生成），三者的对齐标准不同。
+  # 本 gold 只出主卡，拆分留待抽卡器阶段验证，见 SPEC §11。
+  split_note: "should_split: true —— 主卡=documentation；待拆：diagnosis(初步诊断)、test ordering"
+
+  provenance:
+    source: "corpus/text/llm_chatbot_transitions_rct.txt"
+    extraction: manual_gold
+    fields:
+      condition.primary:
+        status: absent
+        note: "§3/§9：跨 24 个专科，论文不针对任何特定病种。absent 是事实而非抽取失败。"
+      care_setting:
+        quote: "to streamline inefficient transitions from primary to specialist care"
+        locator: abstract
+      clinical_task:
+        quote: "The trial met its primary end points with the PreA-only group showing significantly reduced physician consultation duration"
+        locator: abstract
+      evidence_stage:
+        quote: "PreA was tested in a randomized controlled trial involving 111 specialists from 24 medical disciplines across two health centers"
+        locator: abstract

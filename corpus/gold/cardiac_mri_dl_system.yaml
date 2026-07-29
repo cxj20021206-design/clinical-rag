@@ -1,0 +1,69 @@
+# GOLD 卡（人工拆解，2026-07-29）
+# 论文：A generalizable deep learning system for cardiac MRI. Nat BME 2026.
+#       DOI: 10.1038/s41551-026-01637-3
+#
+# 本卡演示的规则：§2（多病种 → 上位概念 + breadth=broad，39 个具体病名**不进 gating**）
+claim_card:
+  submission_date: "2024-10-16"
+  region: "US"
+
+  gating:
+    condition:
+      primary: {label: "cardiovascular disease", codes: {}}
+      breadth: broad                 # §2：诊断 39 种疾病，但对任一种都无单独临床声明——
+                                     # 是一个通用视觉系统在多标签上评测。
+                                     # 具体病名（心脏淀粉样变、肥厚型心肌病…）进 clinical_context，
+                                     # **不进 gating**：否则会命中一堆专病指南，
+                                     # 而拿单病种指南要求通用系统属越级要求。
+      scope_type: disease
+      qualifiers: {modality: "cine-sequence cardiac MRI"}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: adult
+      age_range_text: null
+      special: []
+    care_setting: outpatient_specialty
+    clinical_task: diagnosis
+    evidence_stage: "C2"             # 四家学术机构训练/评估 + UK Biobank + 两个公开外部集
+    study_design: []
+    intended_context: clinical_care
+    finding_direction: positive
+
+  descriptive:
+    intended_use: "Foundational vision system for cardiac MRI representing the breadth of human cardiovascular disease and health"
+    target_population: "Patients undergoing cardiac MRI at four large US academic clinical institutions; plus UK BioBank and two public external datasets"
+    intended_user: "cardiac imaging clinicians / radiologists"
+    model_input: "cine-sequence cardiac MRI scans (trained via self-supervised contrastive learning from raw radiology report text)"
+    model_output: "left-ventricular ejection fraction regression; diagnosis of 39 conditions"
+    clinical_decision_affected: "cardiac diagnosis and functional assessment"
+    comparator: "same network architecture fine-tuned from a Kinetics-400 checkpoint (baseline)"
+    secondary_tasks: ["risk_stratification"]
+    claimed_benefit: "generalizable performance across a broad range of cardiac conditions and tasks"
+    deployment_claim_level: "retrospective multi-institution evaluation; no prospective deployment"
+    clinical_context: |
+      涵盖的 39 种病含心脏淀粉样变（cardiac amyloidosis）、肥厚型心肌病（hypertrophic
+      cardiomyopathy）等。自监督对比学习，从放射报告原文中学习视觉概念。评估含 LVEF 回归。
+      注意：本文与库内 WHO RF/RHD 指南（风湿性心脏病、超声心动图筛查）**不构成匹配** ——
+      病种上位概念不同、影像模态不同（MRI vs 超声），预期为缺口而非命中。
+      本字段不参与任何门控。
+
+  provenance:
+    source: "corpus/text/cardiac_mri_dl_system.txt"
+    extraction: manual_gold
+    fields:
+      condition.primary:
+        quote: "capable of representing the breadth of human cardiovascular disease and health"
+        locator: abstract
+      condition.breadth:
+        quote: "the diagnosis of 39 different conditions such as cardiac amyloidosis and hypertrophic cardiomyopathy"
+        locator: abstract
+      care_setting:
+        quote: "We train and evaluate our model on data from four large academic clinical institutions in the United States."
+        locator: abstract
+      evidence_stage:
+        quote: "We additionally showcase the performance of our models on the UK BioBank and two additional publicly available external datasets."
+        locator: abstract
+      population.age_group:
+        status: inferred
+        note: "论文未给年龄纳入标准；成人心脏 MRI 队列，标 inferred。"

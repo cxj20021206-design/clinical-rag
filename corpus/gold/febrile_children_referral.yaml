@@ -1,0 +1,70 @@
+# GOLD 卡（人工拆解，2026-07-29）
+# 论文：Predicting referral need for febrile children in low-resource community settings
+#       in South and Southeast Asia. Nat Med 2026. DOI: 10.1038/s41591-026-04338-1
+#
+# 本卡演示的规则：§5（人群跨段）。另：本文以 **WHO danger signs** 为对照基线，
+# 是外部规范通道的干净正向测试——该标准（WHO IMCI 体系）**未被预先摄入**，
+# 因此本卡能检验"缺口报告"而非"我事先埋好的答案"。
+claim_card:
+  submission_date: "2025-10-12"
+  region: null                       # 孟加拉/柬埔寨/印尼/老挝/越南五国，非单一地区
+
+  gating:
+    condition:
+      primary: {label: "acute febrile illness", codes: {}}
+      breadth: narrow
+      scope_type: disease
+      qualifiers: {acquisition: community-acquired, severity_outcome: "death or organ support within 2 days"}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: child               # §5：实为 1–59 months，横跨 infant 与 child 两段。
+                                     # 同属儿科 → 填更宽的 child，不填 mixed
+                                     # （mixed 会让成人/儿科硬拦失效，那道门是核心保护）
+      age_range_text: "1-59 months"
+      special: ["low_resource_setting"]
+    care_setting: community
+    clinical_task: triage
+    evidence_stage: "C2"             # 开发 + 外部验证（柬埔寨数据留出）
+    study_design: []
+    intended_context: clinical_care
+    finding_direction: positive
+
+  descriptive:
+    intended_use: "Clinical prediction models to support referral decisions for febrile children in resource-constrained community settings"
+    target_population: "3,405 children aged 1-59 months presenting with community-acquired acute febrile illness to seven hospitals"
+    intended_user: "community health workers / frontline clinicians in low-resource settings"
+    model_input: "simple clinical parameters; optionally pulse oximetry (SpO2) or host biomarker sTREM1"
+    model_output: "predicted need for referral (risk of severe disease)"
+    clinical_decision_affected: "whether to refer a febrile child to higher-level care"
+    comparator: "WHO danger signs criteria"      # ← 直接指向外部规范来源
+    secondary_tasks: ["risk_stratification"]
+    claimed_benefit: "higher sensitivity than WHO criteria with threefold reduction in referral rates; cost-effective"
+    deployment_claim_level: "development and external validation only; no prospective deployment"
+    clinical_context: |
+      简单临床参数模型敏感度 74.7% / 特异度 99.1%，优于 WHO 标准（55.5% / 82.6%）；加入脉搏
+      血氧或 sTREM1 后敏感度升至 88.9% / 89.2%。成本效果 ICER 分别为 $26.28 与 $196.46。
+      论文亦指出 WHO 危险征象存在众所周知的观察者间变异。本字段不参与任何门控。
+
+  provenance:
+    source: "corpus/text/febrile_children_referral.txt"
+    extraction: manual_gold
+    fields:
+      condition.primary:
+        quote: "children aged 1-59 months presenting with community-acquired acute febrile illnesses"
+        locator: abstract
+      population.age_group:
+        quote: "children aged 1-59 months"
+        locator: abstract
+      care_setting:
+        quote: "In resource-constrained community settings, identifying which febrile children require referral remains a major unmet need."
+        locator: abstract
+      clinical_task:
+        quote: "developed and validated clinical prediction models to support referral decisions"
+        locator: abstract
+      evidence_stage:
+        quote: "Cambodian data were held out for external validation."
+        locator: abstract
+      comparator:
+        quote: "outperformed WHO criteria (sensitivity 55.5% ...) for identification of children at risk of severe disease"
+        locator: abstract

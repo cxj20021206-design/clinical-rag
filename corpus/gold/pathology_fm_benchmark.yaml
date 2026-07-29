@@ -1,0 +1,81 @@
+# GOLD 卡（人工拆解，2026-07-29）
+# 论文：Benchmarking foundation models as feature extractors for weakly supervised
+#       computational pathology. Nat BME 2025. DOI: 10.1038/s41551-025-01516-3
+#
+# 本卡演示的规则：§7（C0 纯基准论文要出卡且显式 N/A）、§2（多病种填上位概念）、
+# §9（absent 是审稿发现，不是抽取故障）。
+# **这是最重要的一张 gold 卡**：它检验系统能否说出"本文不需要临床规范对齐"。
+claim_card:
+  submission_date: "2024-08-28"
+  region: null
+
+  gating:
+    condition:
+      primary: {label: "solid tumours", codes: {}}
+      breadth: broad                 # §2：肺/结直肠/胃/乳腺四种癌，但对任一种都无单独临床声明
+      scope_type: disease
+      qualifiers: {}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: adult
+      age_range_text: null
+      special: []
+    care_setting: null               # §9：**absent，不是 not_extracted**。全文搜不到任何
+                                     # 临床部署场景的主张——这本身是审稿发现（一篇声称
+                                     # "extract clinically relevant information"的论文
+                                     # 没有说明它要在什么临床场景使用）
+    clinical_task: null              # §7：无单一临床任务。终点是 13 个队列上的 AUROC，
+                                     # 任务是"哪个特征提取器更好"，不是临床决策
+    evidence_stage: "C0"             # 离线基准，无临床部署，无前瞻验证
+    study_design: []
+    intended_context: research_only  # §6：全文无临床用途主张
+    finding_direction: positive      # 对"CONCH 表现最好"这一方法学结论而言
+
+  descriptive:
+    intended_use: "Methodological benchmark of 19 histopathology foundation models as feature extractors; no clinical use claimed"
+    target_population: "6,818 patients / 9,528 slides across 13 cohorts (lung, colorectal, gastric, breast cancer)"
+    intended_user: "computational pathology researchers"
+    model_input: "whole-slide histopathology images"
+    model_output: "slide-level features → weakly supervised predictions of biomarkers, morphology, prognosis"
+    clinical_decision_affected: null       # absent：论文未主张影响任何临床决策
+    comparator: "other foundation models (vision-only vs vision-language); current state of the art ensembles"
+    secondary_tasks: []
+    claimed_benefit: "identifies which foundation model performs best and shows complementary features can be fused"
+    deployment_claim_level: "offline benchmark only"
+    clinical_context: |
+      19 个组织病理基础模型 × 13 个队列（6,818 例患者 / 9,528 张切片），任务为生物标志物、
+      形态学性质与预后结局的弱监督预测。CONCH（视觉-语言模型）总体最佳，Virchow2 次之，
+      但在低数据量与低患病率任务上优势减弱。CONCH+Virchow2 集成在 55% 的任务上超过单模型。
+      本字段不参与任何门控。
+
+  # 期望的外部检索结果（gold 的一部分：不只是卡对不对，还有系统该怎么反应）
+  expected_external_behaviour:
+    normative: "N/A —— 论文未主张临床用途（intended_context=research_only, C0），
+                套用临床服务推荐属越级要求。系统应打印此理由而非返回空或强行匹配。"
+    reporting_tool: "TRIPOD+AI / PROBAST+AI 适用（预测模型开发与偏倚评估）；
+                     CONSORT-AI / DECIDE-AI 应被拦截（分别适用 C4 / C3）。"
+    note: "这正是 RELATED_WORK §2 说的弃权机制：能说出'本文不需要临床规范对齐'本身是审稿能力。"
+
+  provenance:
+    source: "corpus/text/pathology_fm_benchmark.txt"
+    extraction: manual_gold
+    fields:
+      condition.primary:
+        quote: "13 patient cohorts with 6,818 patients and 9,528 slides from lung, colorectal, gastric and breast cancers"
+        locator: abstract
+      evidence_stage:
+        quote: "Here we benchmark 19 histopathology foundation models on 13 patient cohorts"
+        locator: abstract
+      care_setting:
+        status: absent
+        note: "已检索 Abstract/Methods/Results/Discussion，全文无临床部署场景主张。
+               §9：absent（审稿发现），非 not_extracted（抽取故障）。"
+      clinical_task:
+        status: absent
+        note: "无单一临床任务；评测终点为模型间比较。"
+      intended_context:
+        quote: "There is currently limited literature independently evaluating these foundation models on external cohorts and clinically relevant tasks"
+        locator: abstract
+        note: "'clinically relevant tasks' 指标签的临床相关性，不等于主张临床部署——
+               这个区分是本卡的关键判断，抽卡器最容易在此误判为 clinical_care。"

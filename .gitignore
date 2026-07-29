@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 store/*.jsonl
 store/.cache/
+corpus/text/           # 第三方论文全文（Nature 版权），本地语料不入库；gold 卡内保留必要 quote

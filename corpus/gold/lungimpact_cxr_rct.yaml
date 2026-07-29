@@ -1,0 +1,75 @@
+# GOLD 卡（人工拆解，2026-07-29）—— 抽卡器的评测基准，不是示例。
+# 论文：AI-based chest X-ray prioritization in the lung cancer diagnostic pathway:
+#       the LungIMPACT randomized controlled trial. Nat Med 2026.
+# DOI: 10.1038/s41591-026-04253-5 | 全文 corpus/text/lungimpact_cxr_rct.txt
+#
+# 本卡演示的规则：§4（主任务由主要终点决定）、§8（阴性结果）、§10（Received 而非 Published）
+claim_card:
+  submission_date: "2025-10-06"      # §10：Received: 6 October 2025。
+                                     # Published online 2026-03-24，相差 5.5 个月——用后者会把
+                                     # 这期间发布的指南从 predates=false 翻成 true。
+  region: "GB"
+
+  gating:
+    condition:
+      primary: {label: "lung cancer", codes: {}}
+      breadth: narrow
+      scope_type: disease
+      qualifiers: {pathway_stage: "diagnostic pathway"}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: adult
+      age_range_text: null           # 论文未给年龄区间，仅限定"初级保健转诊的成人胸片"
+      special: []
+    care_setting: primary_care       # 胸片由英国初级保健开具；AI 在放射流程内运行，
+                                     # 但受影响的决策路径属初级保健转诊
+    clinical_task: triage            # §4：AI 做的是**检测**，但主要终点是 time to CT /
+                                     # time to diagnosis，检验的是**分诊优先级**是否改变诊断路径。
+                                     # 按"模型在做什么"会填 diagnosis，那会去找诊断准确性标准，
+                                     # 而本文根本没有主张诊断准确性。
+    evidence_stage: "C4"             # 前瞻性、多中心、随机对照，真实部署于临床流程
+    study_design: []                 # 留空 → 由 C4 推断。自造值会整体替换推断结果（已知坑）
+    intended_context: clinical_care
+    finding_direction: negative      # §8：结论为阴性，且明确建议部署时不应包含流程优先级排序
+
+  descriptive:
+    intended_use: "Immediate AI prioritization of primary care-requested chest X-rays to shorten the lung cancer diagnostic pathway"
+    target_population: "Patients whose chest X-rays were requested by UK primary care (93,326 CXRs analyzed)"
+    intended_user: "radiology reporting workflow / primary care referrers"
+    model_input: "chest X-ray (CXR)"
+    model_output: "AI-detected imaging findings with prioritization flag"
+    clinical_decision_affected: "order and timing of radiology reporting; urgent suspected lung cancer referral"
+    comparator: "same AI available but without prioritization (randomized by day, 'off' arm)"
+    secondary_tasks: ["detection"]
+    claimed_benefit: "reduced time to CT and to lung cancer diagnosis"   # §8：填被检验的假设，不填实测结果
+    deployment_claim_level: "prospective randomized deployment in routine NHS pathway"
+    clinical_context: |
+      两臂均可使用 AI，随机化的是"是否按 AI 结果排优先级"（按日随机）。主要终点为 time to CT
+      与 time to lung cancer diagnosis；次要终点含紧急疑似肺癌转诊数、发病率与分期、转诊与治疗
+      时间、AI 与放射报告一致性、算法准确性。实测主要终点均无显著差异（time to CT 比值 0.97,
+      95% CI 0.93–1.02, P=0.31）。AI 与放射报告不一致 28,261 例（30.3%），专家复核认定其中
+      6,750 例（23.9%）有可处置发现。本字段不参与任何门控。
+
+  provenance:
+    source: "corpus/text/lungimpact_cxr_rct.txt"
+    extraction: manual_gold
+    fields:
+      condition.primary:
+        quote: "AI-based chest X-ray prioritization in the lung cancer diagnostic pathway"
+        locator: title
+      care_setting:
+        quote: "immediate AI prioritization of primary care-requested chest X-rays (CXR)"
+        locator: abstract
+      clinical_task:
+        quote: "influenced time to computed tomography (CT) and lung cancer diagnosis, the primary outcomes"
+        locator: abstract
+      evidence_stage:
+        quote: "This prospective, multicentre, randomized controlled trial"
+        locator: abstract
+      finding_direction:
+        quote: "AI prioritization of CXR requested by UK primary care has no significant impact on the lung cancer pathway."
+        locator: abstract
+      population.age_group:
+        status: inferred          # 论文未明写年龄限制；由"初级保健成人转诊路径"推断
+        note: "未见显式年龄纳入标准，按成人路径推断；抽卡器若填 adult 需标 inferred"
