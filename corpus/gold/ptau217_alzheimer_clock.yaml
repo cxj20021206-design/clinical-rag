@@ -1,4 +1,4 @@
-# GOLD 卡（人工拆解，2026-07-29）
+# 基准卡（**Claude 拆解**，2026-07-29，未经人工核验）—— 回归基准，不是标准答案。
 # 论文：Predicting onset of symptomatic Alzheimer's disease with plasma p-tau217 clocks.
 #       Nat Med 2026. DOI: 10.1038/s41591-026-04206-y
 #
@@ -49,7 +49,9 @@ claim_card:
 
   provenance:
     source: "corpus/text/ptau217_alzheimer_clock.txt"
-    extraction: manual_gold
+    extraction: claude_unverified   # ⚠️ 由 Claude 通读全文拆出，**不是人工**，未经人核验。
+                                   # 作为回归基准有效；作为准确率标准答案无效——抽卡器
+                                   # 也是 Claude，拿它当答案是循环论证（同 SPEC §0）。
     fields:
       condition.primary:
         quote: "Predicting onset of symptomatic Alzheimer's disease with plasma p-tau217 clocks"
@@ -66,7 +68,8 @@ claim_card:
         quote: "cognitively unimpaired individuals are likely to develop onset of Alzheimer's disease (AD) symptoms"
         locator: abstract
       evidence_stage:
-        quote: "Using longitudinal plasma %p-tau217 ... from two independent cohorts (n = 258 and n = 345)"
+        # 同 febrile：原先用省略号删掉了括号内的定义，无法逐字定位（2026-07-31 实测）。
+        quote: "Using longitudinal plasma %p-tau217 (the ratio of phosphorylated to non-phosphorylated tau at position 217) from two independent cohorts (n = 258 and n = 345)"
         locator: abstract
       population.age_group:
         status: inferred

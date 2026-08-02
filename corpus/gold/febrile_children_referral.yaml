@@ -1,4 +1,4 @@
-# GOLD 卡（人工拆解，2026-07-29）
+# 基准卡（**Claude 拆解**，2026-07-29，未经人工核验）—— 回归基准，不是标准答案。
 # 论文：Predicting referral need for febrile children in low-resource community settings
 #       in South and Southeast Asia. Nat Med 2026. DOI: 10.1038/s41591-026-04338-1
 #
@@ -48,7 +48,9 @@ claim_card:
 
   provenance:
     source: "corpus/text/febrile_children_referral.txt"
-    extraction: manual_gold
+    extraction: claude_unverified   # ⚠️ 由 Claude 通读全文拆出，**不是人工**，未经人核验。
+                                   # 作为回归基准有效；作为准确率标准答案无效——抽卡器
+                                   # 也是 Claude，拿它当答案是循环论证（同 SPEC §0）。
     fields:
       condition.primary:
         quote: "children aged 1-59 months presenting with community-acquired acute febrile illnesses"
@@ -66,5 +68,8 @@ claim_card:
         quote: "Cambodian data were held out for external validation."
         locator: abstract
       comparator:
-        quote: "outperformed WHO criteria (sensitivity 55.5% ...) for identification of children at risk of severe disease"
+        # 原先写成 "…(sensitivity 55.5% ...) for identification…"，中间用省略号删掉了
+        # 置信区间——那已经不是逐字引用，evidence.py 无法定位（2026-07-31 实测）。
+        # 规则：quote 内禁止省略，要引两段就给两条 quote。
+        quote: "outperformed WHO criteria (sensitivity 55.5% (95% CI: 39.4−72.7); specificity 82.6% (95% CI: 77.1−87.6)) for identification of children at risk of severe disease"
         locator: abstract

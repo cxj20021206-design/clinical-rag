@@ -2,4 +2,22 @@ __pycache__/
 *.pyc
 store/*.jsonl
 store/.cache/
-corpus/text/           # 第三方论文全文（Nature 版权），本地语料不入库；gold 卡内保留必要 quote
+# 第三方论文全文（Nature 版权），本地语料不入库；gold 卡内保留必要 quote。
+# ⚠️ 原先写成 `corpus/text/    # 注释` —— gitignore **不支持行尾注释**，整行连注释
+# 被当成一个模式，从未生效，6 篇全文已被 8620c97 提交进历史（尚未 push）。
+corpus/text/
+
+# extract.py 装配的调用 bundle：request.md 里嵌了论文全文，且可由 run 目录重新生成。
+# manifest.yaml 里的隔离记录若要留证，请 land 到 04_check/ 而不是留在这里。
+_bundles/
+
+# 两篇新样例（2026-08-01 实跑）的源 PDF 与 MinerU 解析产物：
+#   - Nature Medicine 为订阅制受版权全文；
+#   - ICLR 篇许可未逐条核实 → 一律按保守侧处理。
+# 仓库只保留派生物（卡 / 核查报告 / 检索结果）。原文路径见各 run 的
+# 00_source/metadata.yaml: pdf_origin，可据此重跑 01_parse 复现。
+# ⚠️ 不要写行尾注释 —— gitignore 不支持，corpus/text/ 当初就是这么静默失效的。
+sample/nature_med_apol1_kidney/00_source/*.pdf
+sample/nature_med_apol1_kidney/01_parse/*/
+sample/iclr2024_pediatric_hypoglycemia/00_source/*.pdf
+sample/iclr2024_pediatric_hypoglycemia/01_parse/*/

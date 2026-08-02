@@ -1,0 +1,258 @@
+# 会议/期刊的投稿截止日表 —— **运维方维护，模型不得增改**
+#
+# ## 这张表解决什么问题
+#
+# `predates_paper_submission` 是全系统唯一的硬门控：一份指南发布于论文投稿之后，
+# 就**不得用来指责作者**。它需要两个日期，其中"论文投稿日"通常从论文自身取得
+# （`Received:` / `Accepted:` / 文献检索截止日，见 prompts/stage1_overview.md §③ 阶梯）。
+#
+# **会议的匿名送审稿三档全落空** —— ICLR/NeurIPS 这类 PDF 上没有任何日期。
+# 阶段一会正确地停在第 4 档 `unavailable`，于是 `validate_card()` 硬报错、卡进不了检索。
+# 而 ICLR 的 MedAI 论文正是 MVP 评测的目标语料（DESIGN.md §8）。
+#
+# 决议（2026-08-01）：给阶梯加**第 5 档 `venue_deadline`**，日期由本表提供。
+#
+# ## 三条规矩
+#
+# 1. **模型不得凭记忆推断本表的任何取值。** 模型被问"ICLR 2024 什么时候截止"会给出一个
+#    看起来很像的日期，而**猜错了没有任何地方会报错** —— 错日期是"最像正确"的那种错
+#    （同"不让模型填页码"，PIPELINE_WALKTHROUGH §3④）。
+#    `claim_card.validate_card()` 会拿卡上的日期与本表**逐字比对**，对不上就是硬错误，
+#    因此手工往卡里敲一个日期也绕不过去。
+#
+#    **2026-08-02 修订（运维方决定）**：允许模型**抓取官方页面**代填，条件是
+#    ① `source_url` 必须是实际抓过的那一页，不得编造；
+#    ② `verified_by` 写明"是模型抓的、未经人工复核"，不得冒充人工核实。
+#    禁的始终是**凭记忆生成日期**，不是"取数这件事本身"。
+#
+#    这条修订当场就证明了自己有用：原表里 ICLR 2024 的 `2023-09-22` 是临时脚本按印象
+#    写的，抓官网发现实际是 **09-23**（且是从原定的 09-21 推迟而来）—— 三个候选值
+#    彼此只差一两天，全都"看起来很对"。
+#
+# 2. **`use` 取更早的那一档（有摘要截止就用摘要截止）。** 方向性理由：
+#    日期填得越早 → 越多指南被判成"投稿时尚不存在" → 越少拿标准去要求作者 → **安全侧**。
+#    反过来填晚了，就是拿作者当时看不到的标准指责他，直接违反铁律
+#    （同 SPEC §10「取 Received 不取 Published」，LungIMPACT 那篇两者差 5.5 个月）。
+#
+# 3. **论文自带日期时本表不生效。** 期刊论文有 `Received:`，那是每篇各自的真实日期，
+#    比"全会议一个常数"精确得多。`extract.py stamp-date` 只在 `submission_date: null`
+#    时才补，已有日期一律跳过。
+#
+# ## 已知的粗糙之处（用它出报告时要能说清楚）
+#
+# - **这是"每会议每年一个常数"，不是每篇论文各自的投稿时刻。** 同一届的所有论文共用
+#   一个日期。比真实值粗，但对评测反而有利：同一批论文时间基准统一，可比。
+# - **重投的论文会偏晚**（NeurIPS 被拒改投 ICLR）。但我们审的是这个版本，作者到该届
+#   截止日为止都有机会补上新出的标准，所以用本届截止日是对的。
+# - **拿到的若是 camera-ready 而非送审稿**，作者有过一轮修改机会，正确锚点应更晚；
+#   本表按送审稿口径给值，即再次落在安全侧。
+#
+# ## 怎么加一届
+#
+#   1. 找官方 CFP / 会议主页上写着截止日的那一页，把 URL 填进 `source_url`；
+#   2. `abstract_deadline` / `paper_deadline` 照抄（注意时区：写日期即可，不写时刻）；
+#   3. `use` 指向更早的那个字段名；
+#   4. 亲自核对过之后，把 `verified_by` 填成"谁 + 哪天核的"。**留空会在校验时告警**
+#      （不阻断，但报告里这条日期不能声称已核实）。
+
+schema_version: 1
+maintained_by: operator          # 人工。模型只读不写。
+
+# 下面所有条目的 verified_by 都是同一句 —— 2026-08-02 由模型逐个抓取 source_url
+# 所指页面填入，**没有人复核过**。要转成人工已核，把 verified_by 改成"<谁> <哪天>"。
+
+venues:
+  iclr:
+    display_name: "International Conference on Learning Representations"
+    note: >
+      送审稿双盲，PDF 上只有 "Paper under double-blind review"，无任何日期。
+    editions:
+      2023:
+        abstract_deadline: "2022-09-21"
+        paper_deadline: "2022-09-28"
+        use: abstract_deadline
+        source_url: "https://iclr.cc/Conferences/2023/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Abstract Submission Deadline / Sep 21 '22 (Anywhere on Earth)"、
+          "Paper Submission deadline / Sep 28 '22 (Anywhere on Earth)"。
+      2024:
+        abstract_deadline: "2023-09-23"
+        paper_deadline: "2023-09-28"
+        use: abstract_deadline
+        source_url: "https://iclr.cc/Conferences/2024/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Sep 23 '23 (Anywhere on Earth)"（Abstract Deadline）、
+          "Sep 28 '23 (Anywhere on Earth)"（Paper Submission Deadline）；
+          CallForPapers 页另称 "Abstract submission: 11:59pm, Sept 23"，
+          并说明摘要截止**由原定 9/21 推迟至 9/23**。
+          ⚠️ **订正记录**：本条原为 "2023-09-22"，是 2026-08-01 临时脚本
+          （sample/iclr2024_pediatric_hypoglycemia/05_retrieval/_make_operator_variant.py，
+          已删除）按印象写的，抓官网后订正。09-21/09-22/09-23 三个值只差一两天且
+          都"看起来很对"，正是文件头规矩 1 要防的那类错。
+      2025:
+        abstract_deadline: "2024-09-27"
+        paper_deadline: "2024-10-01"
+        use: abstract_deadline
+        source_url: "https://iclr.cc/Conferences/2025/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Sep 27 '24 (Anywhere on Earth)"（Abstract Submission Deadline）、
+          "Oct 01 '24 (Anywhere on Earth)"（Full Paper Submission Deadline）。
+      2026:
+        abstract_deadline: "2025-09-19"
+        paper_deadline: "2025-09-24"
+        use: abstract_deadline
+        source_url: "https://iclr.cc/Conferences/2026/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Sep 19 '25 (Anywhere on Earth)"（Abstract Submission Deadline）、
+          "Sep 24 '25 (Anywhere on Earth)"（Paper Submission Deadline）。
+
+  neurips:
+    display_name: "Conference on Neural Information Processing Systems"
+    note: >
+      送审稿双盲。摘要截止与正文截止相隔约一周。
+    editions:
+      2023:
+        abstract_deadline: "2023-05-11"
+        paper_deadline: "2023-05-17"
+        use: abstract_deadline
+        source_url: "https://neurips.cc/Conferences/2023/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "May 11 '23 08:00 PM UTC"（Abstract Submission Deadline）、
+          "May 17 '23 08:00 PM UTC"（Paper Submission Deadline）。
+          按文件头约定只取日期不取时刻。
+      2024:
+        abstract_deadline: "2024-05-15"
+        paper_deadline: "2024-05-22"
+        use: abstract_deadline
+        source_url: "https://neurips.cc/Conferences/2024/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "AbstractSubmissionDeadline / May 15 '24 08:00 PM UTC"、
+          "Main Conference Full Paper Submission Deadline / May 22 '24 08:00 PM UTC"。
+      2025:
+        abstract_deadline: "2025-05-11"
+        paper_deadline: "2025-05-15"
+        use: abstract_deadline
+        source_url: "https://neurips.cc/Conferences/2025/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Paper Abstract Submission Deadline / May 11 '25 (Anywhere on Earth)"、
+          "Full Paper Submission Deadline / May 15 '25 (Anywhere on Earth)"。
+
+  icml:
+    display_name: "International Conference on Machine Learning"
+    editions:
+      2024:
+        abstract_deadline: null   # ICML 2024 没有单独的摘要截止，只有正文截止
+        paper_deadline: "2024-02-01"
+        use: paper_deadline
+        source_url: "https://icml.cc/Conferences/2024/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Full Paper Submission Deadline / Feb 01 '24 (Anywhere on Earth)"。
+          该页**没有**列出单独的摘要截止（投稿于 2024-01-09 开放），
+          故 use 指向 paper_deadline —— 这是"取更早一档"能取到的最早官方值。
+      2025:
+        abstract_deadline: "2025-01-23"
+        paper_deadline: "2025-01-30"
+        use: abstract_deadline
+        source_url: "https://icml.cc/Conferences/2025/Dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Abstract Submission Deadline / Jan 23 '25 (Anywhere on Earth)"、
+          "Full Paper Submission Deadline / Jan 30 '25 (Anywhere on Earth)"。
+
+  miccai:
+    display_name: "Medical Image Computing and Computer Assisted Intervention"
+    note: >
+      两段式投稿：先登记 intention-to-submit（含标题、作者、摘要），两周后交正文。
+      **intention-to-submit 即本表的 abstract_deadline** —— 那一刻作者已把摘要定稿。
+    editions:
+      2024:
+        abstract_deadline: "2024-02-22"
+        paper_deadline: "2024-03-07"
+        use: abstract_deadline
+        source_url: "https://conferences.miccai.org/2024/en/CALL-FOR-PAPERS.html"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Abstract registration: 22 February 2024"、
+          "Submission deadline: 7 March 2024"（均 23:59 Pacific Time）。
+      2025:
+        abstract_deadline: "2025-02-13"
+        paper_deadline: "2025-02-27"
+        use: abstract_deadline
+        source_url: "https://conferences.miccai.org/2025/en/IMPORTANT-DATES.html"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Paper Abstract Registration (Intention to Submit) February 13, 2025"、
+          "Main Conference Paper Submission (including Supplementary Materials) February 27, 2025"。
+
+  midl:
+    display_name: "Medical Imaging with Deep Learning"
+    editions:
+      2025:
+        abstract_deadline: "2025-01-17"   # 官方称 "full paper registration"
+        paper_deadline: "2025-01-24"
+        use: abstract_deadline
+        source_url: "https://2025.midl.io/dates"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Full paper registration deadline / 17 January 2025"、
+          "Full paper submission deadline / 24 January 2025"，正文截止后**延期至
+          31 January 2025**。按"取更早一档"用登记日 01-17；延期只会让真实投稿更晚，
+          用更早的值仍在安全侧。
+          ⚠️ 短文（short paper）另有 2025-04-11 截止，**本条不适用于短文**——
+          若语料里出现 MIDL 短文，须另登记一档。
+
+  chil:
+    display_name: "AHLI Conference on Health, Inference, and Learning"
+    note: >
+      单段式投稿，没有单独的摘要截止。
+    editions:
+      2026:
+        abstract_deadline: null
+        paper_deadline: "2026-02-04"
+        use: paper_deadline
+        source_url: "https://chil.ahli.cc/submit/call-for-papers/"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Submissions open: Wednesday, December 10, 2025"、
+          "Submissions due: Wednesday, February 4, 2026"。无单独摘要截止。
+
+  mlhc:
+    display_name: "Machine Learning for Healthcare Conference"
+    editions:
+      2026:
+        abstract_deadline: null
+        paper_deadline: "2026-04-17"
+        use: paper_deadline
+        source_url: "https://mlhc.org/paper-submission"
+        verified_by: "claude(模型) 2026-08-02 —— 抓取 source_url，未经人工复核"
+        provenance: >
+          页面原文 "Full submission deadline (Research and Clinical Abstracts Tracks):
+          April 17th, 2026 (Anywhere on Earth)"。该页未列 pre-submission intent 截止。
+
+  # ---- 尚未登记（**不要凭印象补，按文件头规矩 1 抓官方页面**）----
+  #
+  # 2026-08-02 抓取时没能在官方现行页面上拿到可引用取值的：
+  #   - chil 2024 / 2025 —— 官网 CFP 页已滚到 2026 届，历史届日期需查存档
+  #   - mlhc 2025       —— 同上（社媒有 04-04 / 04-11 的说法，非官方页面，故不登记）
+  #   - ml4h（AHLI Machine Learning for Health Symposium）任何一届 —— 官网未列截止日
+  #   - miccai 2026 / midl 2026 / icml 2026 —— 用到时再抓
+  #
+  # 模板：
+  # <venue-key>:                       # 小写，空格写成连字符（resolve_venue_deadline 会这样归一化）
+  #   display_name: "..."
+  #   editions:
+  #     2024:
+  #       abstract_deadline: "YYYY-MM-DD"
+  #       paper_deadline: "YYYY-MM-DD"
+  #       use: abstract_deadline       # 指向更早的那个非空字段
+  #       source_url: "https://..."
+  #       verified_by: "<谁> <YYYY-MM-DD>"
+  #       provenance: "页面原文引句"

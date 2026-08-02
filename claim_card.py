@@ -96,13 +96,127 @@ INTENDED_CONTEXTS = ("clinical_care", "clinical_trial", "research_only")
 FINDING_DIRECTIONS = ("positive", "negative", "mixed", "not_applicable")
 
 # provenance 里每个 gating 字段的取得方式。
-#   quote 存在        → 有原文，最佳
+#   explicit          → 论文明写，且 quote 可在原文里字面定位（evidence.py 判定）
 #   absent            → 论文确实没写。**这是审稿发现**
 #   inferred          → 论文没明写，由上下文合理推断（可接受，但必须标出来）
 #   not_extracted     → 抽卡器没找到。**这是系统故障，硬错误，不得进入检索**
 # 混掉 absent 与 not_extracted 会让"弃权/缺口报告率"指标失效：系统的故障被记成
 # 论文的缺陷，分数看起来反而更好（SPEC §9，docs/RELATED_WORK.md §2）。
-PROVENANCE_STATUS = ("absent", "inferred", "not_extracted")
+#
+# `explicit` 是 2026-07-31 补的：此前"有原文"靠"有 quote 且无 status"**隐式**表示。
+# 抽卡器上线后每张卡都由模型产出，隐式约定不可维护——模型少写一个 quote 就静默
+# 变成"未声明"。现在四种状态互斥且必须显式给一个。
+PROVENANCE_STATUS = ("explicit", "absent", "inferred", "not_extracted")
+
+# --------------------------------------------------------------------------
+# 投稿日的来源（2026-08-01）
+# --------------------------------------------------------------------------
+# 前三档来自论文自身，由抽卡器按 prompts/stage1_overview.md §③ 的阶梯取得。
+# **第四档 `venue_deadline` 不是模型能得出的东西**——它来自会议日程这一论文之外的
+# 事实，由运维方维护的 venue_deadlines.yaml 提供，`extract.py stamp-date` 机械补入。
+#
+# 为什么非要有它：会议匿名送审稿三档全落空（PDF 上一个日期都没有），
+# 而 predates 是全系统唯一的硬门控，没有基准整张卡就进不了检索——
+# 偏偏 ICLR 的 MedAI 论文正是 MVP 评测的目标语料（DESIGN.md §8）。
+#
+# 为什么不干脆"缺失就放行、predates 全标 unknown"：那等于把铁律废掉。
+# 所有标准都变成"不知道投稿时有没有"之后，"不得拿投稿后的标准指责作者"这句话
+# 就没有任何一处在执行了。
+SUBMISSION_DATE_BASES = ("received_date", "accepted_date", "search_cutoff_lower_bound",
+                         "venue_deadline", "unavailable")
+
+VENUE_DEADLINES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    "venue_deadlines.yaml")
+_VENUE_CACHE: dict | None = None
+
+
+def load_venue_deadlines(path: str | None = None) -> dict:
+    p = path or VENUE_DEADLINES_PATH
+    global _VENUE_CACHE
+    if path is None and _VENUE_CACHE is not None:
+        return _VENUE_CACHE
+    try:
+        doc = yaml.safe_load(open(p, encoding="utf-8")) or {}
+    except FileNotFoundError:
+        doc = {}
+    out = doc.get("venues") or {}
+    if path is None:
+        _VENUE_CACHE = out
+    return out
+
+
+def resolve_venue_deadline(venue: str | None, year, path: str | None = None
+                           ) -> tuple[str | None, dict, str]:
+    """按 (会议, 年份) 查表。返回 (日期, 该届条目, 说明)。查不到 → (None, {}, 原因)。
+
+    **这是纯查表，没有任何推断。** 表里没有的会议/年份就是没有——由运维方去登记，
+    绝不能由这里（或模型）猜一个出来。
+    """
+    if not venue or year in (None, ""):
+        return None, {}, "卡上没有会议名或年份"
+    table = load_venue_deadlines(path)
+    key = str(venue).strip().lower().replace(" ", "-")
+    v = table.get(key)
+    if not v:
+        return None, {}, (f"venue_deadlines.yaml 里没有 {key!r} —— "
+                          f"请运维方按文件头「怎么加一届」登记，模型不得推断")
+    eds = v.get("editions") or {}
+    ed = eds.get(year) if year in eds else eds.get(str(year)) or eds.get(_as_int(year))
+    if not ed:
+        return None, {}, (f"venue_deadlines.yaml 的 {key} 下没有 {year} 这一届"
+                          f"（已登记：{sorted(map(str, eds))}）")
+    use = ed.get("use")
+    if use not in ed or not ed.get(use):
+        return None, {}, f"{key} {year} 的 use={use!r} 指向了一个空字段，条目登记不完整"
+    return str(ed[use]), ed, f"{key} {year} 的 {use}"
+
+
+def _as_int(x):
+    try:
+        return int(x)
+    except (TypeError, ValueError):
+        return None
+
+
+# --------------------------------------------------------------------------
+# 证据阶段：模型报事实，程序做映射（2026-07-31）
+# --------------------------------------------------------------------------
+# 抽卡器**不直接填 C0–C4**，而是填下面这组可观测事实，由 `stage_from_basis()` 映射。
+# 三条理由：
+#   ① SPEC §11 已承认 C1/C2 的界线（内部验证 vs 外部验证）人读都常含糊；
+#   ② stage 错一级整条路由全错——报告清单的启停完全靠它（pathology_fm_benchmark 那张
+#      C0 卡就是靠它把 CONSORT-AI/DECIDE-AI/QUADAS-3/SPIRIT-AI 四份全拦下来的）；
+#   ③ 分级映射是**策略**，要能改、能审计、能对作者解释。这与 §6d 不做跨源分级归一化、
+#      §6f 保留 WHO 自家取值是同一条原则：分级是安全关键字段，宁可显式映射，
+#      不要模型一口报。
+ENDPOINT_TYPES = ("model_metric",        # AUC/敏感度等模型指标
+                  "clinical_process",    # 诊断时间、转诊量等流程终点
+                  "clinical_outcome")    # 死亡、并发症等患者结局
+EVIDENCE_BASIS_KEYS = ("clinical_claim_made", "external_cohort", "different_site",
+                       "prospective", "randomised", "deployed_in_care", "endpoint_type")
+
+# 判定表。顺序即优先级，逐条短路。对应 DESIGN.md §2 的原始定义：
+#   C0 基础方法，无明确临床效用主张 / C1 回顾性开发·内部测试 / C2 独立外部·跨中心验证
+#   C3 前瞻·静默部署验证        / C4 真实工作流·临床试验·患者结局
+def stage_from_basis(basis: dict) -> tuple[str | None, str]:
+    """由可观测事实映射证据阶段。返回 (stage, 依据说明)；事实不全时返回 (None, 原因)。"""
+    if not basis:
+        return None, "未提供 evidence_basis"
+    missing = [k for k in EVIDENCE_BASIS_KEYS if k not in basis]
+    if missing:
+        return None, f"evidence_basis 缺字段 {missing} —— 事实不全不做映射，宁可留空"
+    b = basis
+    if not b.get("clinical_claim_made"):
+        return "C0", "论文未作任何临床效用主张 → C0（不应因没做临床试验被判低分）"
+    if b.get("deployed_in_care") and (b.get("randomised")
+                                      or b.get("endpoint_type") == "clinical_outcome"):
+        return "C4", "模型输出已进入真实临床流程，且为随机对照或以患者结局为终点 → C4"
+    if b.get("deployed_in_care") or (b.get("prospective") and b.get("endpoint_type") != "model_metric"):
+        return "C3", "前瞻/静默部署验证，尚未构成随机对照或结局终点 → C3"
+    if b.get("external_cohort"):
+        why = "独立外部队列" + ("（跨机构）" if b.get("different_site") else "（同机构，transportability 讨论应更保守）")
+        return "C2", f"存在{why} → C2"
+    return "C1", "仅回顾性开发/内部测试 → C1（不能声称临床效用已证明）"
 
 # 研究设计**沿用报告清单层已有的词表**（curated/reporting_tools/*.yaml 的
 # applicability.study_designs），不另起一套——`infer_study_designs` 里"卡里显式声明
@@ -192,16 +306,81 @@ def validate_card(doc: dict) -> tuple[list[str], list[str]]:
     fd = doc.get("finding_direction") or (g.get("finding_direction"))
     if fd is not None and fd not in FINDING_DIRECTIONS:
         errs.append(f"finding_direction={fd!r} 不在受控枚举 {FINDING_DIRECTIONS}")
+    # evidence_basis：**声明优先，留空则由映射补**。两条分支的理由不同，别合并：
+    #
+    # ① 卡里**声明了** evidence_stage → 只接入不消费：映射与声明不一致时只报警、
+    #    不改写。理由同 `study_design` 那次教训（引入受控字段前必须先查既有消费方，
+    #    自造值曾让肺癌卡 105→15 条、所有报告清单静默关闭）。
+    # ② 卡里**留空** → 用映射填上，并记一条 warn 说明它是程序算的不是模型声明的。
+    #    这一支是 2026-08-01 补的：`stage2_fill_card.md` 规则⑨明令"evidence_stage
+    #    留空，由程序按判定表映射"，而本函数当时仍硬性要求它 ∈ C0–C4 ——
+    #    **prompt 与校验器直接打架**，新 prompt 产出的卡一律过不了门。
+    #    此前没暴露，只因既有卡全部出自旧 prompt、自己写了 "C2"。
+    #    留空不是"没声明就报错"，留空正是新流程要求的形态。
+    basis = g.get("evidence_basis") or {}
+    if basis:
+        if not isinstance(basis, dict):
+            errs.append("gating.evidence_basis 必须是字典")
+        else:
+            bad_keys = sorted(set(basis) - set(EVIDENCE_BASIS_KEYS))
+            if bad_keys:
+                errs.append(f"gating.evidence_basis 含未知字段 {bad_keys}，"
+                            f"受控键为 {EVIDENCE_BASIS_KEYS}")
+            et = basis.get("endpoint_type")
+            if et is not None and et not in ENDPOINT_TYPES:
+                errs.append(f"evidence_basis.endpoint_type={et!r} 不在 {ENDPOINT_TYPES}")
+            mapped, why = stage_from_basis(basis)
+            if mapped and not g.get("evidence_stage"):
+                g["evidence_stage"] = mapped          # ← 分支②：留空由程序补
+                warns.append(
+                    f"gating.evidence_stage 留空 → 由 evidence_basis 映射为 {mapped}"
+                    f"（{why}）。此值来自程序判定表，不是模型声明，改判定表会改它")
+            elif mapped and mapped != g.get("evidence_stage"):
+                warns.append(
+                    f"evidence_basis 映射出 {mapped}（{why}），但卡里声明 "
+                    f"{g.get('evidence_stage')!r} —— 二者不一致必须有人看过。"
+                    f"本版以声明为准（只接入不消费）")
+
+    # 放在映射之后：留空且映射得出时上面已填好，这里才不会误报。
+    # 仍然报错的情形是"既没声明、七事实也推不出" —— 那是真的没有阶段，
+    # 而阶段决定报告清单的越级拦截，不能没有。
     if g.get("evidence_stage") not in EVIDENCE_STAGES:
-        errs.append(f"gating.evidence_stage={g.get('evidence_stage')!r} 不在 {EVIDENCE_STAGES}")
+        errs.append(f"gating.evidence_stage={g.get('evidence_stage')!r} 不在 {EVIDENCE_STAGES}"
+                    f"，且 evidence_basis 也推不出（七个事实是否填全？）")
     sd = g.get("study_design") or []
     sd = [sd] if isinstance(sd, str) else list(sd)
     bad_sd = [x for x in sd if x not in STUDY_DESIGNS]
     if bad_sd:
         errs.append(f"gating.study_design {bad_sd} 不在报告清单层的词表 {STUDY_DESIGNS} 内 —— "
                     f"显式声明会**整体替换**推断结果，词表对不上等于把所有清单静默关掉")
-    if not doc.get("submission_date"):
-        errs.append("submission_date 缺失 —— predates 门控是全系统唯一的硬门控，不能没有它")
+    # ---- 投稿日：predates 门控的基准（2026-08-01 加第 5 档 venue_deadline）----
+    sub = doc.get("submission_date")
+    src = doc.get("submission_date_source") or {}
+    basis = src.get("basis")
+    if basis is not None and basis not in SUBMISSION_DATE_BASES:
+        errs.append(f"submission_date_source.basis={basis!r} 不在 {SUBMISSION_DATE_BASES}")
+    if basis == "venue_deadline":
+        # **拿卡上的日期与表逐字比对。** 这一步是这条通道能成立的关键：
+        # 没有它，"venue_deadline" 就退化成"允许手工往卡里敲一个日期"，
+        # 而错日期是最像正确的那种错，事后没人看得出来。
+        d, ed, why = resolve_venue_deadline(src.get("venue"), src.get("year"))
+        if not d:
+            errs.append(f"submission_date_source.basis=venue_deadline，但查表失败：{why}")
+        elif not sub:
+            errs.append(f"声明了 basis=venue_deadline 却没有 submission_date（表里是 {d}）")
+        elif str(sub)[:10] != d:
+            errs.append(
+                f"submission_date={str(sub)[:10]!r} 与 venue_deadlines.yaml 的 {why}={d!r} 不符"
+                f" —— 本档日期只能来自表，不得手工填写。要改就改表（并填 source_url/verified_by）")
+        elif not ed.get("verified_by"):
+            warns.append(
+                f"{why}={d} 取自 venue_deadlines.yaml，但该条目 verified_by 留空 ——"
+                f" 尚未有人对照官方 CFP 核实过，下游报告不得声称此日期已核实")
+    if not sub:
+        errs.append("submission_date 缺失 —— predates 门控是全系统唯一的硬门控，不能没有它。"
+                    "会议匿名送审稿（PDF 上无 Received/Accepted/检索截止日）走第 5 档："
+                    "在 venue_deadlines.yaml 登记该届截止日，再跑 "
+                    "`python3 extract.py stamp-date --run <run>`")
 
     # provenance：合成示例卡可豁免，真实抽取的卡必须给出处。
     # 字段可写在 provenance.fields.<key>（推荐，gold 卡用这种）或直接 provenance.<key>。
@@ -221,6 +400,16 @@ def validate_card(doc: dict) -> tuple[list[str], list[str]]:
                             f"审稿发现，不得进入检索。确认论文确实没写请改标 absent。")
             elif not (p.get("quote") or status):
                 errs.append(f"provenance[{key}] 缺失 —— 抽卡器会幻觉，gating 字段必须可回溯到原文")
+    # 引文里的省略号：**硬错误**。省略意味着中间内容被删掉，剩下的字符串在原文里并不
+    # 连续，`evidence.py` 无论怎么归一化都定位不到，"逐字引用"这个声明就是假的。
+    # 这条不是推演——2026-07-31 实测 6 张 gold 卡 27 条引文，唯二定位失败的两条正是
+    # 我自己人工摘录时写了 "(sensitivity 55.5% ...) for identification"。
+    # 人写卡尚且如此，模型只会更频繁。要引两段请给两条 quote。
+    for key, p in list(fields.items()) + [(k, v) for k, v in prov.items() if isinstance(v, dict)]:
+        q = (p or {}).get("quote") or ""
+        if "..." in q or "…" in q:
+            errs.append(f"provenance[{key}].quote 含省略号 —— 逐字引用不得省略中间内容，"
+                        f"否则无法在原文里定位。要引两段请拆成两条 quote。")
     d = doc.get("descriptive") or {}
     for k in ("comparator", "claimed_benefit", "intended_use"):
         if not d.get(k) and k not in (doc.get("absent_fields") or []):
@@ -275,6 +464,56 @@ class ClaimCard:
     @property
     def finding_direction(self) -> str | None:
         return self.doc.get("finding_direction") or self.gating.get("finding_direction")
+
+    # —— 2026-07-31 为 LLM 抽卡流程新增的承接字段，同样**只接入不消费**。
+    @property
+    def claim_id(self) -> str | None:
+        """一篇论文可以出多张卡（SPEC §1）。paper_id + claim_id 才能把它们串回一篇。"""
+        return self.doc.get("claim_id")
+
+    @property
+    def paper_id(self) -> str | None:
+        return self.doc.get("paper_id")
+
+    @property
+    def cohorts(self) -> list:
+        """论文的研究队列。抽卡第一阶段的产物，也是 evidence_basis 的原料——
+        判 C1/C2 靠的就是"有没有独立外部队列、是否跨机构"。"""
+        return self.doc.get("cohorts") or []
+
+    @property
+    def evidence_basis(self) -> dict:
+        return self.gating.get("evidence_basis") or {}
+
+    @property
+    def mapped_stage(self) -> tuple[str | None, str]:
+        """由 evidence_basis 映射出的阶段（不覆盖声明值，供对账用）。"""
+        return stage_from_basis(self.evidence_basis)
+
+    @property
+    def demonstrated_effect(self) -> str:
+        """论文**实测到**的效果。与 claimed_benefit（作者主张的获益）分开记：
+        "模型预测死亡更准" ≠ "用了模型患者死亡率下降"。两者的差距本身就是审稿发现，
+        也是将来对接内部原文核验子系统的接口。"""
+        return self.descriptive.get("demonstrated_effect") or ""
+
+    @property
+    def benefit_gap(self) -> str:
+        return self.descriptive.get("benefit_gap") or ""
+
+    @property
+    def future_intent(self) -> str:
+        """作者关于"将来可用于……"的表述。ptau217 那句 "clinical trials and
+        **eventually** clinical practice" 此前被 intended_context 吸收后原句就消失了，
+        以致"是否把未来设想当成已完成的验证"这一核查项没有可对照的对象。"""
+        return self.descriptive.get("future_intent") or ""
+
+    @property
+    def input_coverage(self) -> list:
+        """模型实际读到了论文的哪些部分（主文/补充材料/哪些页）。
+        不记录就等于默认"看全了"——补充材料目前一份都没有（journals/ 下零命中），
+        沉默的截断比报错更危险（§6d ESPNIC 10 条冒充 41 条）。"""
+        return ((self.doc.get("provenance") or {}).get("input_coverage")) or []
 
     @property
     def legacy(self) -> dict:
@@ -368,6 +607,11 @@ def main():
             print(f"  {'scope_type':24s} {c.scope_type!r}"
                   f"{'  ← 病种门控不适用（不计入缺口）' if not c.disease_gating_applicable else ''}")
             print(f"  {'intended_context':24s} {c.intended_context!r}")
+            # 投稿日的来源要跟日期一起看：venue_deadline 是"全会议一个常数"，
+            # 比每篇各自的 Received 粗，出报告时这句话要能说得出来。
+            sb = (c.doc.get("submission_date_source") or {}).get("basis")
+            print(f"  {'submission_date_basis':24s} {sb!r}"
+                  f"{'  ← 来自会议日程，非论文自身' if sb == 'venue_deadline' else ''}")
             print(f"  {'finding_direction':24s} {c.finding_direction!r}")
 
 

@@ -1,4 +1,4 @@
-# GOLD 卡（人工拆解，2026-07-29）
+# 基准卡（**Claude 拆解**，2026-07-29，未经人工核验）—— 回归基准，不是标准答案。
 # 论文：Benchmarking foundation models as feature extractors for weakly supervised
 #       computational pathology. Nat BME 2025. DOI: 10.1038/s41551-025-01516-3
 #
@@ -59,7 +59,9 @@ claim_card:
 
   provenance:
     source: "corpus/text/pathology_fm_benchmark.txt"
-    extraction: manual_gold
+    extraction: claude_unverified   # ⚠️ 由 Claude 通读全文拆出，**不是人工**，未经人核验。
+                                   # 作为回归基准有效；作为准确率标准答案无效——抽卡器
+                                   # 也是 Claude，拿它当答案是循环论证（同 SPEC §0）。
     fields:
       condition.primary:
         quote: "13 patient cohorts with 6,818 patients and 9,528 slides from lung, colorectal, gastric and breast cancers"

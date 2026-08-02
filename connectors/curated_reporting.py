@@ -10,7 +10,7 @@
 条目全部来自 curated/reporting_tools/*.yaml（人工策展、带完整 provenance 与许可标注）。
 """
 from __future__ import annotations
-import os, glob, yaml
+import os, glob, re, yaml
 from base import Connector
 from schema import ExternalStandard, compute_predates
 
@@ -18,14 +18,43 @@ CURATED_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "curated", "reporting_tools")
 
-# 从 Claim Card 推断研究设计用的关键词
+# 从 Claim Card 推断研究设计用的关键词。
+#
+# ⚠️ 这些词全部按**词首边界**匹配，不是裸子串（`_kw_hit`）。2026-08-01 实测：
+# 裸子串下 `"ct"` 命中了 `"chara`**`ct`**`ers"`，把一篇**血糖时序**论文判成
+# `medical_imaging_ai`，于是 CLAIM 影像清单被错误启用、报成 🕳（适用但零摄入
+# ＝真缺口）→ **凭空撑大缺口报告**。更要命的是 `"predi`**`ct`**`ion"` 同样含 ct，
+# 意味着几乎任何预测模型论文都会中招。
+# 这与 §6e 的 `injury` 命中 `acute kidney injury`、§6d 的 `ultrasound` 命中儿科
+# 超声指南是同一类错误：**短词当判别信号必须先划边界**。
+#
+# 词尾刻意不封边界：这些是**词干**（`imag` 要吃下 imaging/images，
+# `histolog` 要吃下 histology/histological）。只有词首需要边界。
 _IMAGING_KW = ("ct", "mri", "x-ray", "xray", "radiograph", "ultrasound", "sonograph",
-               "pathology", "histolog", "whole slide", "wsi", "fundus", "oct",
-               "mammograph", "endoscop", "dermoscop", "imaging", "scan", "image")
-_PREDICT_KW = ("risk", "probability", "predict", "prognos", "classif", "detect",
+               "patholog", "histolog", "whole slide", "wsi", "fundus", "oct",
+               "mammograph", "endoscop", "dermoscop", "imag", "scan")
+_PREDICT_KW = ("risk", "probabilit", "predict", "prognos", "classif", "detect",
                "diagnos", "grade", "grading", "score", "staging", "segmentation")
 _DIAG_KW = ("detect", "diagnos", "classif", "screen")
 _TRIAL_KW = ("trial", "rct", "randomis", "randomiz")
+
+
+def _kw_hit(text: str, keywords) -> bool:
+    """边界匹配。`text` 须已小写。表里两类词，判据不同：
+
+    - **长度 ≤3 = 缩写**（ct / mri / oct / wsi / rct）→ **首尾都封边界**。
+      只封词首不够：`oct` 会命中 `October`。缩写在文本里必然独立成词。
+    - **长度 ≥4 = 词干**（imag / histolog / predict / randomis）→ **只封词首**，
+      词尾要留给 imaging/images、histology/histological、randomised/randomized。
+
+    残留风险（已知、未处理）：`scan` 会命中 `scandinavian`。四字母以上的词干
+    继续封词尾就会丢掉全部屈折形式，代价更大；真撞上再单列。
+    """
+    for k in keywords:
+        tail = r"(?![a-z0-9])" if len(k) <= 3 else ""
+        if re.search(r"(?<![a-z0-9])" + re.escape(k) + tail, text):
+            return True
+    return False
 
 
 def load_curated(directory: str = CURATED_DIR) -> list[dict]:
@@ -54,19 +83,19 @@ def infer_study_designs(card: dict) -> set[str]:
                    ("deployment_claim_level", "intended_use", "care_setting")).lower()
 
     designs: set[str] = set()
-    if any(k in inp for k in _IMAGING_KW):
+    if _kw_hit(inp, _IMAGING_KW):
         designs.add("medical_imaging_ai")
-    if any(k in out for k in _PREDICT_KW):
+    if _kw_hit(out, _PREDICT_KW):
         designs.add("prediction_model_development")
         if stage in ("C2", "C3", "C4"):
             designs.add("prediction_model_validation")
-    if any(k in out for k in _DIAG_KW):
+    if _kw_hit(out, _DIAG_KW):
         designs.add("diagnostic_test_accuracy")
     if stage == "C3":
         designs |= {"early_clinical_evaluation", "prospective_deployment"}
     if stage == "C4":
         designs.add("early_clinical_evaluation")
-        if any(k in dep for k in _TRIAL_KW):
+        if _kw_hit(dep, _TRIAL_KW):
             designs.add("randomised_controlled_trial")
     return designs
 

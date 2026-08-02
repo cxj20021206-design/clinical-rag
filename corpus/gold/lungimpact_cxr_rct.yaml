@@ -1,4 +1,4 @@
-# GOLD 卡（人工拆解，2026-07-29）—— 抽卡器的评测基准，不是示例。
+# 基准卡（Claude 拆解，2026-07-29；**未经人工核验**）——回归基准，不是标准答案。
 # 论文：AI-based chest X-ray prioritization in the lung cancer diagnostic pathway:
 #       the LungIMPACT randomized controlled trial. Nat Med 2026.
 # DOI: 10.1038/s41591-026-04253-5 | 全文 corpus/text/lungimpact_cxr_rct.txt
@@ -53,7 +53,9 @@ claim_card:
 
   provenance:
     source: "corpus/text/lungimpact_cxr_rct.txt"
-    extraction: manual_gold
+    extraction: claude_unverified   # ⚠️ 由 Claude 通读全文拆出，**不是人工**，未经人核验。
+                                   # 作为回归基准有效；作为准确率标准答案无效——抽卡器
+                                   # 也是 Claude，拿它当答案是循环论证（同 SPEC §0）。
     fields:
       condition.primary:
         quote: "AI-based chest X-ray prioritization in the lung cancer diagnostic pathway"

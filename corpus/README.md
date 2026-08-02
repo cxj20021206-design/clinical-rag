@@ -3,7 +3,10 @@
 - `text/`（**已 gitignore**）：6 篇论文的 PDF 抽取文本，来自
   `/work/hdd/bgkq/xchen48/journals/pdfs/`。第三方版权内容，不入库；用
   `pypdf` 从 PDF 抽取即可复现（6 篇文本质量实测零连字丢失，**不需要 MinerU**）。
-- `gold/`：人工拆解的 Claim Card 基准，**抽卡器的评测对照**。
+- `gold/`：**Claude 逐篇通读后拆出**的 Claim Card（原写作"人工拆解"，是错标；
+  2026-07-31 订正）。**未经人工核验** → 作为**回归基准**有效（端到端跑不跑得通、
+  门控行为有没有变），作为**准确率标准答案无效**——抽卡器同样是 Claude，
+  拿它当答案是循环论证。真 gold 只能来自人工核验，或论文自带的真人 peer review。
 
 论文选取标准：全部来自 `journals/peer_review/reviewed_papers.jsonl` 的 225 篇
 **带真人 peer review** 的论文（Nature Medicine / Nature BME），便于后续直接接
