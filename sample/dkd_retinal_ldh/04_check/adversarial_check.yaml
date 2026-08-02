@@ -1,0 +1,125 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# ⚠️ context_isolated: false —— 核查者与填卡者是同一个上下文里的同一个执行者。
+#    按 prompt 的要求，本报告只能当**下界**：挑出来的问题是真的，没挑出来的不能算没有。
+#
+# ⚠️⚠️ 2026-08-01 隔离重跑后，本报告的两处结论需要更正，详见 ISOLATION_COMPARISON.md：
+#   ① 下面第 3 问那条 **high 被推翻**——论文在主文里做过 DeepDKD vs 尿试纸的头对头比较
+#      并给了数字（NDSP/PUDM 两个外部集：77·8% vs 19·8%/0%）。本报告抓的 43·6%–69·4%
+#      是 Introduction 引自文献 10–12 的背景数字，不是本文的对照结果。
+#      → STATUS_2026-07-31 §5 待决 C 的前提随之不成立。
+#   ② 下面第 4 问那条 **pass 不成立**——隔离运行在两张卡上各自都判出了 issue
+#      （特异度缺失 / cost-effective 断言无支撑 / "不必要的"这个多余定语）。
+#   "挑出来的问题是真的"这句话本身也过强:非隔离核查同样会挑错。
+adversarial_check:
+  # 路径留原样（本报告当时读的确实是它）。那两份卡是 sample/ run 目录约定之前的副本，
+  # 2026-08-02 已删（yaml 解析后与 03_cards/ 完全相同）→ 现址
+  # 03_cards/claim_1_screening.yaml + claim_2_differential_dx.yaml。
+  card: "corpus/extracted/dkd_retinal_ldh_claim1.yaml + claim2.yaml"
+  context_isolated: false
+
+  findings:
+    - question: 1        # 未来设想当成已完成研究
+      verdict: issue
+      severity: medium
+      field: "claim1.gating.care_setting = primary_care"
+      quote: "substantial efforts are devoted to developing rapid, simple, point-of-care tests to improve DKD screening in primary care settings"
+      card_says: "care_setting: primary_care，引文取自 Introduction"
+      should_be: >
+        这句是**领域背景陈述**（"业界正在努力开发…"），不是本研究的场景声明。真正支持
+        primary_care 的原文在别处："a prospective real-world study in a primary care setting"。
+        结论字段值仍然正确，但**引文选错了** —— 拿背景句当场景证据，是把"该领域想做的事"
+        读成"本文做了的事"。已在下方 should_fix 给出替换引文。
+
+    - question: 2        # 数据来源场景当成实际使用场景
+      verdict: pass
+      field: "claim1.care_setting / claim2.care_setting"
+      quote: "is useful for endocrinologists and nephrologists to narrow a differential diagnosis"
+      card_says: "claim2 → outpatient_specialty"
+      should_be: "论文明确点名使用者是内分泌科与肾内科医师，非由数据来源反推，判定成立。"
+
+    - question: 3        # 算法比较对象当成临床比较对象
+      verdict: issue
+      severity: high
+      field: "claim1.descriptive.comparator"
+      quote: "the sensitivity of the urine dipstick test in detecting albuminuria varies from 43"
+      card_says: "metadata model（XGBoost 临床元数据模型）、尿蛋白试纸"
+      should_be: >
+        **两个对照的性质完全不同，卡把它们并列了。** metadata model 是论文自建的算法对照，
+        前瞻研究里真实比较过（89·8% vs 66·3%）；而"尿蛋白试纸"的敏感度 43·6%–69·4% 是
+        **引自文献的数字**（引用 10–12），论文并未在同一人群里与试纸做头对头比较。
+        并列会让下游误以为本文已对现行临床做法做了比较。应拆成
+        `comparator`（metadata model）与 `comparator_literature_only`（urine dipstick）。
+
+    - question: 4        # 性能提升当患者获益  ← 按 prompt 单独跑
+      verdict: pass
+      field: "claim1/claim2.benefit_gap"
+      quote: "showed its potential for detecting DKD and differentiating isolated diabetic nephropathy from NDKD in clinical practice"
+      card_says: "benefit_gap 已写明「证明的是筛查准确性/区分准确性，未证明患者结局改善」"
+      should_be: >
+        卡的 claimed_benefit 与 demonstrated_effect 分离正确，gap 描述与原文一致；
+        论文结论用词是 "potential"，未越级声称获益。无需修改。
+
+    - question: 5        # 混合不同队列
+      verdict: issue
+      severity: medium
+      field: "claim1.gating.evidence_basis.prospective = true"
+      quote: "Finally, we conducted two proof-of-concept studies"
+      card_says: "prospective: true（注释写「有前瞻真实世界研究，但终点是筛查准确性」）"
+      should_be: >
+        `prospective` 这个事实描述的是**主验证设计**，而本文的主验证（ext_dkd 十个数据集）
+        并非前瞻，前瞻性只存在于一个 proof-of-concept 子研究。把子研究的属性提升为整卡属性，
+        正是第 5 问要抓的队列混合。**注意后果为零**：判定表里 prospective 只在
+        endpoint_type≠model_metric 时才影响分级，本卡仍映射 C2。但事实字段应如实，
+        建议 `prospective: false` + 在 clinical_context 写明子研究为前瞻。
+
+    - question: 6        # 缺乏原文支持的字段  —— ✅ 已由 MinerU 解析解决（见 01_parse/parse_notes.md）
+      verdict: issue
+      resolved: true
+      resolution: >
+        改用主文表 1 的各数据集平均年龄（57.11–66.19 岁，SD 8–10）作推断依据。该表在
+        pypdf 文本里**根本不存在**（表格被逐字符逆序抽出），MinerU 版面解析才拿到。
+        但表内单元格顺序交错，给不出可逐字引用的连续片段 → 按 stage2 §⑩ 保留
+        status: inferred 且**不给 quote**，note 写清依据。
+      severity: low
+      field: "claim2.provenance.fields['population.age_group']"
+      quote: "1068 retinal images from 267 participants for development and internal validation"
+      card_says: "status: inferred，note「由成人肾活检人群推断」"
+      should_be: >
+        引文只给了人数，**与年龄无任何关系** —— 它支持不了 age_group=adult 的推断。
+        `inferred` 的 note 写了依据，但引文与依据对不上。应换成能支持"成人"的原文；
+        若全文确实没有，就把 quote 去掉、只留 status+note（inferred 允许无引文）。
+
+    - question: 7        # 证据阶段高估  ← 按 prompt 单独跑
+      verdict: cannot_determine
+      partially_resolved: true
+      resolution: >
+        MinerU 解析出的表 1 列出十个外部数据集及其种族构成（SEED 新加坡 / UKB 英国 /
+        MeLODY 马来西亚 / NICOLA 北爱 / AHES 澳大利亚），**跨机构跨国已可从主文核实**，
+        different_site=true 的把握显著提高。但各数据集的纳入排除标准仍在 appendix
+        （未获取），故整体维持 cannot_determine —— 不因为"更有把握"就改判。
+      field: "claim1/claim2.evidence_basis.different_site"
+      quote: "ten multi-ethnic datasets from China, Singapore, Malaysia, Australia, and the UK (65 406 participants) for external validation"
+      card_says: "different_site: true"
+      should_be: >
+        队列名（UK Biobank、SEED、MeLODY 等）明显来自不同国家与机构，`different_site: true`
+        高度可信。但数据集细节论文写在 **appendix pp 4-5, 15-16**，而 appendix 未获取
+        （input_coverage 已标 included: false）—— 严格说无法在提供的材料内核实纳入排除
+        与采集机构。按 prompt 要求，判不出来就写 cannot_determine，不强行判定。
+
+  summary:
+    issues_high: 1
+    issues_medium: 2
+    issues_low: 1        # 已解决（Q6）
+    cannot_determine: 1  # 部分解决（Q7）
+    note: >
+      Q6 与 Q7 的进展**不是重新核查得来的，是换了解析层得来的**——同一张卡、同一套
+      prompt，只因为把 pypdf 换成 MinerU，一个 issue 被解决、一个 cannot_determine
+      拿到了主文级证据。这说明解析层不是预处理细节，是证据链的第一环。
+
+  # 与"手做那次"的差异（这正是流程固化与否的度量）
+  delta_vs_manual_run: >
+    手做那次（同一执行者、同一论文、无 prompt）产出的两张卡通过了全部程序校验、引文
+    27/27 定位成功，从外部看不出任何问题。按 prompt 补跑阶段三后挑出 4 个问题 + 1 个
+    判不出来，其中 1 个 high（把文献引用的试纸敏感度与自建算法对照并列，会让下游误以为
+    本文与现行临床做法做过头对头比较）。**结论：程序校验能挡住"引文是编的"，挡不住
+    "引文是真的但用错地方"——后者只有阶段三能抓。**

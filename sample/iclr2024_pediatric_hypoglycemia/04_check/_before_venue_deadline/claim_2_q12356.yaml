@@ -1,0 +1,64 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:1,2,3,5,6   后端:claude-cli
+adversarial_check:
+  card: "（材料中未给出卡文件路径；paper_id = 匿名双盲送审稿 “A REINFORCEMENT LEARNING APPROACH TO EFFECTIVE FORECASTING OF PEDIATRIC HYPOGLYCEMIA…”，claim_id = claim_2）"
+  findings:
+    - question: 1
+      verdict: pass
+      field: "descriptive.future_intent / care_setting / intended_context"
+      quote: "With a broader and more varied dataset, the deployment of dBG across diverse clinical settings will become increasingly viable."
+      card_says: "该句只进 descriptive.future_intent，并在 care_setting 的 note 里明确声明不作为场景依据；care_setting 标 absent。"
+      should_be: "维持现状。全文的将来式/条件式表述（本句的 will become increasingly viable、Introduction 的 “a solution could exist in real clinical settings”）都未被填进当下字段；intended_context=clinical_care 依据的是现在时断言（Summary 的 makes it particularly suitable… enhancing patient care、Abstract 的 sufficient for a clinical setting），不是设想句。"
+
+    - question: 2
+      verdict: pass
+      field: "care_setting / population.special"
+      quote: "Unlike traditional machine learning techniques, dBG’s low update cost makes it particularly suitable for dynamic environments like hospitals, enhancing patient care by enabling timely and precise updates."
+      card_says: "care_setting = null（absent）；population.special = [\"new_patient_with_limited_data\"]，cohort_id 为 null 并注明这是意向使用人群而非队列特征。"
+      should_be: "维持现状。论文从未交代数据采自何处，也没有把任何采集场所写成使用场所；唯一的场所词（hospitals）出现在对更新成本的适用性断言里，卡已按规则排除。population.special 取自 Introduction 的意向使用句（“a new patient with limited data find the best set of graphs…”），不是样本入组来源；§4.4 里“新患者”其实是 15 人中数据完整的一位这一点，卡已在 target_population 与 clinical_context 中如实披露，未混入 special。"
+
+    - question: 3
+      verdict: pass
+      field: "descriptive.comparator / reference_standard / current_practice"
+      quote: "Figure 6 enumerates the outcomes with and without partial updates."
+      card_says: "comparator = 同一评估数据上『有更新 / 无更新』；reference_standard = 与输入同源的 BG 读数（<70 mg/dL）；current_practice = null（absent），并注明论文未与任何已发表方法或临床现行做法比较。"
+      should_be: "维持现状。三类东西已分开：判真值的 70 mg/dL 阈值与 h−t<1h 规则进了 reference_standard 并注明与模型输入同源；算法对照只是自身消融（Figure 6），卡未把它抬成方法学对照；全文确无与 Faccioli/Prendin/D’Antoni 等被引方法的并列数字，也无与自我监测、碳水计数、胰岛素调量等现行做法的同批人比较，absent 是正确的审稿发现而非掩盖。"
+
+    - question: 5
+      verdict: issue
+      severity: low
+      field: "descriptive.comparator / descriptive.demonstrated_effect（评估集的人数与范围）"
+      quote: "Although most patients exhibited minor improvements and some major, a decline was noted in certain evaluation scores."
+      card_says: "comparator 写“同一批评估数据（被选患者数据的后半段）”；demonstrated_effect 写“评估只在被选患者数据的后半段上进行”——两处都按单一患者的后半段无条件陈述；但同一张卡的 cohorts.n、benefit_gap ③、clinical_context 又说被评估人数（1 人还是 15 人）无法确定。"
+      should_be: "卡内自相冲突：既然 “most patients” 与 “A single patient was chosen” 的矛盾未解，comparator / demonstrated_effect 里对评估集范围的陈述也必须带上同一限定（例如“论文自陈评估在被选患者的后半段上进行，但同段结果句写 most patients，Figure 6 是否覆盖多位患者不可确定”），而不是采用其中一种读法。限制条件应与数字/范围写在一起。"
+
+    - question: 6
+      verdict: issue
+      severity: medium
+      field: "descriptive.model_input（status: explicit）"
+      quote: "Post-identification of the best-fit model from the database, the graph was updated with the evaluation data."
+      card_says: "model_input 末句写 “for the update, the first half ('pre-treatment') of the new patient's readings”，整条 status 标 explicit，所配引文是 Introduction 里讲字母表与输入窗口的通用句（“We begin with the de Bruijn graph (dBG)…”），该引文完全没提用哪一半做更新。"
+      should_be: "论文对“用哪一半数据做更新”的唯一表述是上引句 “updated with the evaluation data”，字面读是用评估数据更新（若指后半段即为测试集泄漏），与卡断言的“用前半段更新”方向相反；论文只写了 “A subsequent evaluation on the second half of the dataset was conducted”，未说明更新输入。该子句应改为 inferred + note 写明依据，或直接标出这处歧义（cannot_determine），不得以 explicit 的形式采纳其中一种读法。demonstrated_effect 的 note “（前半段用于更新本身）” 同此。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "descriptive.model_input（字母表构成 12/2/1）"
+      quote: "The model assigns 12 characters for normoglycemia, two for hypoglycemia, and one for hyperglycemia, totaling 15 characters."
+      card_says: "model_input 写 “discretized into a 15-character alphabet (12 characters for normoglycemia, two for hypoglycemia, one for hyperglycemia)”，note 称依据 3.1 末段，未作任何保留。"
+      should_be: "该数字与论文自己的 Table 2 不符：按 3.1 定义的 normoglycemia 区间 70≤v≤180 与 10 单位分箱，Table 2 里 normoglycemia 只有 label 2–12 共 11 个字符，hyperglycemia 是 label 13 与 14 共 2 个（合计仍为 15）。卡照抄了正文的 12/2/1 而未与表交叉核对，应在字段或 note 中标出正文与 Table 2 的这处内部矛盾。（Table 2 在解析产物中是 HTML 行列，按硬约束 3 不作拼接引用。）"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "provenance.fields（缺条目：intended_user、clinical_decision_affected、region、submission_date）"
+      quote: "In such scenarios, our model’s alert, deemed a false positive, is in fact a valuable warning, highlighting a potential risk, as illustrated in Figure 4."
+      card_says: "这四个字段取 null，理由只写在 YAML 行内注释里（“论文全文未说明由谁使用”“论文未描述警报触发什么处置”“全文无国家、地区、机构、数据集名称”等），provenance.fields 下没有对应条目，因而没有 status。"
+      should_be: "care_setting 与 current_practice 都建了 absent 条目，这四个字段却只有注释，缺 status 就无法区分“论文确实没写”（absent，是审稿发现，应进缺口报告）与“没找到”（not_extracted，是故障）。四条都应补 provenance 条目并写 status——按卡自述的全文检索结果应为 absent，并附 locator。上引句是全文离警报后处置最近的一处表述（提到 medication or food intake 使低血糖被避免），但主语是近低血糖事件的自然过程、不是本模型触发的处置，仍撑不起 clinical_decision_affected，故该字段判 absent 而非补值。"
+
+  summary:
+    issues_high: 0
+    issues_medium: 1
+    issues_low: 3
+    cannot_determine: 0

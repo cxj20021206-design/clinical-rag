@@ -1,0 +1,219 @@
+paper_overview:
+  paper_id: "10.1038/s41591-026-04337-2"
+  article_type: original_research
+  article_type_evidence:
+    quote: "Because this was an observational study, residual confounding cannot be excluded"
+
+  submission_date:
+    value: "2025-09-16"
+    basis: received_date
+    quote: "Received: 16 September 2025"
+    note: "首页同时给出 Received / Accepted / Published online 三个日期。按 SPEC §10 阶梯取第 1 档 Received（2025-09-16），不使用 Accepted: 10 March 2026，也不使用 Published online: 15 April 2026。"
+
+  cohorts:
+    - cohort_id: pmbb_hr_egfr60_full
+      purpose: internal_validation
+      source: "Penn Medicine BioBank (PMBB)"
+      n: 851
+      retrospective: true
+      different_site_from_development: false
+      selection_basis: "Participants recruited from the University of Pennsylvania Health System since 2008 who underwent whole-exome sequencing (57,170 sequenced; 1,310 carried the APOL1 high-risk G1/G1, G2/G2 or G1/G2 genotype); demographic, ICD-code, medication and laboratory data extracted from the EHR; included all participants aged >=18 years with available high-risk APOL1 genotype and at least one subsequent follow-up record or documented clinical event."
+      subgroup_restrictions: "Excluded 109 with prior kidney transplantation and 88 with kidney failure (1,113 eligible); this cohort is the subset with baseline eGFR >=60 ml/min/1.73 m2. Further exclusions: missing or ambiguous APOL1 data and excessive missing data in key clinical covariates. Baseline diagnoses required to be recorded in the EHR before the blood draw; baseline labs taken from 2 months before to 1 month after the plasma draw; UACR from the most recent measurement within the 2 years preceding the plasma draw (urine protein-creatinine ratio or dipstick converted to estimated UACR). NOTE: this n=851 set is the union of pmbb_hr_egfr60_train (680) and pmbb_hr_egfr60_test (171); the quintile risk-stratification and 10-year cumulative-incidence figures (Fig. 2c,d) are reported on this pooled set, i.e. they are not out-of-sample."
+      characteristics_locator: main_text_table
+      quote: "<td>Number</td><td>1,113</td><td>851</td><td>262</td>"
+      status: explicit
+
+    - cohort_id: pmbb_hr_egfr60_train
+      purpose: model_development
+      source: "Penn Medicine BioBank (PMBB)"
+      n: 680
+      retrospective: true
+      different_site_from_development: false
+      selection_basis: "Random 80% partition (stratified sampling) of the PMBB APOL1 high-risk eGFR >=60 group, used for marker selection and elastic net Cox model fitting."
+      subgroup_restrictions: "Same inclusion/exclusion as pmbb_hr_egfr60_full; additionally restricted to the 80% marker-selection partition."
+      characteristics_locator: supplementary
+      quote: "To develop and vali date such a panel, the eGFR ≥60 group was randomly partitioned, with 80% of participants being used for marker selection and the remaining 20% reserved for independent testing (Supplementary Table 1)."
+      status: explicit
+
+    - cohort_id: pmbb_hr_egfr60_test
+      purpose: internal_validation
+      source: "Penn Medicine BioBank (PMBB)"
+      n: 171
+      retrospective: true
+      different_site_from_development: false
+      selection_basis: "The held-out 20% of the PMBB APOL1 high-risk eGFR >=60 group, reserved for independent testing."
+      subgroup_restrictions: "Same inclusion/exclusion as pmbb_hr_egfr60_full; additionally restricted to the 20% held-out partition. The headline tAUC 86.5% for the composite outcome is reported on this cohort."
+      characteristics_locator: supplementary
+      quote: "To further assess its prognostic value, we examined the performance of the APRS in the eGFR ≥60 test cohort."
+      status: explicit
+
+    - cohort_id: pmbb_hr_egfr_lt60
+      purpose: internal_validation
+      source: "Penn Medicine BioBank (PMBB)"
+      n: 262
+      retrospective: true
+      different_site_from_development: false
+      selection_basis: "Same PMBB APOL1 high-risk eligible pool as pmbb_hr_egfr60_full, but the stratum with baseline eGFR <60 ml/min/1.73 m2; not used for marker selection."
+      subgroup_restrictions: "Baseline eGFR <60 ml/min/1.73 m2 (established CKD); 145 composite events. NOTE（材料内部矛盾，登记备查）: Extended Data Fig. 1 的图注把 n = 680 标给 eGFR <60、把 n = 262 标给 eGFR >=60，与正文、Table 2 与 Extended Data Table 3 的标注相反。"
+      characteristics_locator: main_text_table
+      quote: "APRS maintained this level of performance in the eGFR <60 stratum (262 participants and 145 events) where CRIC and KFRE were originally developed, performing similarly to KFRE (84.2% versus 82.4%) and CRIC (83.2%)."
+      status: explicit
+
+    - cohort_id: aric_hr
+      purpose: external_validation
+      source: "Atherosclerosis Risk in Communities (ARIC) study"
+      n: "314 (Table 2 'Any' row); 296 in the eGFR >=60 row"
+      retrospective: true
+      different_site_from_development: true
+      selection_basis: "Community-dwelling participants aged 45-65 years enrolled from four US communities (Washington County, Maryland; Forsyth County, North Carolina; Jackson, Mississippi; Minneapolis, Minnesota) between 1987 and 1989; African American participants with APOL1 high-risk genotyping by TaqMan assays who attended visit 2 (approximately 3 years after baseline); SomaScan 5K proteomic profiling on visit 2 biospecimens."
+      subgroup_restrictions: "APOL1 high-risk genotype; attended visit 2; follow-up truncated at 10 years from baseline. NOTE（材料内部矛盾，登记备查）: Methods 说这 314 人都是 eGFR>=60 ('who attended visit 2 ... with eGFR>=60'), 但 Results 说 'Only 18 participants in this subgroup had eGFR below 60', 而 Table 2 把 ARIC 分成 >=60 (n=296) 与 Any (n=314) 两行。阶段二引用 ARIC 数字时必须区分 tAUC 82.2%（n=314, any eGFR）与 tAUC 77.5%（n=296, eGFR>=60）。UACR 在 ARIC visit 2 不可得，故 KFRE 无法计算（表中为 '-'）。"
+      characteristics_locator: main_text_prose
+      quote: "We included 314 African American participants with APOL1 high-risk genotyping (performed using TaqMan assays for G1 and G2)"
+      status: explicit
+
+    - cohort_id: ukbb_hr
+      purpose: external_validation
+      source: "UK Biobank (UKBB)"
+      n: "204 (Table 2 'Any' row); 195 in the eGFR >=60 row"
+      retrospective: true
+      different_site_from_development: true
+      selection_basis: "Community-based cohort of over 500,000 participants aged 40-69 years at recruitment (2006-2010) from 22 assessment centres across the United Kingdom; restricted to all participants who underwent plasma proteomic profiling; 1,171 individuals of African descent identified, of whom 204 were APOL1 high-risk."
+      subgroup_restrictions: "APOL1 genotypes imputed (Data-Field 21007, TOPMed R2 reference panel) rather than sequenced; nine participants had eGFR below 60 ml/min/1.73 m2; Olink measurements log transformed and normalized, and proteins missing on Olink imputed by mapping to the SomaScan scale with a multi-output penalized regression trained on SomaScan data (cross-platform harmonization)."
+      characteristics_locator: main_text_prose
+      quote: "Among these, 1,171 individuals of African descent were identified—204 with APOL1 high-risk."
+      status: explicit
+
+    - cohort_id: pmbb_lowrisk_african
+      purpose: external_validation
+      source: "Penn Medicine BioBank (PMBB)"
+      n: "912 (any eGFR); 874 with eGFR >=60"
+      retrospective: true
+      different_site_from_development: false
+      selection_basis: "PMBB African ancestry participants classified as APOL1 low-risk (zero or one risk allele: G0/G0, G0/G1 or G0/G2), included as an external reference population."
+      subgroup_restrictions: "APOL1 low-risk genotype (i.e. NOT the target population of the claim); reported separately for eGFR >=60 (n=874) and any eGFR (n=912)."
+      characteristics_locator: appendix
+      quote: "Additional 912 African ancestry APOI 1 low-risk participants and 698 Furopean ancestry APOl 1 low-risk were included as external reference"
+      status: explicit
+
+    - cohort_id: pmbb_lowrisk_european
+      purpose: external_validation
+      source: "Penn Medicine BioBank (PMBB)"
+      n: "698 (any eGFR); 658 with eGFR >=60"
+      retrospective: true
+      different_site_from_development: false
+      selection_basis: "PMBB European ancestry participants classified as APOL1 low-risk, included as an external reference population."
+      subgroup_restrictions: "European ancestry and APOL1 low-risk (i.e. NOT the target population of the claim); reported separately for eGFR >=60 (n=658) and any eGFR (n=698)."
+      characteristics_locator: appendix
+      quote: "Similarly, among APOL1 low-risk European ancestry participants in the PMBB, APRS outperformed KFRE (66.9% versus 58.9%) but was similar to CRIC score (66.7%)."
+      status: explicit
+
+    - cohort_id: aric_lowrisk_african
+      purpose: external_validation
+      source: "Atherosclerosis Risk in Communities (ARIC) study"
+      n: "2,021 (any eGFR); 1,932 with eGFR >=60"
+      retrospective: true
+      different_site_from_development: true
+      selection_basis: "ARIC African ancestry participants without APOL1 high-risk genotypes, evaluated as a cross-population benchmark."
+      subgroup_restrictions: "APOL1 low-risk (NOT the target population); KFRE not computable in ARIC (UACR unavailable at visit 2)."
+      characteristics_locator: appendix
+      quote: "We additionally evaluated APRS, CRIC score and KFRE in participants without APOL1 high-risk genotypes across ancestries (Table 2)."
+      status: explicit
+
+    - cohort_id: aric_lowrisk_european
+      purpose: external_validation
+      source: "Atherosclerosis Risk in Communities (ARIC) study"
+      n: "8,602 (any eGFR); 8,437 with eGFR >=60"
+      retrospective: true
+      different_site_from_development: true
+      selection_basis: "ARIC European ancestry participants without APOL1 high-risk genotypes, evaluated as a cross-population benchmark."
+      subgroup_restrictions: "European ancestry and APOL1 low-risk (NOT the target population); KFRE not computable in ARIC (UACR unavailable at visit 2)."
+      characteristics_locator: appendix
+      quote: "We additionally evaluated APRS, CRIC score and KFRE in participants without APOL1 high-risk genotypes across ancestries (Table 2)."
+      status: explicit
+
+    - cohort_id: ukbb_lowrisk_african
+      purpose: external_validation
+      source: "UK Biobank (UKBB)"
+      n: "967 (any eGFR); 942 with eGFR >=60"
+      retrospective: true
+      different_site_from_development: true
+      selection_basis: "UKBB participants of African descent with plasma proteomic profiling who were not APOL1 high-risk, evaluated as a cross-population benchmark."
+      subgroup_restrictions: "APOL1 low-risk (NOT the target population); Olink platform with cross-platform harmonization to SomaScan."
+      characteristics_locator: appendix
+      quote: "We additionally evaluated APRS, CRIC score and KFRE in participants without APOL1 high-risk genotypes across ancestries (Table 2)."
+      status: explicit
+
+    - cohort_id: ukbb_lowrisk_european
+      purpose: external_validation
+      source: "UK Biobank (UKBB)"
+      n: "46,863 (any eGFR); 45,623 with eGFR >=60"
+      retrospective: true
+      different_site_from_development: true
+      selection_basis: "UKBB European ancestry participants with plasma proteomic profiling who were not APOL1 high-risk, evaluated as a cross-population benchmark."
+      subgroup_restrictions: "European ancestry and APOL1 low-risk (NOT the target population); Olink platform with cross-platform harmonization to SomaScan."
+      characteristics_locator: appendix
+      quote: "We additionally evaluated APRS, CRIC score and KFRE in participants without APOL1 high-risk genotypes across ancestries (Table 2)."
+      status: explicit
+
+    - cohort_id: kidney_tissue
+      purpose: other
+      source: "Human kidney samples (surgical nephrectomies), University of Pennsylvania"
+      n: "474 for RNA-seq; 325 for proteomics"
+      retrospective: true
+      different_site_from_development: unknown
+      selection_basis: "Kidney tissue procured from surgical nephrectomies, using only the normal parts of the tissue at least 2 cm from any cancerous lesions; deidentified by an honest broker with clinical information (age, race, sex, diabetes and hypertension status, creatinine); scored for pathology by a specialized renal pathologist."
+      subgroup_restrictions: "这是**组织样本来源**，不是本主张的目标人群（硬约束 4 第三例）。该队列只用于把九个蛋白的血浆水平与肾组织间质纤维化/小管损伤关联（九个蛋白中四个在 mRNA 与蛋白两个层面均与间质纤维化相关，P<0.01），不参与任何预测性能数字。论文未说明这些样本来自哪个机构/是否与 PMBB 同源，故 different_site_from_development 标 unknown。"
+      characteristics_locator: not_reported
+      quote: "Kidney tissue samples (n = 474 for RNA-seq and n = 325 for proteomics) for this study were procured from surgical nephrectomies, ensuring that only the normal parts of the tissue, specifically those at least 2 cm from any cancerous lesions, were used for analysis."
+      status: explicit
+
+  claim_candidates:
+    - claim_id: claim_1
+      summary: "APRS（九个血浆蛋白 SPON1/SUMO2/EPHA10/REG3A/WFDC2/LYZ/MMP7/NPPB/CILP2 加年龄、性别、eGFR、UACR 的 elastic net Cox 评分）能在 APOL1 高危、eGFR 仍 >=60 的非裔人群中，于 CKD 临床显现之前预测 ≥40% eGFR 下降/肾衰竭/死亡的 10 年复合终点；全文只做了这一个独立临床声明——eGFR <60 组与 APOL1 低危各队列被论文自己定位为对照性/边界分析（论文明说临床落地最可行的是 APOL1 高危富集人群），故这些队列不进 uses_cohorts；kidney_tissue 进 uses_cohorts 仅为支撑生物学合理性，它是手术肾切除组织，不是目标人群；同批人内跑过的比较对象有三个，需在阶段二分开安放：KFRE（既是算法对照又是论文自陈的现行做法）、CRIC proteomic score 与 CKD PRS（纯算法对照）。"
+      importance: primary
+      condition: "chronic kidney disease progression / kidney failure (ESKD) in individuals with APOL1 high-risk genotypes"
+      population: "individuals of African ancestry with APOL1 high-risk genotypes (G1/G1, G2/G2 or G1/G2) and preserved eGFR (>=60 ml min-1 1.73 m-2)"
+      task: "early risk prediction (prognostic risk score) of a composite outcome of >=40% eGFR decline, kidney failure or death over 10 years"
+      separate_claim_evidence:
+        quote: "We developed and validated a plasma proteomic risk score that substantially improves prediction of kidney outcomes in individuals carrying high-risk APOL1 genotypes."
+      uses_cohorts: [pmbb_hr_egfr60_full, pmbb_hr_egfr60_train, pmbb_hr_egfr60_test, aric_hr, ukbb_hr, kidney_tissue]
+
+      reference_standard:
+        label: "EHR-ascertained composite outcome: long-term dialysis, ESKD diagnosis, kidney transplantation or >=40% decline in eGFR from baseline, plus all-cause mortality; obtained through medical record review and ICD-10 codes, with eGFR calculated by the creatinine-based CKD-EPI 2021 equation"
+        quote: "The primary outcomes were defined as a composite of kidney events (long-term dialysis, ESKD diagnosis, kidney transplantation or a ≥40% decline in eGFR from baseline) and all-cause mortality."
+        status: explicit
+      current_practice:
+        label: "Kidney Failure Risk Equation (KFRE) together with conventional clinical measures (eGFR, UACR); the paper states these perform well only after CKD is established and that KFRE discrimination diminishes when eGFR is normal"
+        head_to_head: true
+        quote: "The KFRE was included as a comparator because it is the most widely validated clinical prediction tool for kidney outcomes, although its discrimination is known to diminish in individuals with normal eGFR."
+        status: explicit
+
+  input_coverage:
+    - {part: main_text,      included: true,  note: "Abstract / Results / Discussion / Methods / References / Reporting Summary 均以 MinerU 版面解析文本提供；Table 1 与 Table 2 以 HTML 表格形式提供（Table 2 的行列已被解析错位，读取需谨慎）。Fig. 1-3 只有图注，面板内的数值是图片，不可读。"}
+    - {part: appendix,       included: true,  note: "Extended Data Table 1-4 以文本形式提供；Extended Data Fig. 1-6 只有图注，面板内的数值是图片，不可读（Extended Data Fig. 6a 的 NNT、Fig. 6b 的竞争风险 tAUC 等只在正文散见）。"}
+    - {part: supplementary,  included: false, note: "Supplementary Table 1-2、Supplementary Fig. 1-3 与 Source data 均未取到。"}
+
+  unavailable_content:
+    - part: supplementary
+      pages: null
+      contains: "Supplementary Table 1（80% 训练集 / 20% 测试集的基线特征）、Supplementary Table 2（CRIC 65 蛋白评分与 APRS 九蛋白面板的重叠情况）、Supplementary Fig. 1（组织蛋白与纤维化关联）、Supplementary Fig. 2（按年龄/性别/高血压/糖尿病分层的亚组分析）、Supplementary Fig. 3（APOL1 基因型交互）。"
+      affects_claims: [claim_1]
+      quote: "Supplementary information The online version contains supplementary material available at https://doi.org/10.1038/s41591-026-04337-2."
+
+    - part: supplementary
+      pages: null
+      contains: "Source data（各图底层数据）。"
+      affects_claims: [claim_1]
+      quote: "Source data are provided with this paper."
+
+    - part: appendix
+      pages: null
+      contains: "Extended Data Fig. 1-6 的面板数据（火山图、marker 选择稳定性、相关矩阵、纤维化相关散点、按 UACR/亚组的 tAUC、NNT 与竞争风险分析）——只给了图注，面板是图片。"
+      affects_claims: [claim_1]
+      quote: "Extended data is available for this paper at https://doi.org/10.1038/s41591-026-04337-2."
+
+    - part: main_text
+      pages: null
+      contains: "Fig. 1-3 的面板数据（研究流程图、tAUC 曲线、累积事件曲线、5 年 AUC、决策曲线分析）——只给了图注，面板是图片。"
+      affects_claims: [claim_1]
+      quote: "Decision curve analysis demonstrated greater net clinical benefit than either a treat-all or a treat-none strategy across a range of thresholds (Fig. 3d)."

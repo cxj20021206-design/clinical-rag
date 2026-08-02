@@ -1,0 +1,87 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:1,2,3,5,6   后端:claude-cli
+adversarial_check:
+  findings:
+    - question: 1
+      verdict: pass
+      field: "descriptive.future_intent / care_setting / gating.intended_context"
+      quote: "The contributions in this work are: developing a novel, effective reinforcement learning approach to address the critical problem of pediatric T1D forecasting well-enough that a solution could exist in real clinical settings."
+      card_says: "future_intent 收录了 could exist in real clinical settings / will become increasingly viable；care_setting 标 absent 并写明「情态与未来式不作依据」"
+      should_be: "维持现状。全文的情态/未来式句（§1 could exist、§5 will become increasingly viable）都只出现在 future_intent，没有被填进 intended_use、care_setting 或 intended_context。intended_use 的引文 “Then, as sensor data is given, the graph can forecast when a hypoglycemic episode will subsequently occur within 30 minutes with acceptable clinical accuracy.” 中的 can 是对已构建模型能力的描述（贡献段的行文主语是本文的图），不是未来设想。"
+
+    - question: 2
+      verdict: pass
+      field: "care_setting / population.special / descriptive.target_population"
+      quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+      card_says: "care_setting: null（absent）；population.special: []；target_population: children with type 1 diabetes (T1D)"
+      should_be: "维持现状。论文对数据采集地点、机构、科室一字未写，因而不存在「把数据来源场景当成使用场景」的空间；§5 的 “dynamic environments like hospitals” 卡已明确拒绝用作 care_setting。population.special 未混入任何入组来源条件（「需要 BG 传感器读数」被正确放在 model_input 而非人群）。"
+
+    - question: 3
+      verdict: pass
+      field: "descriptive.comparator / reference_standard / current_practice"
+      quote: "Model performance using different k parameters. No pruning is performed on the graph. k = 2 is structurally equivalent to a Markov chain."
+      card_says: "全部对照都是模型自身的变体，无任何外部对照；current_practice 另记且「论文没有与它做过任何比较」"
+      should_be: "维持现状。全文唯一给出并列数字的只有自身变体（Table 3 的 k 扫描、Figure 5 的有/无监督与剪枝）；§2 只文献性地列举 Faccioli / D'Antoni 等工作而无同数据并列数字；真值取自与模型输入同源的 BG 读数（70 mg/dL 阈值），卡已把它放进 reference_standard 而非 comparator。"
+
+    - question: 5
+      verdict: issue
+      severity: medium
+      field: "descriptive.demonstrated_effect / cohorts[loocv_15]"
+      quote: "In total, our model preemptively issued warnings for 272 hypoglycemia instances and missed 10, achieving a 96.45% warning rate."
+      card_says: "以下全部来自 loocv_15（同一批 15 名患者的留一交叉验证，adaptive pruning，k = 6, ρ = 0.2, x = 6）：272 次低血糖事件被预先预警、10 次漏报，warning rate 96.45%；全患者平均 Balanced Accuracy 0.844……"
+      should_be: "论文把 k = 6, ρ = 0.2, x = 6 与 adaptive pruning 只挂在 Figure 2 (RIGHT) 的图注上；§4.2 同一段里还并列陈述了 Figure 5（有/无监督，uniform pruning 取 weight < 4）的结果，而 272/10/96.45% 这句本身没有任何配置说明——尤其没说是否启用了 §4.1 的监督规则集，而监督恰恰会改变假警报与警报数。把 warning rate 与 Figure 2 的四项平均并成「同一次运行的一套数字」是卡的归纳，应降为 inferred 并在 note 里写明「该数字的配置论文未述」，否则下游会读出一个论文里不存在的单一评估。"
+
+    - question: 5
+      verdict: issue
+      severity: low
+      field: "cohorts[ksweep_nopruning_15].subgroup_restrictions / descriptive.demonstrated_effect"
+      quote: "We assessed the Balanced Accuracy, Precision, Sensitivity, and Specificity for all patients employing the leave-one-out cross-validation method. The average scores across all patients were 0.844, 0.268, 0.801, and 0.887 for these metrics, respectively."
+      card_says: "k=6 一行为 0.810/0.708/0.913/0.294，而 Figure 2 图注给出的平均为 0.844/0.268/0.801/0.887"
+      should_be: "两串数字的指标顺序不同却都以无标签的四元组并排给出：Figure 2 是 Balanced Accuracy / Precision / Sensitivity / Specificity，Table 3 的列序是 Accuracy / Sensitivity / Specificity / Precision。卡先用前一种顺序命名，再紧接着抛出后一种顺序的裸四元组，读者会把 0.708 读成 Precision（真值 0.294），凭空得出「不剪枝时精确度 0.708」这一论文里不存在的结论。应逐项写出指标名，而不是只写「不可混用」。"
+
+    - question: 5
+      verdict: issue
+      severity: low
+      field: "cohorts[loocv_15].subgroup_restrictions / descriptive.demonstrated_effect"
+      quote: "Gray data points are not used for evaluation, possibly due to the patient already being in a hypoglycemic state or gaps in the timeline."
+      card_says: "评估并非覆盖全部数据点……引用本队列性能数字时必须一并带上「已处于低血糖状态者与断点被排除」"
+      should_be: "该图注是 Figure 3 对单患者 P21 时间线的说明（属 p21_case_demo），且作者自己用 possibly 对排除原因存疑；§4 开头则写 “To evaluate our proposed model, we methodically scrutinize every datapoint in our dataset.”。把一张单患者图的排除规则当作 loocv_15 全队列的既定事实，是跨队列迁移。应写成 inferred（依据 Figure 3，来自 p21_case_demo 的推广）或标 cannot_determine，并把 §4 的相反表述一并记下。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "descriptive.intended_user"
+      quote: "Observe that alerts will be suppressed if $\\mathrm { B G } > 1 5 0 \\mathrm { m g } / \\mathrm { d L } .$ , or BG ascends by more than 15 mg/dL from the preceding reading."
+      card_says: "intended_user: null           # 论文从未说明警报交给谁（患者、家长、护士、医师均未提及）"
+      should_be: "该字段在 provenance.fields 下**根本没有条目**，因而没有 status——下游无法区分「论文确实没写」（absent，属审稿发现）与「没找到」（not_extracted，属故障）。同一张卡对 care_setting 就补了完整的 absent 条目，处理不一致。值本身（null）我核对后同意：全文描述警报的生成与抑制，从未出现接收者。应补一条 status: absent 的 provenance 条目（region、clinical_decision_affected 同样缺条目，同理）。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "descriptive.model_output"
+      quote: "Alerts for tuple v are issued as follows:"
+      card_says: "status: explicit，引文为上句，locator「3.2.2 MAKING PREDICTIONS（式 (1) 之前）」"
+      should_be: "这句是公式 (1) 的引出语，本身不陈述任何输出内容；卡里填的 ρ 阈值、x 步搜索、监督规则可撤销告警等全部内容都不在这条引文里，explicit 因而没有落地的出处。应改用 §3.2.2 中实际陈述阈值机制的句子（“can be adjusted to tune alert sensitivity” 所在句）并另起一条 provenance 覆盖 §4.1 的规则集，或把本条降为 inferred。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "condition.primary"
+      quote: "Hypoglycemic events include all episodes of a plasma glucose concentration low enough to cause symptoms and/or signs, such as dizziness, fast heartbeat, shaking, sweating, hunger, etc."
+      card_says: "status: explicit，locator「1 INTRODUCTION」"
+      should_be: "这句的主语是「低血糖事件」这一临床概念的通用定义（背景段落），它证明的是低血糖是什么，不是本研究以低血糖为目标事件。值 hypoglycemia 我核对后同意，但出处应换成主语是本研究的句子，例如 §3.2.2 的 “Our focus is on predicting a hypoglycemic episode for the patient.”（可与 clinical_task 各截取相关部分分列两条）。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "gating.intended_context"
+      quote: "This evaluation provides a more comprehensive understanding of the model’s effectiveness in real-world settings."
+      card_says: "status: inferred，引文为上句，note 判为 clinical_care"
+      should_be: "这句的主语是「这次评估」，讲的是提前量分析让人更全面理解模型效果，不是「本模型的用途语境是真实照护」。值 clinical_care 我核对后同意，但更贴题的支撑是摘要的 “sufficient for a clinical setting” 与 §5 的 “enhancing patient care by enabling timely and precise updates.”（后者已被 evidence_basis.clinical_claim_made 使用，可分列条目）。"
+
+  summary:
+    issues_high: 0
+    issues_medium: 1
+    issues_low: 6
+    cannot_determine: 0

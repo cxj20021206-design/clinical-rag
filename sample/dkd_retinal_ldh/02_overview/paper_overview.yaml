@@ -1,0 +1,95 @@
+# 阶段一产物 —— 按 prompts/stage1_overview.md 逐字执行。
+# 论文：Lancet Digit Health 2025, DOI 10.1016/j.landig.2025.02.008
+paper_overview:
+  paper_id: "10.1016/j.landig.2025.02.008"
+  article_type: original_research
+  article_type_evidence:
+    quote: "In this population-based study, we developed a retinal image-based AI-deep learning system, DeepDKD, pretrained using 734 084 retinal fundus images."
+
+  submission_date:
+    value: "2024-03-10"
+    basis: search_cutoff_lower_bound     # 阶梯第 3 档：PDF 无 Received / Accepted
+    quote: "We searched PubMed for studies of deep learning-based chronic kidney disease (CKD), diabetic kidney disease (DKD), diabetic nephropathy, or non-diabetic kidney disease (NDKD) detection from retinal images published from database inception to March 10, 2024"
+    note: >
+      PDF 全文无 Received/Accepted；本地 metadata 与 Crossref 均只有 published 2025-05。
+      按 stage1 §③ 取检索截止日作保守下界（检索截止必然早于投稿，会让更少指南被判
+      predates=true）。**basis 必须随卡传下去，下游需知道这不是真收稿日。**
+
+  cohorts:
+    - cohort_id: dev_dkd
+      purpose: model_development
+      source: "Shanghai Integrated Diabetes Prevention and Care System"
+      n: "486 312 retinal images from 121 578 participants"
+      retrospective: unknown
+      different_site_from_development: false
+      quote: "we used 486 312 retinal images from 121 578 participants in the Shanghai Integrated Diabetes Prevention and Care System for development and internal validation"
+
+    - cohort_id: ext_dkd
+      purpose: external_validation
+      source: "ten multi-ethnic datasets (incl. PUDM, SEED, UK Biobank, MeLODY, Australian Eye and Heart Study)"
+      n: "65 406 participants"
+      retrospective: unknown
+      different_site_from_development: true
+      quote: "ten multi-ethnic datasets from China, Singapore, Malaysia, Australia, and the UK (65 406 participants) for external validation"
+
+    - cohort_id: dev_dn_ndkd
+      purpose: model_development
+      source: "Diabetic Retinopathy Progression Study cohort（接受过肾活检者）"
+      n: "267 patients"
+      retrospective: unknown
+      different_site_from_development: false
+      quote: "267 patients with diabetes who had undergone kidney biopsies in the Diabetic Retinopathy Progression Study cohort were used"
+
+    - cohort_id: ext_dn_ndkd
+      purpose: external_validation
+      source: "WHKDS, UK Biobank, MeLODY"
+      n: "244 participants"
+      retrospective: unknown
+      different_site_from_development: true
+      quote: "three multi-ethnic datasets from China, Malaysia, and the UK (244 participants) for external validation"
+
+    - cohort_id: prosp_screening
+      purpose: prospective_evaluation
+      source: "primary care setting"
+      n: "325 participants"
+      retrospective: false
+      different_site_from_development: unknown
+      quote: "a prospective real-world study in a primary care setting to evaluate the performance of the DeepDKD system in DKD screening among 325 participants with 3 months"
+
+    - cohort_id: longitudinal_dn
+      purpose: longitudinal_followup
+      source: "随访队列"
+      n: "207 participants"
+      retrospective: unknown
+      different_site_from_development: unknown
+      quote: "a longitudinal analysis of the effectiveness of the DeepDKD system in differentiating isolated diabetic nephropathy from NDKD on renal function changes over time among 207 participants"
+
+  claim_candidates:
+    - claim_id: claim_1
+      summary: "以视网膜眼底照相筛查糖尿病肾病"
+      importance: primary
+      condition: "diabetic kidney disease (DKD)"
+      population: "people with diabetes（前瞻子研究为 2 型糖尿病）"
+      task: "screening"
+      separate_claim_evidence:
+        quote: "First, for DKD detection, we used 486 312 retinal images from 121 578 participants"
+      uses_cohorts: [dev_dkd, ext_dkd, prosp_screening]
+
+    - claim_id: claim_2
+      summary: "区分单纯糖尿病肾病与非糖尿病肾病"
+      importance: primary
+      condition: "isolated diabetic nephropathy vs non-diabetic kidney disease"
+      population: "已有肾脏损害、接受过肾活检的糖尿病患者"
+      task: "differential diagnosis"
+      separate_claim_evidence:
+        quote: "Second, to differentiate isolated diabetic nephropathy from NDKD, we used 1068 retinal images from 267 participants"
+      uses_cohorts: [dev_dn_ndkd, ext_dn_ndkd, longitudinal_dn]
+
+  # 判据核对（stage1 §②，两个候选各满足全部四条，故不合并）：
+  #   自己的队列 ✅（12 万人 vs 267 人）自己的人群 ✅（全体糖尿病人 vs 活检者）
+  #   自己的对照 ✅（元数据模型/尿试纸 vs 肾活检）自己的终点 ✅（筛查敏感度 vs 4·6 年肾功能）
+
+  input_coverage:
+    - {part: main_text, included: true, note: "15 页 PDF 全文"}
+    - {part: appendix, included: false, note: "论文引用 appendix pp 4-5, 7-10, 15-16, 44-45，未获取"}
+    - {part: supplementary, included: false, note: "未获取"}

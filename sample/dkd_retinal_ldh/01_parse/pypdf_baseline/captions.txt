@@ -1,0 +1,4 @@
+Figure 1: Overall study design of the development and validation of the DeepDKD system
+Figure 2: Receiver operating characteristic curve and AUC of the DeepDKD system for detecting diabetic kidney disease in the inte
+Figure 4: Real-world prospective study on screening DKD among patients with type 2 diabetes, in a primary care
+Figure 5: Longitudinal study on differentiating isolated diabetic nephropathy from NDKD among patients with DKD

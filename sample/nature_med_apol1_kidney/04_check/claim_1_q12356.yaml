@@ -1,0 +1,102 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:1,2,3,5,6   后端:claude-cli
+#
+# ⚠️ 下面 card: 一行是**模型自填**的 —— bundle 只给卡的内容、不给卡的路径,所以这个值是编的:
+#    `corpus/extracted/` 下从来没有过这个文件(2026-08-02 核对)。实际卡为 03_cards/claim_1.yaml。
+#    留原值不改(它是产物),记在这里以免被当成真路径。同类:页码由程序反查、不让模型填。
+adversarial_check:
+  card: "corpus/extracted/10.1038_s41591-026-04337-2.yaml"
+  findings:
+    - question: 1
+      verdict: issue
+      severity: medium
+      field: "descriptive.intended_use（并与 descriptive.future_intent 自相矛盾）"
+      quote: "First, APRS may enable earlier identification of high-risk individuals for intensified surveillance long before CKD is detected by standard measures."
+      card_says: "intended_use: \"early prediction of kidney disease progression ...; risk stratification to identify carriers for intensified surveillance and for APOL1-targeted therapy\"；同一张卡的 future_intent 又把\"指导 APOL1 靶向治疗（inaxaplin）的使用\"列为\"论文未做\"的情态表述。"
+      should_be: >-
+        intended_use 的后半句（intensified surveillance / APOL1-targeted therapy）在论文里只有
+        "may enable" 与 "it could guide use of emerging APOL1-targeted therapies such as inaxaplin"
+        两句情态表述支撑，按本卡自己的处理原则应只留在 future_intent。intended_use 应收缩到
+        非情态部分（early prediction / risk prediction before CKD is clinically evident），
+        或对这两项加情态标注。现在同一内容同时以"当下用途"和"未来设想"两种身份出现，
+        下游读到的适用范围被放大。其 provenance 引文
+        "The APRS was developed and validated to address the critical unmet need in APOL1 high-risk individuals"
+        也只覆盖前半句，覆盖不到后半句。
+
+    - question: 2
+      verdict: pass
+      field: "care_setting / population.special"
+      quote: "Despite differences in recruitment era, geographic location and healthcare systems across cohorts, APRS showed consistent performance beyond the academic medical center setting of PMBB."
+      card_says: "care_setting: null（status: absent），note 明确指出 academic medical center setting of PMBB、ARIC 的 community-dwelling population、UKBB 的 22 个 assessment centres 都是数据来源而非使用场所。"
+      should_be: >-
+        无需改动。全文唯一带场所词的句子（上引）讲的是队列来源与外推范围，卡没有把它写成使用场所。
+        population.special 的三项也不是入组来源而是使用人群：论文 Results 直接写
+        "In our primary target population with eGFR"，Discussion 写
+        "although clinical implementation is most feasible and cost-effective in the enriched APOL1 high-risk group"，
+        两句的主语都是本评分的目标/落地人群。
+
+    - question: 3
+      verdict: pass
+      field: "descriptive.comparator / reference_standard / current_practice"
+      quote: "APRS achieved higher discrimination than KFRE (tAUC 86.5% versus 66.2%) and outperformed the CRIC proteomic score (79.0%)."
+      card_says: "comparator = KFRE / CRIC proteomic score / CKD PRS（均有并列 tAUC）；reference_standard = EHR 复合终点定义；current_practice = KFRE 加常规临床指标，并注明真的做了并列比较。"
+      should_be: >-
+        无需改动。三样东西被正确分开：参考标准（复合终点定义，Methods "The primary outcomes were defined as
+        a composite of kidney events ... and all-cause mortality."）在 reference_standard；算法对照
+        （CRIC 65 蛋白评分、CKD PRS）与现行做法（KFRE，以及 Fig. 2a 中单独的 eGFR、UACR）都给出了
+        同一批人里的并列数字，符合"报告过对比数字"的判据。ARIC 侧 KFRE 无法计算一事卡里也已注明。
+
+    - question: 5
+      verdict: cannot_determine
+      field: "cohorts[aric_hr].n / subgroup_restrictions；demonstrated_effect 中 82.2% 与 77.5% 的归属"
+      quote: "We included 314 African American participants with APOL1 high-risk genotyping (performed using TaqMan assays for G1 and G2) who attended visit 2 (approximately 3 years after baseline) with eGFR≥60"
+      card_says: "n: \"314（Table 2 Any 行）；296（eGFR >=60 行）\"；\"引用 tAUC 时必须区分 82.2%（n=314，any eGFR）与 77.5%（n=296，eGFR >=60）\"。"
+      should_be: >-
+        判不出来，因为论文自相矛盾：Methods 说 314 人全部是 visit 2 时 eGFR>=60 者，
+        而 Results 说 "Only 18 participants in this subgroup had eGFR below 60 ml min−1 1.73 m−2"，
+        Table 2 也按 314（Any）/296（>=60）分两行。若 Methods 为准，则目标人群（preserved eGFR）
+        对应的外部数字是 82.2% 而非 77.5%，卡里"n=314 = any eGFR"的定性就不成立；若 Results/Table 2
+        为准，卡是对的。卡对 Extended Data Fig. 1 的 n 标注矛盾做了"登记备查"，却没有对这一处同等的
+        矛盾做登记——至少应在 aric_hr 里写明两处口径冲突，并说明卡采信了哪一处。
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "descriptive.target_population / model_input / model_output / clinical_decision_affected / benefit_gap / intended_user"
+      quote: "These proteins were combined with age, sex, eGFR and UACR, using the same clinical variables as in the KFRE but reestimating their coefficients in our cohort, to generate the APOL1 proteomic risk score (APRS)."
+      card_says: "这些字段都填了值（intended_user 填 null 并在行内注释写\"论文未写明\"），但 provenance.fields 下没有对应条目，因而没有 status、没有引文、没有 locator。"
+      should_be: >-
+        这些字段有原文可引（如上引句直接支撑 model_input），却一条 provenance 都没有；
+        intended_user 更关键：行内注释断言"论文未写明"，但没有 status: absent 条目，
+        于是无法区分"全文找过确实没有"（审稿发现）与"没找"（抽取故障）——正是硬约束 5 要防的那种混淆。
+        应为每个已填字段补 provenance 条目并各写 status。
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "condition.primary"
+      quote: "However, their use is constrained by the inability to identify which carriers are most likely to progress before CKD develops."
+      card_says: "condition.primary.label: \"chronic kidney disease\"，status: explicit，引文即上句。"
+      should_be: >-
+        字段值本身没问题，但引文的主语是"新兴 APOL1 靶向疗法（their use）受限于无法识别谁会进展"，
+        讲的是治疗落地的障碍，不是本主张的目标病种。按硬约束 4 应换成主语确实是病种/终点的正文句，
+        例如 Methods 的 "The primary outcomes were defined as a composite of kidney events (long-term dialysis,
+        ESKD diagnosis, kidney transplantation or a ≥40% decline in eGFR from baseline) and all-cause mortality."
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "cohorts[kidney_tissue].subgroup_restrictions"
+      quote: "The use of these samples and data was approved by the University of Pennsylvania IRB under the category of ‘exempt’, negating the need for informed consent due to the deidentified nature of the study samples."
+      card_says: "\"论文未说明标本来自哪个机构。\"，characteristics_locator: not_reported"
+      should_be: >-
+        "未说明来源机构"这一断言缺乏原文支持且与上引句相抵触：肾组织样本的 IRB 审批归 University of
+        Pennsylvania，指向与 PMBB 同一机构。应改为"论文未直接声明采样机构，但 IRB 审批为
+        University of Pennsylvania"，或删去该断言。该队列不参与任何预测数字，故不影响门控。
+
+  summary:
+    issues_high: 0
+    issues_medium: 1
+    issues_low: 3
+    cannot_determine: 1

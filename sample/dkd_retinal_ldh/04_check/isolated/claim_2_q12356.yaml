@@ -1,0 +1,98 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:1,2,3,5,6   后端:claude-cli
+# 注:模型在正文里自报 context_isolated: true(已剥除)。它无从知道自己被怎么调起来,以上以程序判定为准。
+adversarial_check:
+  card: "10.1016/j.landig.2025.02.008 · claim_2（卡文件路径未随卡提供）"
+  findings:
+    - question: 1
+      verdict: issue
+      severity: medium
+      field: "gating.care_setting / gating.intended_context"
+      quote: "DeepDKD also has promising applications in the clinical workflow of differentiating isolated diabetic nephropathy from NDKD in more specialised care settings to assist diabetes physicians and nephrologists to enable more precise and personalised diagnostic and therapeutic clinical decision making."
+      card_says: "care_setting: outpatient_specialty（status: explicit），intended_context: clinical_care"
+      should_be: "论文对『专科门诊场景』只有前瞻性措辞——`has promising applications`、`improving the ease and possibility of future clinical adoption`、`might serve as an adjunctive tool`。本主张下没有任何一份数据来自内分泌/肾内科门诊工作流：开发集是活检回顾队列，外部集是 WHKDS/UKB/MeLODY，纵向分析是社区队列。care_setting 至少应降为 inferred 并在 note 中写明『专科场景为作者设想的未来用途，非研究实施场景』；若按 SPEC §6『不要为了填满 care_setting 而硬编一个临床场景』，标 absent 也是可辩护的。（claim_1 的前瞻研究在 primary care，与本卡无关，不能借用。）"
+
+    - question: 2
+      verdict: issue
+      severity: medium
+      field: "gating.population.special"
+      quote: "To develop and internally validate DeepDKD for distinguishing isolated diabetic nephropathy from NDKD, 267 patients with diabetes who had undergone kidney biopsies in the Diabetic Retinopathy Progression Study cohort were used."
+      card_says: "population.special: [\"biopsy-confirmed kidney disease\"]"
+      should_be: "『已做过肾活检』是**样本入组来源**（需要活检病理当金标准才能建标签），不是模型的**使用人群**。卡自己写的 intended_use 是 `to minimise the need for invasive kidney biopsy`，即用在**尚未活检、正在考虑是否活检**的患者身上——两者是互斥的人群。把数据来源特征写进 gating.population，会让下游拿『活检后人群』的标准去要求一个声称『活检前分流』的工具。建议 special 改为描述使用人群（如 `已有肾损害的糖尿病患者，拟鉴别 DN/NDKD`），把『研究样本为活检人群』移入 descriptive 并标为选择偏倚（论文限制段亦自认 `selection bias`）。"
+
+    - question: 3
+      verdict: issue
+      severity: medium
+      field: "descriptive.comparator"
+      quote: "In the internal validation dataset, the DeepDKD system achieved an AUC of 0⋅906 (95% CI 0⋅825–0⋅966), which was significantly higher than that of the metadata model (0⋅772 [0⋅656–0⋅868], p=0⋅029) and comparable to that of the combined model (0⋅949 [0⋅895–0⋅988], p=0.23; figure 3; appendix p 32)."
+      card_says: "comparator: \"kidney biopsy（病理诊断，侵入性参考标准）\""
+      should_be: "方向反了：肾活检在本研究里是**标签来源/参考标准**，不是被比较的对照臂——论文从未比较『用 DeepDKD 的路径 vs 走活检的路径』。task 2 实际做过统计比较的对照只有 metadata model 与 combined model，两者都是算法。而论文自己指出现行临床做法是拿视网膜病变状态来鉴别（`diabetic retinopathy is often used in clinical practice to differentiate isolated diabetic nephropathy from NDKD`，discussion），论文只做了按 DR 状态分层的亚组分析，**没有与该临床规则或与肾科医师做过头对头比较**。comparator 应写 `metadata model (XGBoost, 临床变量) / combined model`，把 kidney biopsy 记为 reference_standard，并把『无现行临床做法对照』作为审稿发现显式记入 benefit_gap——现在的写法把一条缺口盖住了。"
+
+    - question: 5
+      verdict: issue
+      severity: high
+      field: "gating.population.age_group（provenance.fields.population.age_group.note / locator）"
+      quote: "T<sub>a</sub>bl<sub>e:</sub> Ch<sub>arac</sub>t<sub>er</sub>i<sub>s</sub>ti<sub>cs</sub> <sub>o</sub>f th<sub>e</sub> d<sub>a</sub>t<sub>ase</sub>t<sub>s</sub> <sub>use</sub>d i <sub>n</sub> th<sub>e</sub> d<sub>eve</sub>l<sub>opmen</sub>t <sub>an</sub>d <sub>va</sub>l id<sub>a</sub>ti<sub>on</sub> <sub>o</sub>f d<sub>e</sub>t<sub>ec</sub>ti <sub>ng</sub> DKD"
+      card_says: "note: \"论文无显式年龄纳入标准；主文表 1 各数据集平均年龄 57.11–66.19 岁（SD 8–10），据此推断成人\"，locator: \"table 1\""
+      should_be: "主文表只覆盖 **DKD detection（claim_1）** 的队列——列头是 CNDCS/NDSP/PUDM/ECHM/CUHK-STDR/SEED/UKB/MeLODY/NICOLA/AHES，卡里引的 66.05 / 66.19 / 57.11 正是该表的 developmental / internal validation / CNDCS 三列。本卡（claim_2）的队列是 Diabetic Retinopathy Progression Study（267 人）与 WHKDS，其特征按 Methods 明写在 `appendix (pp 4–5, 15–16)`，而卡的 input_coverage 标了 `appendix included: false`。即：**用 claim_1 队列的年龄去推断 claim_2 人群的年龄**，正是本问要拦的跨队列混合。应改为 `not_extracted`（附录未取）或在取到附录 pp 4–5 后重填；现有 note 必须删除对主文表的引用。注：UKB 与 MeLODY 同时出现在两个任务里，更容易误导，不能作为『同一张表也覆盖 claim_2』的理由。"
+
+    - question: 5
+      verdict: issue
+      severity: medium
+      field: "descriptive.demonstrated_effect / descriptive.clinical_context"
+      quote: "In the second longitudinal study (figure 5), there was a significant difference (p=0⋅0010) in the proportion ofeGFR decline between participants of isolated diabetic nephropathy (27⋅45%) and those ofNDKD (52⋅56%) identified by the DeepDKD system (appendix p 40)."
+      card_says: "demonstrated_effect: \"…纵向随访中两组 eGFR 下降比例 27·45% vs 52·56%（p=0·0010）\"；clinical_context 只描述了 267 人开发集与 244 人外部集"
+      should_be: "这条纵向结果来自**第三个队列**：Methods 写明 `we conducted an analysis of retinal fundus images and clinical metadata in a community-based cohort with longitudinal data`，Research in context 给出 N=207、随访 4·6 年。它既不是 267 人开发集也不是 244 人外部集，且分组是**模型自己判定的**（`identified by the DeepDKD system`），没有活检病理确认。卡把它与内部/外部 AUC 并列写在同一个 demonstrated_effect 里，而 clinical_context 完全没提这个队列，读起来像是对活检确诊队列做了随访。应在 demonstrated_effect 与 clinical_context 中显式标出『社区队列 207 人、分组由模型判定、非病理确认』。"
+
+    - question: 5
+      verdict: issue
+      severity: medium
+      field: "gating.population.special（对 244 人外部集的适用性）"
+      quote: "Three external validation datasets (the Wuhan Kidney Disease Screening [WHKDS] cohort, the UKB cohort, and the MeLODY cohort) were collected (244 participants)."
+      card_says: "population.special: [\"biopsy-confirmed kidney disease\"]（作用于整张卡）"
+      should_be: "『活检确诊』在主文中只对 267 人开发集有明文（`267 patients with diabetes who had undergone kidney biopsies`）；对 WHKDS / UKB / MeLODY 这 244 人，主文没有任何一句说他们做过肾活检，标签如何得到被推到 `The detailed diagnosis criteria of DKD, isolated diabetic nephropathy, and NDKD used in this study are in the appendix (p 6)`，而附录未获取。把开发集的入组条件当成全卡人群属性，是把一个论文里未必存在的『全员活检确诊』研究写进了卡。应把该属性限定到开发/内部验证集，外部集的确诊方式标 not_extracted（附录 p 6 未取），不要沿用。"
+
+    - question: 6
+      verdict: issue
+      severity: medium
+      field: "provenance.fields.care_setting.status"
+      quote: "Having access to simpler, non-invasive tests to distinguish isolated diabetic nephropathy from NDKD is useful for endocrinologists and nephrologists to narrow a differential diagnosis."
+      card_says: "care_setting: status: explicit，quote 即上句，locator: introduction"
+      should_be: "引文与字段不对应。这句说的是『**任何**更简单的无创检查』对哪两类医师有用，是 Introduction 的立题动机，既不是在讲 DeepDKD，也没有出现任何场景词（门诊/专科/住院）。它至多支持 `intended_user`，支持不了 `care_setting: outpatient_specialty` 标 explicit。应改 status: inferred，note 写明依据是 discussion 的 `in more specialised care settings`（且该处是设想语气，见第 1 问）。"
+
+    - question: 6
+      verdict: issue
+      severity: medium
+      field: "provenance.fields（缺失条目）"
+      quote: "Second, to differentiate isolated diabetic nephropathy from NDKD, we used 1068 retinal images from 267 participants for development and internal validation, and three multi-ethnic datasets from China, Malaysia, and the UK (244 participants) for external validation."
+      card_says: "provenance.fields 只有 7 条：condition.primary / population.age_group / care_setting / clinical_task / comparator / evidence_stage / claimed_benefit"
+      should_be: "按 SPEC §9『每个 gating 字段都要给 quote + locator』，以下 gating 字段无任何 provenance 条目、也无 status：`condition.breadth`、`condition.scope_type`、`condition.qualifiers.subtype`、`condition.comorbid_context`、`population.special`、`intended_context`、`finding_direction`、`study_design`（空列表未说明是 absent 还是 not_extracted）。卡外字段 `region: \"CN\"` 同样无出处，而本主张的数据横跨 China / Malaysia / UK（见引文），单填 CN 需要写明取的是主导单位而非数据来源地。`submission_date: 2024-03-10` 也无 provenance 条目，其来源是文献检索截止日（`published from database inception to March 10, 2024`）而非 SPEC §10 要求的 Received 日——该判断只写在 YAML 注释里，注释不是 provenance，应落成带 status 的字段（本解析产物中确无 Received，宜标 absent + note）。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "provenance.fields.evidence_stage.status"
+      quote: "Second, to differentiate isolated diabetic nephropathy from NDKD, we used 1068 retinal images from 267 participants for development and internal validation, and three multi-ethnic datasets from China, Malaysia, and the UK (244 participants) for external validation."
+      card_says: "evidence_stage: \"C2\"，status: explicit"
+      should_be: "`C2` 是本项目的分级标签，论文里不存在这个词。引文只能证明『存在外部验证队列』这一事实，不能把分级判定标成 explicit——SPEC §11 明确说 C1/C2 的界线目前靠人读。应改 status: inferred，note 写明判据（有外部多中心验证、无 RCT、无部署）。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "provenance.fields.claimed_benefit.locator"
+      quote: "The ability of DeepDKD to differentiate isolated diabetic nephropathy from NDKD could also be used as an ancillary tool to minimise the need for invasive kidney biopsy."
+      card_says: "claimed_benefit.quote: \"could also be used as an ancillary tool to minimise the need for invasive kidney biopsy\"，locator: discussion"
+      should_be: "locator 指错节。这个 `could` 版本出现在 Research in context 的 Implications of all the available evidence 方框里；Discussion 结论段的同句写的是 `can also be used as an ancillary tool to minimise the need for invasive kidney biopsy`（`can`，不是 `could`）。locator 是本项目的可审计机制，指错节会让复核者在 Discussion 里逐字找不到该串。应改 locator 为 `research in context: implications`，或改引 Discussion 的 `can` 版本。两处语气强度不同（can > could），选哪一版会影响第 4 问的判读，需明确。"
+
+    - question: 6
+      verdict: cannot_determine
+      field: "provenance.fields.condition.primary.quote"
+      quote: "In patients with DKD, another important clinical process is differentiating kidney damage specifically due to diabetes, referred to as diabetic nephropathy, from other causes, referred to as non-diabetic kidney disease (NDKD)."
+      card_says: "quote: \"another important clinical process is differentiating kidney damage speciﬁcally due to diabetes, referred to as diabetic nephropathy, from other causes, referred to as non-diabetic kidney disease (NDKD)\"（含 ﬁ 合字）"
+      should_be: "语义完全一致，但字节不一致：卡写 `speciﬁcally`（ﬁ 合字），我手上的同一份 MinerU 产物写 `specifically`。规则要求引文可逐字定位、PDF 伪影原样保留，因此这个差异要么说明卡引自另一版解析产物，要么说明中途做过一次未记录的归一化。我无法在不比对卡实际所指文件（`…_content_list.json`）的前提下判定是哪一种，故不下结论；建议以文件哈希或行号补一个可复核的定位，而不是靠肉眼比对。"
+  summary:
+    issues_high: 1
+    issues_medium: 6
+    issues_low: 2
+    cannot_determine: 1

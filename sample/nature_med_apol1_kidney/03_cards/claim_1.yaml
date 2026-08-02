@@ -1,0 +1,382 @@
+# Claim Card —— 论文：Proteomic risk score for early prediction of kidney disease
+# progression in individuals with APOL1 high-risk genotypes. Nature Medicine 2026.
+# DOI: 10.1038/s41591-026-04337-2
+claim_card:
+  paper_id: "10.1038/s41591-026-04337-2"
+  claim_id: claim_1
+
+  # basis: received_date（首页 "Received: 16 September 2025"）。按 SPEC §10 取 Received，
+  # 不取 Accepted: 10 March 2026、也不取 Published online: 15 April 2026。
+  submission_date: "2025-09-16"
+  # 主队列 PMBB 在 University of Pennsylvania Health System（Philadelphia, PA, USA）。
+  # 外部验证 ARIC 为四个美国社区，UKBB 为英国 22 个评估中心。
+  region: "US"
+
+  cohorts:
+    - cohort_id: pmbb_hr_egfr60_full
+      purpose: internal_validation
+      n: 851
+      subgroup_restrictions: >-
+        PMBB 中 APOL1 高危、基线 eGFR >=60 ml/min/1.73 m2 的那一层；由 1,113 名合格者
+        （已排除 109 名既往肾移植与 88 名肾衰竭）中分出。是 train(680)+test(171) 的合集——
+        五分位风险分层与 10 年累积发病率（Fig. 2c,d）报告在这个合集上，不是样本外。
+      characteristics_locator: main_text_table
+
+    - cohort_id: pmbb_hr_egfr60_train
+      purpose: model_development
+      n: 680
+      subgroup_restrictions: >-
+        上述人群的随机 80%（分层抽样），用于 marker selection 与 elastic net Cox 拟合。
+        基线特征表在 Supplementary Table 1，未取到。
+      characteristics_locator: supplementary
+
+    - cohort_id: pmbb_hr_egfr60_test
+      purpose: internal_validation
+      n: 171
+      subgroup_restrictions: >-
+        上述人群留出的 20%。头条数字 tAUC 86.5%（复合终点）出自这个队列。
+        基线特征表在 Supplementary Table 1，未取到。
+      characteristics_locator: supplementary
+
+    - cohort_id: aric_hr
+      purpose: external_validation
+      n: "314（Table 2 Any 行）；296（eGFR >=60 行）"
+      subgroup_restrictions: >-
+        ARIC 中 APOL1 高危的非裔美国参与者，蛋白组学做在 visit 2 生物样本上，随访自基线截断 10 年。
+        ARIC visit 2 无 UACR，故 KFRE 无法计算（Table 2 中留空），APRS 的 UACR 项也因此缺失。
+        引用 tAUC 时必须区分 82.2%（n=314，any eGFR）与 77.5%（n=296，eGFR >=60）。
+      characteristics_locator: main_text_prose
+
+    - cohort_id: ukbb_hr
+      purpose: external_validation
+      n: "204（Table 2 Any 行）；195（eGFR >=60 行）"
+      subgroup_restrictions: >-
+        UKBB 中做过血浆蛋白组学的非裔参与者里 APOL1 高危者。基因型为插补
+        （Data-Field 21007, TOPMed R2）而非测序；蛋白为 Olink，缺失蛋白由训练在 SomaScan 上的
+        多输出惩罚回归跨平台映射补齐。引用 tAUC 时区分 84.7%（n=204，any eGFR）与
+        81.6%（n=195，eGFR >=60）。
+      characteristics_locator: main_text_prose
+
+    - cohort_id: kidney_tissue
+      purpose: other
+      n: "474（RNA-seq）；325（proteomics）"
+      subgroup_restrictions: >-
+        手术肾切除标本（取距肿瘤 >=2 cm 的正常部分），不是本主张的目标人群，
+        只用于把九个蛋白与肾间质纤维化/小管损伤关联，不参与任何预测性能数字。
+        论文未说明标本来自哪个机构。
+      characteristics_locator: not_reported
+
+  gating:
+    condition:
+      primary: {label: "chronic kidney disease", codes: {}}
+      breadth: narrow
+      scope_type: disease
+      qualifiers: {subtype: "APOL1-associated kidney disease"}
+      comorbid_context: []            # 高血压 62.4% / 糖尿病 27.9% 是队列构成，不是本主张的合并症语境
+      excluded: ["end-stage kidney disease at baseline", "kidney transplantation"]
+    population:
+      age_group: adult
+      age_range_text: "aged >=18 years"
+      special: ["apol1_high_risk_genotype", "african_ancestry", "preserved_egfr"]
+    care_setting: null                # 论文从未说明 APRS 将在何种场所使用，见 provenance
+    clinical_task: prognostication
+    evidence_stage: null              # 不填，由程序按 evidence_basis 映射
+    evidence_basis:
+      clinical_claim_made: true
+      external_cohort: true
+      different_site: true
+      prospective: false
+      randomised: false
+      deployed_in_care: false
+      endpoint_type: model_metric
+    study_design: []
+    intended_context: clinical_care
+    finding_direction: positive
+
+  descriptive:
+    intended_use: "early prediction of kidney disease progression in individuals carrying APOL1 high-risk genotypes, before chronic kidney disease is clinically evident; risk stratification to identify carriers for intensified surveillance and for APOL1-targeted therapy"
+    target_population: "individuals of African ancestry carrying APOL1 high-risk genotypes (G1/G1, G2/G2 or G1/G2) with preserved eGFR (>=60 ml/min/1.73 m2)"
+    intended_user: null               # 论文未写明谁来用这个评分（既未写医生类别，也未写实验室/专科）
+    # ⚠️ model_input 被 `infer_study_designs` 的英文词表做子串匹配，SomaScan 里的 scan
+    # 会命中影像词表、把本卡误判成 medical_imaging_ai，故平台名只写在 clinical_context。
+    model_input: "plasma proteomic profiling (aptamer-based proteomic assay), plus age, sex, eGFR and UACR"
+    model_output: "APOL1 Proteomic Risk Score (APRS), a continuous risk score predicting a 10-year composite outcome of >=40% eGFR decline, kidney failure or death"
+    clinical_decision_affected: >-
+      是否对该携带者启动强化监测；是否使用 APOL1 靶向治疗（如 inaxaplin）；是否纳入相关治疗试验。
+      三者在论文里全是情态表述，无一被实测（见 future_intent 与 benefit_gap）。
+    comparator: >-
+      KFRE（Kidney Failure Risk Equation）、CRIC proteomic score（65 蛋白）、
+      CKD PRS（全基因组多基因风险评分）——三者都在同一批人里给出了与 APRS 并列的 tAUC。
+      注意 KFRE 在 aric_hr 里无法计算（visit 2 无 UACR）。
+    reference_standard: >-
+      EHR 确定的复合终点：长期透析、ESKD 诊断、肾移植或 eGFR 较基线下降 >=40%，加全因死亡；
+      经病历回顾与 ICD-10 编码获取，eGFR 用基于肌酐的 CKD-EPI 2021 方程计算。
+    current_practice: >-
+      KFRE 加常规临床指标（eGFR、UACR）。论文自陈 KFRE 是应用最广、验证最充分的肾脏结局预测工具，
+      但在 eGFR 正常者中判别力下降——这一条既是论文自陈的现行做法，也真的做了并列比较。
+    secondary_tasks: []
+    claimed_benefit: "accurate and early prediction of adverse events in APOL1 high-risk individuals, before CKD is clinically evident; a precision medicine framework to support early intervention and to reduce longstanding racial disparities in kidney failure; nearly halved the number needed to treat"
+    demonstrated_effect: |
+      全部是模型判别指标，全部来自回顾性队列：
+      · pmbb_hr_egfr60_test（n=171，留出 20%）：复合终点 tAUC 86.5%(3.9)、死亡 85.7%、肾事件 88.1%；
+        5 年敏感度 76.3% / 特异度 86.7%；C-index 复合 82.0% / 肾 84.4% / 死亡 78.5%。
+        同一队列内 KFRE 66.2%(4.3)、CRIC 79.0%(4.0)、PRS 58.5%。
+      · pmbb_hr_egfr60_train（n=680）：tAUC 86.7%(1.4)，KFRE 66.6%(1.5)、CRIC 79.7%(1.9)。
+      · aric_hr：any eGFR（n=314，事件 13.7%）tAUC 82.2%(1.2)；限于 eGFR>=60 亚组（n=296）时
+        降到 77.5%(1.1)，论文归因于 ARIC 无 UACR；同一亚组 CRIC 52.0%，KFRE 因无 UACR 无法计算。
+      · ukbb_hr：any eGFR（n=204）tAUC 84.7%(5.3)；eGFR>=60 亚组（n=195）81.6%(5.9)，KFRE 67.3%(6.8)。
+      · 风险分层：10 年累积发病率从最低五分位 3.3% 到最高 62.5%（P=4.73e-23），Δ hazard ratio 2.68
+        ——报告在 pmbb_hr_egfr60_full（n=851）这个训练+测试合并集上，不是样本外估计。
+      · 生物学佐证：kidney_tissue 中九个蛋白有四个在 mRNA 与蛋白两个层面均与间质纤维化相关（P<0.01）。
+    benefit_gap: |
+      ① 主张的两半只兑现了一半：兑现的是"准确且更早的预测"（判别指标），未兑现的是"支持早期干预、
+         缩小种族差距"——全文没有任何患者结局、没有决策影响研究。论文自己写明常规临床落地前
+         需先做前瞻决策影响研究。
+      ② 主张里的动作是"更早识别 → 强化监测 / 用药"，代价侧（被多标出来的人多做的检查与治疗、
+         低分者被减少随访带来的漏诊）全文无量化。论文只给了一句提醒（低分不能替代常规监测），
+         没有给漏诊侧的数字。
+      ③ NNT 从 8.4(KFRE) 降到 4.9，是在假设某疗法使复合终点风险降低 27% 的前提下推演出来的，
+         不是实测疗效；该假设取自另一项药物试验的报告值。
+      ④ 摘要与讨论断言 scalable / cost-effective / 简单可及，全文无任何成本或可及性分析；
+         论文自己在限制里承认技术复杂度可能限制近期临床落地。
+      ⑤ reduce longstanding racial disparities in kidney failure 未被任何终点测量。
+      ⑥ 五分位分层与 10 年累积发病率报告在训练+测试合并的 851 人上（见 demonstrated_effect），
+         其乐观程度不能与留出集的 tAUC 同等看待。
+      ⑦ 外部队列事件数少：aric_hr 43 例复合事件、ukbb_hr 13 例，论文自陈置信区间宽。
+      ⑧ ukbb_hr 的基因型是插补而非测序、蛋白是 Olink 经跨平台映射补齐，与开发平台不同源。
+    future_intent: |
+      以下全部是情态表述，论文未做：作为治疗试验的受试者富集工具；序列测量做风险轨迹的纵向监测；
+      指导 APOL1 靶向治疗（inaxaplin）的使用并作为药效学读数；把现行蛋白组学方法改造成简化的
+      高通量临床检测；在前瞻队列中做独立验证以确认真实世界效力。
+    deployment_claim_level: "retrospective development and external validation in independent cohorts; no clinical deployment and no decision impact study"
+    clinical_context: |
+      血浆蛋白组学平台为 SomaScan（v4.1；ARIC 为 5K），基于修饰型 DNA 适配体；UKBB 侧为 Olink，
+      经跨平台映射到 SomaScan 尺度。九个蛋白为 SPON1、SUMO2、EPHA10、REG3A、WFDC2、LYZ、MMP7、
+      NPPB、CILP2，与 age、sex、eGFR、UACR 一起进入 elastic net Cox 模型（临床变量与 KFRE 相同，
+      但系数在本队列重新估计）。
+      各队列年龄：PMBB eGFR>=60 组平均 49.22±15.07 岁（Table 1）；ARIC 母队列招募年龄 45–65 岁、
+      aric_hr 平均 55.8±5.6 岁；UKBB 招募年龄 40–69 岁、ukbb_hr 平均 52.2±7.8 岁。
+      Fig. 2a 的 tAUC 曲线标注 n=680，即画在训练集上；Fig. 3a 标注 n=433、Fig. 3b–d 标注 n=171。
+      Extended Data Fig. 1 的图注把 n=680 标给 eGFR<60、n=262 标给 eGFR>=60，与正文、Table 2 及
+      Extended Data Table 3 的标注相反（材料内部矛盾，登记备查）。
+      本字段不参与任何门控。
+
+  provenance:
+    source: "sample/nature_med_apol1_kidney/01_parse/10.1038_s41591-026-04337-2/auto/10.1038_s41591-026-04337-2_content_list.json"
+    extraction: claude_llm_pipeline_v0
+    input_coverage:
+      - {part: main_text, included: true, note: "MinerU 版面解析文本；Table 1 与 Table 2 以 HTML 表格提供（Table 2 行列已被解析错位，读取需谨慎）。Fig. 1-3 只有图注，面板内数值是图片，不可读。"}
+      - {part: appendix, included: true, note: "Extended Data Table 1-4 以文本形式提供；Extended Data Fig. 1-6 只有图注，面板内数值不可读。"}
+      - {part: supplementary, included: false, note: "Supplementary Table 1-2、Supplementary Fig. 1-3 与 Source data 均未取到。"}
+    unavailable_content:
+      - {part: supplementary, contains: "Supplementary Table 1（80% 训练集 / 20% 测试集的基线特征）、Supplementary Table 2（CRIC 65 蛋白评分与 APRS 九蛋白面板的重叠情况）、Supplementary Fig. 1-3（组织蛋白与纤维化关联、按年龄/性别/高血压/糖尿病分层的亚组分析、APOL1 基因型交互）。"}
+      - {part: supplementary, contains: "Source data（各图底层数据）。"}
+      - {part: appendix, contains: "Extended Data Fig. 1-6 的面板数据（火山图、marker 选择稳定性、相关矩阵、纤维化散点、按 UACR/亚组的 tAUC、NNT 与竞争风险分析）——只给了图注。"}
+      - {part: main_text, contains: "Fig. 1-3 的面板数据（流程图、tAUC 曲线、累积事件曲线、5 年 AUC、决策曲线分析）——只给了图注。"}
+    fields:
+      condition.primary:
+        status: explicit
+        quote: "However, their use is constrained by the inability to identify which carriers are most likely to progress before CKD develops."
+        locator: "Introduction（第 4 段，紧接 inaxaplin 那句之后）"
+        note: >-
+          论文的目标病种是 CKD / 肾衰竭；APOL1 高危基因型是人群特征不是病种，
+          故写进 population.special 与 qualifiers.subtype，不进 primary.label。
+
+      condition.breadth:
+        status: inferred
+        locator: "Methods — Outcomes and follow-up；Results 全篇"
+        note: >-
+          narrow 是本项目的标签词，论文里不存在。事实依据：全文只对一个复合肾脏终点做主张，
+          没有多病种多标签评测，故 narrow 而非 broad。
+
+      condition.scope_type:
+        status: inferred
+        locator: "Methods — Outcomes and follow-up"
+        note: >-
+          disease 是本项目的标签词。事实依据：终点是具体病种事件（透析 / ESKD 诊断 / 肾移植 /
+          eGFR 下降 >=40%）与死亡，不是跨专科的流程指标，故 disease 而非 care_process。
+
+      condition.qualifiers.subtype:
+        status: explicit
+        quote: "This approach directly addresses the gap in early risk prediction and provides a framework for precision medicine aimed at reducing disparities in APOL1-associated kidney disease."
+        locator: "Introduction（末段）"
+
+      condition.excluded:
+        status: explicit
+        quote: "Exclusion criteria included known ESKD or with kidney transplantation at baseline, missing or ambiguous APOL1 data and excessive missing data in key clinical covariates."
+        locator: "Methods — PMBB cohort"
+        cohort_id: pmbb_hr_egfr60_full
+        note: >-
+          只把其中的病种排除项写进 condition.excluded；数据质量类排除
+          （APOL1 数据缺失 / 关键协变量缺失过多）不是病种，不写。
+
+      population.age_group:
+        status: explicit
+        quote: "We included all participants aged ≥18"
+        locator: "Methods — PMBB cohort"
+        cohort_id: pmbb_hr_egfr60_full
+        note: >-
+          引文在 ≥18 处截断，不是省略：原句下文是 "…years with available high-risk APOL1
+          genotype…"，而 18 与 years 之间在解析文本里是非 ASCII 窄空格，逐字打不出来；
+          按硬约束 3 宁可取更短的连续片段，也不写一个原文里不存在的字符串。
+          明写的年龄纳入标准是 >=18 岁且无上限，故 adult 而非 older_adult、也不是 mixed。
+          Table 1 中 eGFR>=60 组平均年龄 49.22±15.07 岁与之一致。
+
+      population.special:
+        status: inferred
+        quote: "although clinical implementation is most feasible and cost-effective in the enriched APOL1 high-risk group"
+        locator: "Discussion（第 2 段末）"
+        cohort_id: pmbb_hr_egfr60_full
+        note: >-
+          三个标签是本项目词汇，论文里不存在。事实依据分别是：
+          (a) apol1_high_risk_genotype —— 本引文指明落地人群是 APOL1 高危富集人群，
+          这是使用人群而非入组来源；Methods 另定义两个风险等位（G1/G1、G2/G2 或 G1/G2）为高危。
+          (b) preserved_egfr —— Results 有一句 "In our primary target population with eGFR"，
+          直接把 eGFR>=60 称作目标人群。
+          (c) african_ancestry —— Methods 写 "the APOL1 was analyzed in all African ancestry
+          participants with available exome sequence data"。
+
+      care_setting:
+        status: absent
+        locator: "全文（Abstract / Results / Discussion / Methods / Extended Data / Reporting Summary）"
+        note: >-
+          论文从未说明 APRS 将在何种照护场所使用。全文出现的场所词只有两类，都描述数据来源
+          而非使用场所：academic medical center setting of PMBB、ARIC 的 community-dwelling
+          population、UKBB 的 22 个 assessment centres。讨论里最接近的表述是 routine clinical
+          implementation 与 everyday clinical care，都不含场所词。按 §3 规则⑥不硬编场景，
+          标 absent（这是审稿发现，不是抽取故障）。
+
+      clinical_task:
+        status: explicit
+        quote: "To further assess its prognostic value, we examined the performance of the APRS in the eGFR ≥60 test cohort."
+        locator: "Results — Performance of the APRS"
+        cohort_id: pmbb_hr_egfr60_test
+        note: >-
+          主要终点是 10 年复合事件的未来风险，故主任务为 prognostication。论文没有把 APRS 当作
+          诊断或筛查试验来评价（没有与金标准同期对照的诊断准确性设计），故不填 diagnosis / screening。
+
+      intended_context:
+        status: explicit
+        quote: "APRS overcomes this limitation by translating static genetic risk into a dynamic, clinically usable prediction tool."
+        locator: "Discussion（第 1 段末）"
+        note: >-
+          取 clinical_care 的依据是这句非情态的临床用途声明。需一并读到的两点：
+          (a) 论文里所有具体使用场景（强化监测、指导 APOL1 靶向治疗、纵向监测、试验富集）
+          全部是 may / could 句，已隔离到 descriptive.future_intent，未用来支撑本字段；
+          (b) 论文自陈常规临床落地前需先做前瞻决策影响研究——那属于成熟度，
+          记在 evidence_basis.deployed_in_care=false，不改变 intended_context。
+
+      finding_direction:
+        status: explicit
+        quote: "APRS showed robust and reproducible performance across training, test and external cohorts (Table 2)."
+        locator: "Results — External validation of the APRS（首句）"
+        cohort_id: [pmbb_hr_egfr60_train, pmbb_hr_egfr60_test, aric_hr, ukbb_hr]
+
+      evidence_basis.clinical_claim_made:
+        status: explicit
+        quote: "The APRS offers a valuable early risk stratification framework for individuals with high-risk APOL1 genotypes."
+        locator: "Discussion（末段首句）"
+        note: "论文明确主张临床效用，故为 true（不是纯基准论文）。"
+
+      evidence_basis.external_cohort:
+        status: explicit
+        quote: "External validation in independent population-based cohorts (Extended Data Table 4) confirmed these findings."
+        locator: "Results — External validation of the APRS"
+        cohort_id: [aric_hr, ukbb_hr]
+        note: >-
+          ARIC 与 UKBB 是与开发数据完全独立的两个人群队列，不是同院另一批数据、
+          也不是同一数据集的另一次切分。PMBB 的 20% 留出集不计入本字段（那是内部切分）。
+
+      evidence_basis.different_site:
+        status: explicit
+        quote: "Despite differences in recruitment era, geographic location and healthcare systems across cohorts, APRS showed consistent performance beyond the academic medical center setting of PMBB."
+        locator: "Results — External validation of the APRS"
+        cohort_id: [aric_hr, ukbb_hr]
+        note: "原文直接说明跨招募年代、跨地理位置、跨医疗体系，不是由数据集名字推断。"
+
+      evidence_basis.prospective:
+        status: explicit
+        quote: "Independent validation in prospective cohorts represents an important next phase to confirm efficacy in real-world settings."
+        locator: "Discussion（末段）"
+        note: >-
+          填 false。论文把前瞻队列中的独立验证列为下一步，即尚未做。PMBB 侧是基于 EHR 的
+          回顾性队列；ARIC / UKBB 虽是前瞻随访的人群队列，但 APRS 的评估是在已存的 visit 2 /
+          招募期生物样本上回顾完成的（Methods 写明 ARIC 蛋白组学做在 visit 2 生物样本上、
+          随访自基线截断 10 年）。有随访不等于前瞻设计。
+
+      evidence_basis.randomised:
+        status: explicit
+        quote: "Because this was an observational study, residual confounding cannot be excluded"
+        locator: "Discussion — 限制段（首句）"
+        note: >-
+          填 false。模型开发时的 80% / 20% 随机划分是数据切分，不是把人随机分配到干预，
+          不构成 randomised。
+
+      evidence_basis.deployed_in_care:
+        status: explicit
+        quote: "Furthermore, prospective decision impact studies will be required to determine whether APRS-guided strategies meaningfully improve clinical outcomes before routine clinical implementation."
+        locator: "Discussion（第 4 段末）"
+        note: >-
+          填 false。论文自陈尚未进入常规临床，全文也没有任何证据表明 APRS 的输出改变了
+          任何一位参与者的照护。
+
+      evidence_basis.endpoint_type:
+        status: explicit
+        quote: "The predictive performance of the developed models was evaluated using a comprehensive set of metrics, including AUC, C-index, specificity, sensitivity, F1 score, precision, recall, accuracy, FPR, FNR, MCC, PPV and NPV."
+        locator: "Methods — Statistical analysis"
+        note: >-
+          终点全部是模型指标，故 model_metric。复合终点里的死亡 / ESKD 是被预测的结局，
+          不是被干预改变的结局，不构成 clinical_outcome。
+
+      descriptive.intended_use:
+        status: explicit
+        quote: "The APRS was developed and validated to address the critical unmet need in APOL1 high-risk individuals"
+        locator: "Discussion（第 2 段）"
+
+      descriptive.comparator:
+        status: explicit
+        quote: "To benchmark APRS against existing tools (scores), we compared its performance to the KFRE, to the Chronic Renal Insufficiency Cohort (CRIC) proteomic score"
+        locator: "Results — Performance of the APRS"
+        cohort_id: [pmbb_hr_egfr60_train, pmbb_hr_egfr60_test, aric_hr, ukbb_hr]
+        note: >-
+          三个对照都在同一批人里给出了并列 tAUC（Table 2 / Extended Data Table 3），
+          符合本项目对 comparator 的判据（报告过对比数字）。KFRE 在 aric_hr 里无法计算，
+          故 ARIC 侧只有 CRIC 的并列数字。参考标准（复合终点定义）另填 reference_standard。
+
+      descriptive.reference_standard:
+        status: explicit
+        quote: "The primary outcomes were defined as a composite of kidney events (long-term dialysis, ESKD diagnosis, kidney transplantation or a ≥40% decline in eGFR from baseline) and all-cause mortality."
+        locator: "Methods — Outcomes and follow-up"
+
+      descriptive.current_practice:
+        status: explicit
+        quote: "The KFRE was included as a comparator because it is the most widely validated clinical prediction tool for kidney outcomes, although its discrimination is known to diminish in individuals with normal eGFR."
+        locator: "Results — Development of the APRS"
+        note: >-
+          KFRE 既是论文自陈的现行做法，也真的做了并列比较，故同时出现在 current_practice
+          与 comparator；两处引文不同。
+
+      descriptive.claimed_benefit:
+        status: explicit
+        quote: "In conclusion, a plasma proteomic risk score enables accurate and early prediction of adverse events in APOL1 high-risk individuals, before CKD is clinically evident."
+        locator: "Discussion（末段）"
+        note: >-
+          逐字取作者原话，未加原文没有的限定词。主张的另外两半（早期干预框架与缩小种族差距、
+          NNT 减半）分别见 Abstract 末句与 Discussion 第 4 段，已写入字段正文。
+
+      descriptive.demonstrated_effect:
+        status: explicit
+        quote: "In this group, APRS achieved a tAUC of 86.5% for the composite outcome, 85.7% for mortality and 88.1% for kidney events (Fig. 3a,b, Extended Data Fig. 5 and Extended Data Table 3)."
+        locator: "Results — Performance of the APRS"
+        cohort_id: pmbb_hr_egfr60_test
+        note: >-
+          本条只是头条数字的出处；其余队列的数字与各自的亚组限制写在字段正文里，
+          均带 cohort 与限制条件。
+
+      descriptive.future_intent:
+        status: explicit
+        quote: "Concurrently, the APRS could serve as a subject enrichment tool for these therapeutic trials, potentially improving efficiency and reducing costs."
+        locator: "Discussion（末段）"
+        note: >-
+          情态句，按 §3 规则⑬只进 future_intent，不用来支撑 care_setting / intended_context /
+          clinical_task。

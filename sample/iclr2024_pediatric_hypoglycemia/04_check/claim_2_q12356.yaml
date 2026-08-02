@@ -1,0 +1,81 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:1,2,3,5,6   后端:claude-cli
+adversarial_check:
+  card: "kP6X9QBF1t (ICLR 匿名送审稿) / claim_2 —— 材料中未给出卡文件路径"
+  findings:
+    - question: 1
+      verdict: pass
+      field: "descriptive.future_intent / care_setting / descriptive.deployment_claim_level"
+      quote: "With a broader and more varied dataset, the deployment of dBG across diverse clinical settings will become increasingly viable."
+      card_says: "该将来时句只进 future_intent；care_setting 标 absent；deployment_claim_level 写到『Retrospective offline demonstration of potential』为止。"
+      should_be: "维持。全文的设想类表述（本句、以及 Introduction 的 “a solution could exist in real clinical settings”）都未被当作已完成的用途/场景；deployment_claim_level 与作者自陈的 “demonstrate the potential” 一致，未越级。"
+
+    - question: 2
+      verdict: pass
+      field: "care_setting / population.special / cohorts[graph_update_split]"
+      quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+      card_says: "care_setting: null (absent)，note 写明数据来源场所也未交代；target_population 写明被选『新患者』来自同一 15 人数据集。"
+      should_be: "维持。论文自始至终没有交代数据采集于哪个场所，卡也没有从数据来源反推使用场所；样本入组来源（15 人数据集的再切分）与使用人群在 target_population / clinical_context 里被分开陈述，未互相顶替。"
+
+    - question: 3
+      verdict: issue
+      severity: low
+      field: "descriptive.comparator（note 的否定语句）"
+      quote: "k = 2 is structurally equivalent to a Markov chain."
+      card_says: "「这是全文唯一一处对本主张给出并列数字的对照……论文没有与任何已发表方法或临床现行做法的并列数字，故 comparator 不写它们。」"
+      should_be: "对照本身（Figure 6 有更新 / 无更新）判定正确，current_practice 标 absent 也正确（全文确无与现行临床做法的并列数字）。但 note 里「论文没有与任何已发表方法的并列数字」是**全文级**否定，而 Table 3 给出了 k=2 一行的并列数字，论文自陈该配置结构上等价于 Markov chain——这构成一次与经典方法的并列比较（虽属同一架构的退化配置，且不在本主张的 4.4 实验内）。应把否定语句限定为「本主张（4.4 图更新）未与任何已发表方法并列比较」，并注明 Table 3 的 k=2 基线属另一主张的评估。"
+
+    - question: 5
+      verdict: issue
+      severity: medium
+      field: "cohorts[graph_update_split].n / condition.primary.cohort_id / population.age_group.cohort_id"
+      quote: "A single patient was chosen to represent a new patient, while the remaining dataset was divided into three groups to construct a database with three independent graphs."
+      card_says: "只有一个 cohort（graph_update_split），n 记为「论文自相矛盾……无法确定实际评估了 1 人还是 15 人」；condition.primary（引 3.1 的 15 人 22,291 点）与 population.age_group（引 Table 1 全部 15 人的 Age 列）都挂在这同一个 cohort_id 下。"
+      should_be: "这一句里其实是两个互不重叠的组：①被评估的『新患者』（1 人，其数据被对半切开，评估只在后半段）；②构成三张数据库图的其余患者（14 人，分三组）。卡把两者压进同一个 cohort_id，于是 Table 1 的 15 人年龄/BMI/病程与「实际被评估者」被读成同一批人，n 字段的矛盾正是这次压平的产物而非单纯的论文矛盾。应拆成两条 cohort（如 update_target_patient: n=1、graph_database_donors: n=14），把 Table 1 的人群特征挂到后者（或挂到一个显式的 full_dataset 条目），并在前者的 n 上如实写「1，但 4.4 结果句写 most patients，无法确定该实验是否对每位患者各做一次」。"
+
+    - question: 6
+      verdict: issue
+      severity: medium
+      field: "population.special（status / 取证来源）"
+      quote: "The selected patient’s data was bifurcated; the initial half symbolized pre-treatment data, and the latter half, post-treatment data."
+      card_says: "population.special: [\"new_patient_with_limited_data\"]，status: explicit，引文取自 1 INTRODUCTION 的 contributions 段末（“a new patient with limited data find the best set of graphs…”）。"
+      should_be: "两处不足：①硬约束 2 要求 population.* 的引文取自正文（Methods / Results / 表格 / 图注），contributions 段是作者对全文的自我概括，而正文 4.4 存在更具体的版本（本引文），应改用正文版本取证；②正文版本与所填值方向相反——被评估的『新患者』是数据集里一位记录完整的患者，用其**前半段**做更新、后半段做评估，全文没有任何「数据有限」的患者被实际评估过。建议：值可保留（这确是作者声明的意向使用人群），但 status 由 explicit 降为 inferred，note 写明「该限定只见于 Introduction 的能力声明，正文实验中的『新患者』并非限数据患者」。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "descriptive.intended_user / descriptive.clinical_decision_affected / region"
+      quote: "We introduce a threshold parameter, $\\rho ,$ to trigger an alert for potential hypoglycemic episodes when $P ( \\mathrm { h y p o } _ { x } | v ) > \\rho . \\ \\rho$ can be adjusted to tune alert sensitivity."
+      card_says: "三者均为 null，仅以 YAML 行内注释说明（「论文全文未说明由谁使用、警报交给谁」「论文未描述警报触发什么处置」「全文无国家、地区、机构、数据集名称」），provenance.fields 下没有对应条目、没有 status。"
+      should_be: "按硬约束 5，这三项都应在 provenance.fields 里各出一条并写 status（据其注释内容应为 absent，并给出已查章节的 locator）。现在只有行内注释，程序读不到 status，等于分不清「论文确实没写」与「忘了填/没找到」——而这三项恰好是缺口报告要统计的东西。本条引文说明论文确实定义了警报的触发机制却从未指明警报的接收者与后续处置，支持标 absent 而非 not_extracted。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "condition.primary.note"
+      quote: "The contributions in this work are: developing a novel, effective reinforcement learning approach to address the critical problem of pediatric T1D forecasting well-enough that a solution could exist in real clinical settings."
+      card_says: "「正文对本研究人群的唯一交代只写 “pediatric diabetes patients”，未在正文句子里写 type 1；T1D 的限定来自 Table 1 的列头 “Years With T1D”。」"
+      should_be: "note 的事实陈述不成立：Introduction 的 contributions 首句明写本工作针对 pediatric T1D forecasting，正文并非只有 Table 1 列头提到 T1D。值（hypoglycemia in type 1 diabetes）与 narrow 不受影响，但 note 应改写为「3.1 的数据段只写 pediatric diabetes patients，T1D 的限定见 Introduction contributions 句与 Table 1 的 Years With T1D 列头」；status 是否可升为 explicit 由填卡方判断（本条不代判）。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "care_setting.note"
+      quote: "We can then use paths in the graph to anticipate hypoglycemia in advance of about 30 minutes sufficient for a clinical setting and additionally find actionable rules that accurate and effective."
+      card_says: "「唯一出现场所词的是 5 SUMMARY 里 “dynamic environments like hospitals” 与 “deployment of dBG across diverse clinical settings will become increasingly viable”。」"
+      should_be: "care_setting 标 absent 的**结论**正确（全文无门诊/病房/家庭/院前等可门控的场所），但 note 的「唯一」不成立：ABSTRACT 有 “sufficient for a clinical setting”，1 INTRODUCTION 有 “a solution could exist in real clinical settings”，4.2 有 “real-world settings”，5 另有 “especially in medical settings”。应把 note 改为「全文的场所词只有泛指的 clinical/medical setting 与将来时的 hospitals，均不指向可门控的具体照护场所」并列出这几处，否则复核者按 note 去核会发现清单不全。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "descriptive.claimed_benefit.efficiency.locator"
+      quote: "The default weight increment is one, adjustable for more substantial graphs."
+      card_says: "locator: \"3.3 GRAPH UPDATE 末句（LaTeX 片段为解析产物原样，未做归一化）\""
+      should_be: "3.3 的末句是本引文（默认权重增量），被引的 O(n) 那句是**倒数第二句**。引文本身逐字无误，仅 locator 指位偏一句，改为「3.3 GRAPH UPDATE 倒数第 2 句」即可。"
+
+  summary:
+    issues_high: 0
+    issues_medium: 2
+    issues_low: 5
+    cannot_determine: 0

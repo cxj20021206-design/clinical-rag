@@ -1,0 +1,37 @@
+source_paper:
+  forum_id: "kP6X9QBF1t"
+  url: "https://openreview.net/forum?id=kP6X9QBF1t"
+  title: >
+    A Reinforcement Learning Approach to Effective Forecasting of Pediatric
+    Hypoglycemia in Diabetes I Patients: an extended de Bruijn Graph
+  venue: "ICLR"
+  year: 2024
+  license: null                   # ⚠️ 未逐篇核实 OpenReview 许可 → 与 Nature 篇同样不入库
+  license_note: >
+    ICLR/OpenReview 论文多为 CC BY 4.0，但本篇未逐条核实，按保守侧处理：
+    PDF 与 MinerU 解析产物均已 gitignore。要复现请从
+    /work/hdd/bgkq/xchen48/aris-paper-review/data/confpdf/ICLR2024/ 取原文重跑 01_parse。
+  pdf: "kP6X9QBF1t.pdf"
+  pdf_origin: "/work/hdd/bgkq/xchen48/aris-paper-review/data/confpdf/ICLR2024/kP6X9QBF1t.pdf"
+  pages: 12
+
+  # 真实评审分数（OpenReview 公开）。同 Nature 篇：**不进入抽卡流程的任何一步**。
+  human_peer_review:
+    available: true
+    inventory: "/work/hdd/bgkq/xchen48/aris-paper-review/data/dataset.jsonl (forum_id=kP6X9QBF1t)"
+    used_in_extraction: false
+
+  # 为什么选它（2026-08-01 新 prompt 的第一次实跑，两篇之一）
+  why_this_paper:
+    - "ICLR MedAI 论文正是 MVP 评测的目标语料（见 DESIGN §8 三臂对比），此前一篇都没跑过"
+    - "儿科人群：与 Nature 篇的成人队列构成人群门控的双向测试；库里的成人 CPG 应当被硬拦"
+    - "有明确临床声明（提前 30 分钟预警、'sufficient for a clinical setting'）→ 不是纯基准，clinical_claim_made 应为 true"
+    - "会议论文体例（无 Methods/Results 固定分节、无 Received 日期）—— 正好压测 stage1 §③ 投稿日阶梯与硬约束 2「不假定章节位置」"
+    - "OpenReview 有真实评审分数与 decision，可作日后对照"
+
+  submission_date:
+    resolved_in: "02_overview/paper_overview.yaml"
+    expected_difficulty: >
+      ICLR 论文 PDF 通常无 Received/Accepted，也少有"文献检索截止日"。
+      预期落到阶梯第 4 档 unavailable —— 那会让 predates 门控**没有基准**，
+      是本次要观察的一个真实边界（submission_date 缺失时 validate_card 会硬报错）。

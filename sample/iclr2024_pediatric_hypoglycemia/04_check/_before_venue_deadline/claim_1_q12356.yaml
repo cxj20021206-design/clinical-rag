@@ -1,0 +1,62 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:1,2,3,5,6   后端:claude-cli
+findings:
+  - question: 1
+    verdict: pass
+    field: "descriptive.future_intent / care_setting / evidence_basis"
+    quote: "With a broader and more varied dataset, the deployment of dBG across diverse clinical settings will become increasingly viable."
+    card_says: "该句与 §1 的 \"could exist in real clinical settings\" 一并归入 descriptive.future_intent；care_setting 标 absent；deployment_claim_level 写 \"no deployment; retrospective offline evaluation ... with clinical deployment stated only as future work\"。"
+    should_be: "维持现状。全文关于「真正用于临床」的表述（will become increasingly viable / could exist / would be）确实都被隔离在 future_intent，没有任何一条被用来填 intended_use、care_setting 或 evidence_basis；descriptive.clinical_decision_affected 也明确指出 Background 的 proactive treatment 讲的是领域而非本系统。未见把未来设想当已完成研究的情形。"
+
+  - question: 2
+    verdict: pass
+    field: "care_setting / population.age_group / population.special / descriptive.target_population"
+    quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+    card_says: "该句用于 population.age_group（status: inferred，note 说明年龄区间由 Table 1 逐人 Age 列得出）；care_setting 标 absent；population.special 为空；「需要 BG 传感器读数」写在 descriptive.model_input 而非人群。"
+    should_be: "维持现状。全文没有任何采集场所的交代（无机构、无国家、无设备名），因此不存在「把数据来源场景当使用场景」的空间；卡也没有把「有 BG 传感器数据」这一入组前提写进 population.special。人群字段的唯一非情态正文依据确实只有这句样本描述——§1 中所有指向使用人群的句子（\"a critical use of artificial intelligence (AI) would be to improve clinical forecasting of blood glucose (BG) levels in pediatric T1D\"）都是情态式，按硬约束 2/规则⑬不可用，故 inferred + note 是此处可达的最好处理。"
+
+  - question: 3
+    verdict: issue
+    severity: low
+    field: "descriptive.comparator（连带 cohorts 白名单）"
+    quote: "Figure 6 enumerates the outcomes with and without partial updates."
+    card_says: "comparator 写「**全部对照都是模型自身的变体**：① 不同 k 取值（Table 3…）；② 有/无监督规则、不同剪枝方式（Figure 5…）」，只列了两项。"
+    should_be: "论文还有第三组自身变体对照：§4.4 GRAPH UPDATE EVALUATION 的「有/无图更新」（Figure 6，附带 \"percentage accuracy differences with and without applying graph updates\"），且该实验用的是另一套划分（一名患者充当新患者、其余分三组建三张独立图、该患者数据对半切）。comparator 用了「全部」这一穷举措辞却漏掉它，cohorts 白名单与 provenance.unavailable_content 也都没有它。应在 comparator 增列 ③ 图更新消融，并把该实验的划分补进 cohorts、把 Figure 6 的数值补进 unavailable_content。结论方向不变（仍是清一色自身变体、无外部对照、与现行做法无并列数字），故判 low。"
+
+  - question: 5
+    verdict: issue
+    severity: medium
+    field: "descriptive.demonstrated_effect（及 cohorts.loocv_15.subgroup_restrictions）"
+    quote: "If $h - t < 1$ hour and an alert is issued at instance t, then it’s deemed a correct prediction."
+    card_says: "demonstrated_effect 列出「272 次预警 / 10 次漏报 / warning rate 96.45%；平均 Balanced Accuracy 0.844、Precision 0.268、Sensitivity 0.801、Specificity 0.887」，随附的限制条件只有「已排除患者已处于低血糖状态的数据点与时间线断点」，另注「提前量方面正文只给出『多数警报提前 30 分钟』这一定性表述」。"
+    should_be: "该组数字成立的判定条件是「警报落在低血糖发生前 1 小时内即计为正确」，而不是 30 分钟。这个窗口没有跟数字写在一起，下游把 Sensitivity 0.801 / warning rate 96.45% 与紧邻的「多数提前 30 分钟」并读，会读出一个论文没有做的评估——「30 分钟提前量下的性能」。应把 \"h − t < 1 hour\" 这一正确性定义与所有 loocv_15 的数字写在同一处（或写进 cohorts.loocv_15.subgroup_restrictions）。判 medium：不改动准入字段，但会让下游读出论文里不存在的结果。"
+
+  - question: 6
+    verdict: issue
+    severity: low
+    field: "condition.primary（provenance 引文）"
+    quote: "Our focus is on predicting a hypoglycemic episode for the patient."
+    card_says: "condition.primary status: explicit，引文为 \"Hypoglycemic events include all episodes of a plasma glucose concentration low enough to cause symptoms and/or signs, such as dizziness, fast heartbeat, shaking, sweating, hunger, etc.\"，locator \"1 INTRODUCTION\"。"
+    should_be: "该引文的主语是「低血糖事件」这一通用医学定义（§1 背景段对术语的界定），它证明的是「低血糖是什么」，不是「本研究的主张针对低血糖」——正是硬约束 4 要挡的那类取证。字段取值 hypoglycemia 本身无误，故只判 low；引文应换成 §3.2.2 的 \"Our focus is on predicting a hypoglycemic episode for the patient.\"（该句已被卡用于 clinical_task，两个字段各截取真正相关的部分、分列两条 provenance 即可）。"
+
+  - question: 6
+    verdict: issue
+    severity: low
+    field: "descriptive.model_input（provenance 引文与取值）"
+    quote: "The model assigns 12 characters for normoglycemia, two for hypoglycemia, and one for hyperglycemia, totaling 15 characters."
+    card_says: "model_input status: explicit，取值为「patient temporal BG sensor readings, discretized into a 15-character alphabet over 10-unit value ranges (12 characters for normoglycemia, two for hypoglycemia, one for hyperglycemia), at a general 15-minute sample rate」，唯一引文是 §1 的 \"by creating an alphabet over patient temporal BG sensor readings and integrate an input window reflecting numerical intervals\"。"
+    should_be: "两点。(a) 标 explicit 的引文只覆盖「对 BG 读数建字母表」这一半，取值中的 15 字符、10 单位区间、12/2/1 拆分、15 分钟采样率全部不在引文里——应按字段分列 provenance，各带 §3.1 的连续引文（如上 quote，以及 \"Despite a general 15-minute sample rate, the dataset exhibits both variations and notable gaps.\"）。(b) 12/2/1 这个拆分与论文自己的 Table 2 不符：Table 2 中正常区 (70–180] 对应 label 2–12 共 11 个字符，(180–190] 与 (190–500] 两个 label 都在高血糖侧，即 11/2/2。卡照抄了正文版本而未标出论文内部矛盾。descriptive 不参与准入，故 low。"
+
+  - question: 6
+    verdict: cannot_determine
+    field: "care_setting（与 evidence_basis.clinical_claim_made 的引文同源）"
+    quote: "Unlike traditional machine learning techniques, dBG’s low update cost makes it particularly suitable for dynamic environments like hospitals, enhancing patient care by enabling timely and precise updates."
+    card_says: "care_setting: null，status absent，note 称该句「其主语是 dBG 的更新成本，不是『本系统将部署在住院病房』（硬约束 4）」；同一句却被 evidence_basis.clinical_claim_made 以 status: explicit 采信为「论文明确主张改善照护」。"
+    should_be: "判不出来。该句是现在时陈述句（makes it particularly suitable），主句主语是 \"dBG’s low update cost\" 但补语所指的 \"it\" 就是 dBG 本身，字面上是在断言「本模型特别适合医院这类动态环境」——不是情态、也不是未来式，因而规则⑬挡不住它。卡对同一句作了方向相反的两次处置：为 clinical_claim_made 采信其临床主张部分，为 care_setting 排除其场所部分。要么该句支持 care_setting 取住院/院内一档，要么它连 clinical_claim_made 也只能算 inferred。卡在：\"dynamic environments like hospitals\" 究竟是场所主张还是「动态环境」的一个举例，正文再无第二处可交叉验证（全文其余场所表述均为情态/未来式）。care_setting 属 gating 字段，按规则不为保险上提严重度，请人工裁定。"
+
+summary:
+  issues_high: 0
+  issues_medium: 1
+  issues_low: 3
+  cannot_determine: 1

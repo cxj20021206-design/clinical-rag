@@ -1,0 +1,60 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:7   后端:claude-cli
+adversarial_check:
+  card: "claim_1 (A REINFORCEMENT LEARNING APPROACH TO EFFECTIVE FORECASTING OF PEDIATRIC HYPOGLYCEMIA IN DIABETES I PATIENTS: AN EXTENDED DE BRUIJN GRAPH)"
+  findings:
+    - question: 7
+      verdict: pass
+      field: "gating.evidence_basis.clinical_claim_made"
+      quote: "Unlike traditional machine learning techniques, dBG’s low update cost makes it particularly suitable for dynamic environments like hospitals, enhancing patient care by enabling timely and precise updates."
+      card_says: "true（explicit）"
+      should_be: "维持 true。正文（§5）以现在式断言 enhancing patient care，§4.2 另有 \"This evaluation provides a more comprehensive understanding of the model’s effectiveness in real-world settings.\"，二者都不是纯方法学表述。该事实没有被高估——true 是把本文纳入临床标准的方向，不是抬高证据层级。"
+
+    - question: 7
+      verdict: pass
+      field: "gating.evidence_basis.external_cohort"
+      quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+      card_says: "false（inferred；理由为全文只有这一批数据，留一交叉验证与 k 扫描都是同一数据集的重新划分）"
+      should_be: "维持 false。全文只出现这一处数据来源陈述，§4 的 \"Our evaluation leveraged a leave-one-out cross-validation, with each patient’s data processed separately.\" 与 §4.4 的图数据库实验（\"the remaining dataset was divided into three groups\"）都取自同一批 15 人，没有第二批数据。留一法把某一患者留出属内部验证，不构成外部队列。"
+
+    - question: 7
+      verdict: pass
+      field: "gating.evidence_basis.different_site"
+      quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements. The hypoglycemia threshold is set at 70 mg/dL. Despite a general 15-minute sample rate, the dataset exhibits both variations and notable gaps."
+      card_says: "false（absent；论文无机构名、无国家/地区、无数据集名、无采集设备名、无伦理审批）"
+      should_be: "维持 false。§3.1 是全文唯一交代数据的段落，其中没有任何机构、地区或数据集标识；全文亦无第二处来源陈述。此处不存在\"从数据集名字猜出多中心\"的风险，因为论文连数据集名字都没给。"
+
+    - question: 7
+      verdict: pass
+      field: "gating.evidence_basis.prospective"
+      quote: "To evaluate our proposed model, we methodically scrutinize every datapoint in our dataset."
+      card_says: "false（absent；无招募、连续入组、纳入排除、随访方案的交代，只有 Table 1 的 Study Days）"
+      should_be: "维持 false。评估动作是对既有数据集逐点回放。全文 prospective 一词只出现在 §4.4 的 \"This experiment, although constrained by a limited dataset, showcased prospective enhancements.\"，其义为\"有前景的\"，不是研究设计；§4.4 的 pre-treatment / post-treatment 划分是对既有序列的前后半切分（\"The selected patient’s data was bifurcated; the initial half symbolized pre-treatment data, and the latter half, post-treatment data.\"），仍是回顾性重放，不构成前瞻成分。"
+
+    - question: 7
+      verdict: pass
+      field: "gating.evidence_basis.randomised"
+      quote: "Our evaluation leveraged a leave-one-out cross-validation, with each patient’s data processed separately."
+      card_says: "false（absent；唯一的\"对照\"是同一批数据上的模型自身变体）"
+      should_be: "维持 false。留一交叉验证是确定性的划分，不是随机分配；全文无任何分组分配、盲法或随机化描述，Table 3 与 Figure 5 的比较都是同一批数据上换参数/换配置。"
+
+    - question: 7
+      verdict: pass
+      field: "gating.evidence_basis.deployed_in_care"
+      quote: "With a broader and more varied dataset, the deployment of dBG across diverse clinical settings will become increasingly viable."
+      card_says: "false（inferred；模型输出没有进入任何照护流程）"
+      should_be: "维持 false。论文自陈 deployment 属未来式；正文对模型输出的处理止于 \"To evaluate our proposed model, we methodically scrutinize every datapoint in our dataset.\"，没有任何证据表明警报被任何人（患者、家长、临床人员）看到或据以处置。§4.1 的监督规则也只作用于模型自身的输出抑制，不涉及照护动作。"
+
+    - question: 7
+      verdict: pass
+      field: "gating.evidence_basis.endpoint_type"
+      quote: "In total, our model preemptively issued warnings for 272 hypoglycemia instances and missed 10, achieving a 96.45% warning rate."
+      card_says: "model_metric（inferred）"
+      should_be: "维持 model_metric。全部终点都是警报正确与否的派生量（warning rate 与 Balanced Accuracy / Precision / Sensitivity / Specificity），正确性定义本身也是模型口径的：\"If $h - t < 1$ hour and an alert is issued at instance t, then it’s deemed a correct prediction.\"；Figure 4 的提前量同样是模型输出的时间属性，不是流程终点（如就诊时间、检查量），更不是患者结局（如低血糖发作次数、住院、HbA1c）。"
+
+  summary:
+    issues_high: 0
+    issues_medium: 0
+    issues_low: 0
+    cannot_determine: 0

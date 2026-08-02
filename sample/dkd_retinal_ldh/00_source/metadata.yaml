@@ -1,0 +1,27 @@
+source_paper:
+  doi: "10.1016/j.landig.2025.02.008"
+  title: "Non-invasive biopsy diagnosis of diabetic kidney disease via deep learning applied to retinal images: a population-based study"
+  journal: "The Lancet Digital Health"
+  year: 2025
+  license: "CC BY-NC 4.0"        # 开放许可 —— 这是本 PDF 可以直接放进仓库的原因
+  license_quote: "This is an open access article under the CC BY-NC license (http://creativecommons.org/licenses/by-nc/4.0/)."
+  pdf: "10.1016_j.landig.2025.02.008.pdf"
+  pages: 15
+  chars_pypdf: 73985
+
+  # ⚠️ 选它做样例的三个理由
+  why_this_paper:
+    - "CC BY-NC 开放许可：PDF 可直接入库，不像 corpus/ 里那批 Nature 论文"
+    - "不是 Nature：顺带验证抽卡流程对期刊结构的独立性"
+    - "两个独立临床主张 + 六个队列：能真正验一篇出多张卡"
+
+  # ⚠️ submission_date 的实况（这是今天最大的一个泛化性发现）
+  submission_date:
+    pdf_received: null            # PDF 全文无 Received
+    pdf_accepted: null            # 也无 Accepted
+    local_metadata: "year 2025 only"
+    crossref_api: "published 2025-05；assertion 里无 received/accepted"
+    adopted_value: "2024-03-10"
+    adopted_basis: search_cutoff_lower_bound
+    adopted_quote: "published from database inception to March 10, 2024"
+    consequence: "TRIPOD+AI(2024-04-16) 与 PROBAST+AI(2025-03-24) 因此 predates=false，不能用来要求作者"

@@ -1,0 +1,57 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:4   后端:claude-cli
+findings:
+  - question: 4
+    verdict: issue
+    severity: low
+    field: descriptive.claimed_benefit
+    quote: "The ability of DeepDKD to differentiate isolated diabetic nephropathy from NDKD could also be used as an ancillary tool to minimise the need for invasive kidney biopsy."
+    card_says: "作为辅助工具减少不必要的侵入性肾活检，帮助医师收窄鉴别诊断"
+    should_be: >-
+      原文只说"minimise the need for invasive kidney biopsy"（减少活检需求），
+      没有任何地方判定哪些活检是"不必要的"。"不必要的"这个限定词是卡自己加的，
+      它隐含了一个更强的主张：系统能识别出可以免做的那部分活检——而论文既未定义
+      这一分层，也未测量它。建议改为"作为辅助工具以减少侵入性肾活检的需求，
+      帮助医师收窄鉴别诊断"，与 provenance 里已引的 quote 逐字对齐。
+      （后半句"帮助医师收窄鉴别诊断"有原文支持，不在此列。）
+  - question: 4
+    verdict: pass
+    field: descriptive.demonstrated_effect
+    quote: "In the longitudinal study, participants with isolated diabetic nephropathy and participants with NDKD identified by DeepDKD had a significant difference in renal function outcomes (proportion of estimated glomerular filtration rate decline: 27⋅45% vs 52⋅56%, p=0⋅0010)."
+    card_says: "内部验证 AUC 0·906（0·825–0·966），外部 0·733–0·844；纵向随访中两组 eGFR 下降比例 27·45% vs 52·56%（p=0·0010）"
+    should_be: >-
+      三个数字与原文逐字相符（内部 AUC 0·906 [95% CI 0·825–0·966]、外部
+      0·733–0·844、27·45% vs 52·56% p=0·0010）。这里最容易犯的错是把 eGFR 下降
+      比例的组间差异写成"系统减缓了肾功能下降"——卡没有这么写，它用的是"两组
+      eGFR 下降比例"，如实描述为两个被判定人群之间的预后可分性，而非干预效应。
+      无需改动。
+  - question: 4
+    verdict: pass
+    field: descriptive.benefit_gap
+    quote: "Fourth, although two proof-of-concept clinical studies were conducted to evaluate the effectiveness of DeepDKD, further randomised controlled trials are needed to evaluate the impact of real-time system integration in routine workflow on patient outcomes."
+    card_says: "论文证明的是**区分准确性**与两组预后可分，未证明使用该系统后活检例数下降或患者结局改善；'减少活检'为作者提出的用途而非实测终点"
+    should_be: >-
+      与作者自己在 Limitations 第四条的表述一致：对患者结局的影响需要后续 RCT。
+      卡把"区分准确"与"患者获益"明确分开，且点名了缺失的两个终点（活检例数、
+      患者结局），名副其实。无需改动。
+  - question: 4
+    verdict: pass
+    field: descriptive.clinical_decision_affected
+    quote: "Having access to simpler, non-invasive tests to distinguish isolated diabetic nephropathy from NDKD is useful for endocrinologists and nephrologists to narrow a differential diagnosis."
+    card_says: "是否需要做侵入性肾活检、鉴别诊断范围的收窄"
+    should_be: >-
+      本字段记的是"意图影响的临床决策"而非"已被证明改变的决策"，卡填的两项
+      （活检与否、收窄鉴别诊断）都能在原文找到对应的意图表述，且卡在 benefit_gap
+      与 deployment_claim_level（"无部署"）两处已声明该影响未被实测。
+      没有把"意图影响决策"升格为"已改变决策"。无需改动。
+  - question: 4
+    verdict: pass
+    field: gating.evidence_basis.endpoint_type
+    quote: "For differentiating isolated diabetic nephropathy from NDKD, DeepDKD achieved an AUC of 0⋅906 (0⋅825–0⋅966) on the internal validation dataset and AUCs of 0⋅733–0⋅844 across external validation datasets."
+    card_says: "endpoint_type: model_metric"
+    should_be: >-
+      本主张的主要结果是 AUC，属模型指标。4·6 年 eGFR 变化虽是肾功能结局，但它
+      衡量的是模型判定的两组人预后是否可分（判别力的外部佐证），不是"用了系统
+      之后患者结局更好"，因此不构成把它升格为 patient_outcome 的理由。
+      卡在同一处的注释已写明"4·6 年肾功能变化是佐证性纵向分析"。无需改动。

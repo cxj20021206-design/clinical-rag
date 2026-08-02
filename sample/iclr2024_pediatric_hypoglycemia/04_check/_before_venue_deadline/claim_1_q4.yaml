@@ -1,0 +1,33 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:4   后端:claude-cli
+findings:
+  - question: 4
+    verdict: issue
+    severity: medium
+    field: "descriptive.claimed_benefit / descriptive.demonstrated_effect / descriptive.benefit_gap / provenance.unavailable_content"
+    quote: "Although most patients exhibited minor improvements and some major, a decline was noted in certain evaluation scores."
+    card_says: >-
+      claimed_benefit 只收了摘要那一句（30 分钟提前量 + actionable rules）；demonstrated_effect 只列
+      loocv_15 的 272/10/96.45% 与 0.844/0.268/0.801/0.887；benefit_gap 的六条里没有任何一条涉及
+      §3.3/§4.4 的「图更新 / 新患者快速适配」这条主张；unavailable_content 只列了 Figure 2(RIGHT)、
+      Figure 4、Figure 5，没有 Figure 6。
+    should_be: >-
+      论文在 §1 把「懒结构 + 图更新」当成本工作的贡献之一并给出受益侧表述——"Further, since this is a
+      lazy structure, a new patient with limited data find the best set of graphs and then modify them to
+      suit her needs."，§3.3 又称 "The dBG model excels in its ease of update, eliminating the need for
+      total graph reconstruction. This feature is particularly beneficial for large-scale applications."。
+      §4.4 是唯一为这条主张做的评估，其结论是有升有降（引文所示），且逐人数值只存在于 Figure 6，本次材料
+      取不到。卡里这条主张与它的评估**整段缺席**：claimed_benefit 未收（若判定它不属于本 claim_1 的主张
+      范围，则应在 benefit_gap 或 note 里写明为何排除）、demonstrated_effect 未记、benefit_gap 未把
+      「代价侧（部分患者评分下降）无量化、Figure 6 取不到」列为缺口、unavailable_content 也漏了 Figure 6。
+      结果是卡只呈现了受益侧的一整套数字，而论文自陈的这一处方向不一致的结果被抹掉——下游据此会读出一个
+      「各项均为正向」的研究。
+      建议：在 provenance.unavailable_content 增加 figure_6_graph_update_ablation 条目；在 benefit_gap
+      增加一条，记「§1/§3.3 主张的『新患者以有限数据快速适配 / 更新成本低』在 §4.4 中评估结果有升有降
+      （原文 'a decline was noted in certain evaluation scores'），逐人数值在 Figure 6 内不可得，故该主张
+      未被兑现」。
+      附带（同属第 4 问、严重度更低，不另计条数）：§5 的 "enhancing patient care by enabling timely and
+      precise updates" 是一条直指患者获益的主张，卡把它用作 evidence_basis.clinical_claim_made 的引文，
+      却没有在 benefit_gap 里点名它无对应证据；benefit_gap ③ 虽已写「无任何患者结局或流程终点」，但那是挂
+      在 "sufficient for a clinical setting" 名下的，建议把这句一并点名。

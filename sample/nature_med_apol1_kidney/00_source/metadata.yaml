@@ -1,0 +1,33 @@
+source_paper:
+  doi: "10.1038/s41591-026-04337-2"
+  title: "Proteomic risk score for early prediction of kidney disease progression in individuals with APOL1 high-risk genotypes"
+  journal: "Nature Medicine"
+  year: 2026
+  license: null                   # ⚠️ 非开放获取 —— PDF 与解析产物一律不入库，见下
+  license_note: >
+    Nature Medicine 订阅制内容。PDF 与 MinerU 解析产物均已 gitignore；
+    仓库里只保留派生物（卡、核查报告、检索结果）。要复现请从
+    /work/hdd/bgkq/xchen48/journals/pdfs/nature_medicine/ 取原文重跑 01_parse。
+  pdf: "10.1038_s41591-026-04337-2.pdf"
+  pdf_origin: "/work/hdd/bgkq/xchen48/journals/pdfs/nature_medicine/10.1038_s41591-026-04337-2.pdf"
+  pages: 25
+
+  # 真人 peer review：本篇在 journals/peer_review/reviewed_papers.jsonl 的 225 篇之内。
+  # 评审意见本身**不进入抽卡流程的任何一步**（那会是循环论证），只作为日后 Flaw-Recall
+  # 评测的对照答案保存。
+  human_peer_review:
+    available: true
+    inventory: "journals/peer_review/reviewed_papers.jsonl"
+    used_in_extraction: false
+
+  # 为什么选它（2026-08-01 新 prompt 的第一次实跑，两篇之一）
+  why_this_paper:
+    - "预测模型论文：TRIPOD+AI / PROBAST+AI 两份报告清单应当启用 —— 能验证语言规则修好后清单没被静默关掉"
+    - "肾病进展预后：normative 侧属已知缺口（心衰/糖网/AKI/DKD 两条通道都补不上），预期 0 命中，看系统是否如实报缺口而不是编覆盖"
+    - "成人队列 + 基因分层人群（APOL1 高危基因型）：人群门控与 condition.qualifiers 的真实压力测试"
+    - "带真人 peer review：日后可直接接 Flaw-Recall 评测"
+    - "与 sample/dkd_retinal_ldh 同属肾病领域但方法学完全不同（蛋白组 vs 眼底影像）—— 可对照两张卡的差异是否合理"
+
+  # submission_date 按 stage1 §③ 的阶梯找；实际取值以阶段一产物为准，此处不预填。
+  submission_date:
+    resolved_in: "02_overview/paper_overview.yaml"

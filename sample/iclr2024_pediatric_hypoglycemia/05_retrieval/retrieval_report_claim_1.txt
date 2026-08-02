@@ -1,0 +1,92 @@
+  [card warn] gating.evidence_stage 留空 → 由 evidence_basis 映射为 C1（仅回顾性开发/内部测试 → C1（不能声称临床效用已证明））。此值来自程序判定表，不是模型声明，改判定表会改它
+  [card warn] iclr 2024 的 abstract_deadline=2023-09-22 取自 venue_deadlines.yaml，但该条目 verified_by 留空 —— 尚未有人对照官方 CFP 核实过，下游报告不得声称此日期已核实
+
+=== 报告规范清单适用性 (策展层) ===
+ ⛔ CLAIM 2024 Update  (  0 条, 完整性=none, 发布 2024-07-01)
+      研究设计不匹配：从 Claim Card 推断为 ['prediction_model_development']，CLAIM 2024 Update 适用于 ['medical_imaging_ai']。
+ ⛔ CONSORT-AI         ( 14 条, 完整性=partial, 发布 2020-09-09)
+      证据阶段不匹配：论文为 C1，CONSORT-AI 适用于 ['C4']。对 C1 论文套用本清单属越级要求。
+ ⛔ DECIDE-AI          ( 38 条, 完整性=full, 发布 2022-05-18)
+      证据阶段不匹配：论文为 C1，DECIDE-AI 适用于 ['C3', 'C4']。对 C1 论文套用本清单属越级要求。
+ 🟡 PROBAST+AI         ( 34 条, 完整性=partial, 发布 2025-03-24)
+      适用：研究设计 ['prediction_model_development']，证据阶段 C1。
+      ⚠️ 已摄入步骤 3 的全部信号问题（开发 16 条 + 评估 18 条，共 34 条）。PROBAST+AI 完整流程共 4 步， 步骤 1-2（判定是否为预测模型研究、提取模型信息）与步骤 4（总体判定）为流程说明，未逐条摄入。
+      ⏱ 发布于投稿日 2023-09-22 之后 → predates=false，可用于'今天能否部署'，不得据此指责作者。
+ ⛔ QUADAS-3           (  4 条, 完整性=structure_only, 发布 2026-02-17)
+      研究设计不匹配：从 Claim Card 推断为 ['prediction_model_development']，QUADAS-3 适用于 ['diagnostic_test_accuracy']。
+ ⛔ SPIRIT-AI          ( 15 条, 完整性=partial, 发布 2020-09-09)
+      证据阶段不匹配：论文为 C1，SPIRIT-AI 适用于 ['C4']。对 C1 论文套用本清单属越级要求。
+ ✅ TRIPOD+AI          ( 52 条, 完整性=full, 发布 2024-04-16)
+      适用：研究设计 ['prediction_model_development']，证据阶段 C1。
+      ⏱ 发布于投稿日 2023-09-22 之后 → predates=false，可用于'今天能否部署'，不得据此指责作者。
+
+=== 临床指南适用性 (normative 策展层) ===
+ ⛔ USPSTF (0 条推荐)
+      场景不匹配：clinical_task=prognostication 属诊疗/分诊类任务，USPSTF 职权仅限预防服务（筛查/预防用药/行为咨询）。套用属越权外推，须改由学会指南/WHO 等 normative 源承担。
+ ⛔🤖 Brazilian Public Health System pro (0/4 条推荐, 2025-06-20, Academia Brasileira de Neurologia（)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['acute ischemic stroke', 'brazilian public', 'diagnosis treatment'] 无交集
+ ⛔🤖 Guidelines for Neuroprognosticatio (0/13 条推荐, 2026-04-06, 未知（自动摄入：发布机构未确认，须人工核对）)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['acute ischemic stroke', 'critically ill adults'] 无交集
+ ⛔ ESPNIC neonatal/paediatric POCUS 2 (0/41 条推荐, 2020-02-24, European Society of Paediatric and)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['point of care ultrasound', 'pocus', 'congenital heart', 'ductus arteriosus', 'intraventricular haemorrhage', 'pneumothorax', 'necrotising enterocolitis', 'lung ultrasound', 'critical illness'] 无交集
+ ⛔ German nosocomial pneumonia S3 202 (0/10 条推荐, 2024-08-08, Deutsche Gesellschaft für Anästhes)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['nosocomial pneumonia', 'ventilator-associated pneumonia', 'hospital-acquired pneumonia', 'pneumonia'] 无交集
+ ⛔ Korean sepsis CPG 2024             (0/13 条推荐, 2024-11-18, Korean Sepsis Alliance / Korean So)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['sepsis', 'septic shock'] 无交集
+ ⛔ WHO intrapartum care recommendatio (0/53 条推荐, 2018-02-14, World Health Organization)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['intrapartum care', 'labour and childbirth', 'childbirth', 'fetal well-being', 'cardiotocography', 'fetal monitoring'] 无交集
+ ⛔ WHO RF/RHD guideline 2024          (0/28 条推荐, 2024-10-29, World Health Organization)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['rheumatic fever', 'rheumatic heart disease', 'group A streptococcal pharyngitis', 'streptococcal pharyngitis', 'GAS pharyngitis'] 无交集
+ ⛔ WHO TB guidelines module 3: diagno (0/17 条推荐, 2025-04-04, World Health Organization)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['tuberculosis', 'pulmonary tuberculosis', 'drug-resistant tuberculosis', 'rifampicin-resistant tuberculosis', 'MDR/RR-TB'] 无交集
+ ⛔ WSES elderly trauma 2023           (0/44 条推荐, 2024-05-31, World Society of Emergency Surgery)
+      病种不匹配：本卡判别词与该指南 scope.disease_terms ['trauma', 'traumatic injury', 'major trauma', 'polytrauma', 'frailty'] 无交集
+    ⚠️ 其余 normative 源 (WHO IRIS / VA-DoD) 仍待策展；NICE 因 AI 用途许可禁令不可行，见 docs/RELATED_WORK.md §2。未摄入的具体指南与原因见 curated/guidelines/manifest.yaml: deferred。
+
+=== 检索结果 (按模块) ===
+
+[clinical_question]  命中 11 条 {'europepmc': 5, 'tripod_ai': 6}
+   ⚠️无连接器角色(待策展): ['evidence_synthesis']
+   - europepmc: Management of Individuals With Diabetes at High Risk for Hypogly
+   - europepmc: Expert consensus on personalized initiation of glucose-lowering 
+   - europepmc: A Systematic Review Supporting the Endocrine Society Guidelines:
+
+[population_validity]  命中 33 条 {'europepmc': 5, 'clinicaltrials_gov': 5, 'tripod_ai': 13, 'probast_ai': 10}
+   - europepmc: Management of Individuals With Diabetes at High Risk for Hypogly
+   - europepmc: Expert consensus on personalized initiation of glucose-lowering 
+   - europepmc: A Systematic Review Supporting the Endocrine Society Guidelines:
+
+[reference_standard]  命中 28 条 {'europepmc': 5, 'openfda': 4, 'tripod_ai': 5, 'probast_ai': 14}
+   ⚠️无连接器角色(待策展): ['terminology']
+   - europepmc: Management of Individuals With Diabetes at High Risk for Hypogly
+   - europepmc: Expert consensus on personalized initiation of glucose-lowering 
+   - europepmc: A Systematic Review Supporting the Endocrine Society Guidelines:
+
+[comparator_baseline]  命中 15 条 {'europepmc': 5, 'clinicaltrials_gov': 5, 'openfda': 4, 'tripod_ai': 1}
+   ⚠️无连接器角色(待策展): ['evidence_synthesis']
+   - europepmc: Management of Individuals With Diabetes at High Risk for Hypogly
+   - europepmc: Expert consensus on personalized initiation of glucose-lowering 
+   - europepmc: A Systematic Review Supporting the Endocrine Society Guidelines:
+
+[endpoint_utility]  命中 20 条 {'europepmc': 5, 'clinicaltrials_gov': 5, 'tripod_ai': 5, 'probast_ai': 5}
+   ⚠️无连接器角色(待策展): ['evidence_synthesis']
+   - europepmc: Management of Individuals With Diabetes at High Risk for Hypogly
+   - europepmc: Expert consensus on personalized initiation of glucose-lowering 
+   - europepmc: A Systematic Review Supporting the Endocrine Society Guidelines:
+
+[generalization]  命中 62 条 {'europepmc': 5, 'clinicaltrials_gov': 5, 'openfda': 4, 'tripod_ai': 30, 'probast_ai': 18}
+   - europepmc: Management of Individuals With Diabetes at High Risk for Hypogly
+   - europepmc: Expert consensus on personalized initiation of glucose-lowering 
+   - europepmc: A Systematic Review Supporting the Endocrine Society Guidelines:
+
+[safety_harm_equity]  命中 24 条 {'europepmc': 5, 'openfda': 4, 'tripod_ai': 11, 'probast_ai': 4}
+   - europepmc: Management of Individuals With Diabetes at High Risk for Hypogly
+   - europepmc: Expert consensus on personalized initiation of glucose-lowering 
+   - europepmc: A Systematic Review Supporting the Endocrine Society Guidelines:
+
+[workflow_deployment]  命中 18 条 {'europepmc': 5, 'openfda': 4, 'tripod_ai': 7, 'probast_ai': 2}
+   - europepmc: Management of Individuals With Diabetes at High Risk for Hypogly
+   - europepmc: Expert consensus on personalized initiation of glucose-lowering 
+   - europepmc: A Systematic Review Supporting the Endocrine Society Guidelines:
+
+=== 写入 /tmp/claude-92914/-work-hdd-bgkq-xchen48/e1646709-8c70-46d2-97e2-c1f40c09c97d/scratchpad/iclr_new_1.jsonl (100 条去重记录)；schema 错误: 无 ===

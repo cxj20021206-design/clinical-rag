@@ -1,0 +1,107 @@
+# 抽取卡（claim 2/2）—— 同一篇论文的第二个独立临床主张。
+# 论文：Non-invasive biopsy diagnosis of diabetic kidney disease via deep learning
+#       applied to retinal images. Lancet Digit Health 2025. DOI 10.1016/j.landig.2025.02.008
+#
+# 为什么必须单独出卡（SPEC §1「论文自己是否为这个任务做了单独的临床声明」）：
+#   本主张有**自己的数据集**（267 人开发 + 244 人外部验证，与 claim_1 的 12 万人完全不同）、
+#   **自己的人群**（已确诊 DKD 且做过肾活检者，而非全体糖尿病人）、**自己的对照**
+#   （侵入性肾活检，而非尿试纸/元数据模型）、**自己的终点**（4·6 年肾功能变化）。
+#   合成一张卡会让病种/人群/对照全变成混合物。
+claim_card:
+  paper_id: "10.1016/j.landig.2025.02.008"
+  claim_id: claim_2
+
+  submission_date: "2024-03-10"     # 同 claim_1：三处无收稿日，取文献检索截止日作保守下界
+  region: "CN"
+
+  gating:
+    condition:
+      primary: {label: "diabetic nephropathy", codes: {}}
+      breadth: narrow
+      scope_type: disease
+      qualifiers: {subtype: "isolated diabetic nephropathy vs non-diabetic kidney disease"}
+      comorbid_context: ["diabetes", "chronic kidney disease"]
+      excluded: []
+    population:
+      age_group: adult
+      age_range_text: null
+      special: ["biopsy-confirmed kidney disease"]
+    care_setting: outpatient_specialty     # 内分泌科/肾内科，非基层
+    clinical_task: diagnosis               # 鉴别诊断；与 claim_1 的 screening 是两回事
+    evidence_stage: "C2"
+    evidence_basis:
+      clinical_claim_made: true
+      external_cohort: true
+      different_site: true          # 中国/马来西亚/英国三个数据集
+      prospective: false            # 纵向分析基于随访数据，未见前瞻性设计声明
+      randomised: false
+      deployed_in_care: false
+      endpoint_type: model_metric   # 主结果为 AUC；4·6 年肾功能变化是佐证性纵向分析
+    study_design: []
+    intended_context: clinical_care
+    finding_direction: positive
+
+  descriptive:
+    intended_use: "non-invasive differentiation of isolated diabetic nephropathy from non-diabetic kidney disease from retinal fundus images, as an ancillary tool to minimise invasive kidney biopsy"
+    target_population: "已有肾脏损害的糖尿病患者（研究人群为接受过肾活检者）"
+    intended_user: "内分泌科医师与肾内科医师"
+    model_input: "retinal fundus images"
+    model_output: "predicted probability of isolated diabetic nephropathy versus non-diabetic kidney disease (differential diagnosis)"
+    clinical_decision_affected: "是否需要做侵入性肾活检、鉴别诊断范围的收窄"
+    comparator: "kidney biopsy（病理诊断，侵入性参考标准）"
+    secondary_tasks: []
+    claimed_benefit: "作为辅助工具减少不必要的侵入性肾活检，帮助医师收窄鉴别诊断"
+    demonstrated_effect: "内部验证 AUC 0·906（0·825–0·966），外部 0·733–0·844；纵向随访中两组 eGFR 下降比例 27·45% vs 52·56%（p=0·0010）"
+    benefit_gap: "论文证明的是**区分准确性**与两组预后可分，未证明使用该系统后活检例数下降或患者结局改善；'减少活检'为作者提出的用途而非实测终点"
+    future_intent: "作者称该能力可作为 ancillary tool 以尽量减少侵入性肾活检的需要"
+    deployment_claim_level: "回顾性开发 + 外部验证 + 纵向佐证分析，无部署"
+    clinical_context: |
+      开发与内部验证：267 人 1068 张眼底图；外部验证：中国、马来西亚、英国三个多族裔
+      数据集 244 人。可解释性分析提示系统依据小静脉扩张、血管稀疏与糖尿病视网膜病变改变
+      作出判断。论文指出 NDKD 在糖尿病人群中占 33%–72·5%，而许多 NDKD 可治疗，单纯糖尿病
+      肾病则进展性更强。本字段不参与任何门控。
+
+  provenance:
+    # ⚠️ 必须指向**抽卡时实际读的解析产物**：表格内容只存在于 MinerU 输出里
+    # （pypdf 文本中 `Number of participants with diabetes` 与各数据集年龄都查不到）。
+    # 拿 MinerU 抽卡却用 pypdf 核验，会把解析层的能力差异误报成抽取故障。
+    source: "sample/dkd_retinal_ldh/01_parse/10.1016_j.landig.2025.02.008/auto/10.1016_j.landig.2025.02.008_content_list.json"
+    extraction: claude_llm_pipeline_v0
+    input_coverage:
+      - {part: main_text, included: true, note: "MinerU 版面解析产物"}
+      - {part: appendix, included: false, note: "appendix 未获取"}
+    fields:
+      condition.primary:
+        status: explicit
+        quote: "another important clinical process is differentiating kidney damage speciﬁcally due to diabetes, referred to as diabetic nephropathy, from other causes, referred to as non-diabetic kidney disease (NDKD)"
+        locator: introduction
+      population.age_group:
+        status: inferred
+        # ⚠️ 阶段三 Q6 指出：原引文只给了人数/病型，支持不了"成人"。改用主文表 1 的
+        # 各数据集平均年龄（57–66 岁）作依据——但**不给 quote**：该表在两种解析下都
+        # 无法给出可逐字引用的连续片段（pypdf 把表格逐字符逆序抽出；MinerU 还原了结构，
+        # 但此表单元格顺序交错，"Age, years (45.34%) 66.05" 里的百分比来自另一行）。
+        # 按 stage2 §⑩，inferred 允许无 quote，但 note 必须写清依据。宁可不给，
+        # 也不拿一个交错拼出来的字符串冒充原文。
+        note: "论文无显式年龄纳入标准；主文表 1 各数据集平均年龄 57.11–66.19 岁（SD 8–10），据此推断成人"
+        locator: "table 1（MinerU 解析产物，pypdf 文本中不存在）"
+      care_setting:
+        status: explicit
+        quote: "is useful for endocrinologists and nephrologists to narrow a differential diagnosis"
+        locator: introduction
+      clinical_task:
+        status: explicit
+        quote: "to differentiate isolated diabetic nephropathy from NDKD"
+        locator: abstract
+      comparator:
+        status: explicit
+        quote: "the pathological diagnosis of NDKD typically involves an invasive kidney biopsy"
+        locator: introduction
+      evidence_stage:
+        status: explicit
+        quote: "three multi-ethnic datasets from China, Malaysia, and the UK (244 participants) for external validation"
+        locator: abstract
+      claimed_benefit:
+        status: explicit
+        quote: "could also be used as an ancillary tool to minimise the need for invasive kidney biopsy"
+        locator: discussion

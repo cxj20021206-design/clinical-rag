@@ -1,0 +1,67 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:7   后端:claude-cli
+findings:
+  - question: 7
+    fact: clinical_claim_made
+    verdict: pass
+    field: "gating.evidence_basis.clinical_claim_made"
+    quote: "Having access to simpler, non-invasive tests to distinguish isolated diabetic nephropathy from NDKD is useful for endocrinologists and nephrologists to narrow a differential diagnosis."
+    card_says: "clinical_claim_made: true"
+    should_be: "维持 true。论文对本主张（鉴别 isolated diabetic nephropathy 与 NDKD）做了明确的临床用途陈述，指名使用者为内分泌科与肾内科医师，并在 Discussion 重申 'might serve as an adjunctive tool to assist endocrinologists and nephrologists in more precise clinical decision making'。不是纯方法学论文，不存在高估。"
+
+  - question: 7
+    fact: external_cohort
+    verdict: pass
+    field: "gating.evidence_basis.external_cohort"
+    quote: "Three external validation datasets (the Wuhan Kidney Disease Screening [WHKDS] cohort, the UKB cohort, and the MeLODY cohort) were collected (244 participants)."
+    card_says: "external_cohort: true"
+    should_be: "维持 true。三个外部数据集是独立命名队列（武汉、UK Biobank、马来西亚 MeLODY），与本主张的开发集（Diabetic Retinopathy Progression Study，267 人）不是同一批数据的切分，也不是同一队列的另一次抽样，不属于'同院另一批数据'。"
+
+  - question: 7
+    fact: different_site
+    verdict: pass
+    field: "gating.evidence_basis.different_site"
+    quote: "First, the DeepDKD system was trained in a Chinese population followed by validation in multi-ethnic cohorts from Singapore, Malaysia, Australia, and the UK."
+    card_says: "different_site: true（中国/马来西亚/英国三个数据集）"
+    should_be: "维持 true，但卡的依据措辞不精确。这句 limitation 句列举的是**任务一**的外部队列国别（含新加坡、澳大利亚），不能直接当本主张的依据；本主张的支持在于其外部集中的 MeLODY（马来西亚）与 UKB（英国）确为非中国站点，而模型编码器训练于中国人群。另需注意：正文从未写出 Diabetic Retinopathy Progression Study 开发队列的具体机构/城市（细节在 appendix pp 4–5，卡自陈未获取），故'不同站点'是靠外部集国别成立的，不是靠开发-验证机构对照成立的。建议 note 改写为按外部集国别陈述。"
+
+  - question: 7
+    fact: prospective
+    verdict: pass
+    field: "gating.evidence_basis.prospective"
+    quote: "Second, some potential biases cannot be eliminated in the present retrospective study such as data distribution, selection bias, and unknown confounders."
+    card_says: "prospective: false（纵向分析基于随访数据，未见前瞻性设计声明）"
+    should_be: "维持 false，判断正确且是本卡最容易被高估的一格。摘要中 'prospective' 只修饰任务一的 DKD 筛查研究（'a prospective real-world study with 3 months' follow-up to evaluate the effectiveness of DeepDKD in screening DKD'），本主张对应的是 'a longitudinal analysis ... with 4·6 years' follow-up'，Methods 亦写作 'an analysis of retinal fundus images and clinical metadata in a community-based cohort with longitudinal data'——用既有随访数据回溯分析，无前瞻设计声明。"
+
+  - question: 7
+    fact: randomised
+    verdict: pass
+    field: "gating.evidence_basis.randomised"
+    quote: "Fourth, although two proof-of-concept clinical studies were conducted to evaluate the effectiveness of DeepDKD, further randomised controlled trials are needed to evaluate the impact of real-time system integration in routine workflow on patient outcomes."
+    card_says: "randomised: false"
+    should_be: "维持 false。作者自陈随机对照试验尚待开展，全文无随机分组、无对照臂。"
+
+  - question: 7
+    fact: deployed_in_care
+    verdict: pass
+    field: "gating.evidence_basis.deployed_in_care"
+    quote: "Second, we conducted an analysis of retinal fundus images and clinical metadata in a community-based cohort with longitudinal data to demonstrate the effectiveness of DeepDKD in distinguishing isolated diabetic nephropathy from NDKD."
+    card_says: "deployed_in_care: false"
+    should_be: "维持 false。本主张的临床研究是对既有队列数据的回溯性模型应用，模型输出未进入任何诊疗流程，无证据表明它改变了活检决策或治疗。注意 Discussion 中 'DeepDKD could be integrated into routine clinical workflow in the primary care setting' 一句属于任务一（DKD 筛查）的前瞻性研究，若被挪用来支持本卡即构成高估——本卡没有这么做。"
+
+  - question: 7
+    fact: endpoint_type
+    verdict: pass
+    field: "gating.evidence_basis.endpoint_type"
+    quote: "We aimed to compare the proportion of eGFR decline between the isolated diabetic nephropathy group and NDKD group identified by the metadata model, DeepDKD system, and combined model, to assess the discriminative ability of these three models."
+    card_says: "endpoint_type: model_metric（主结果为 AUC；4·6 年肾功能变化是佐证性纵向分析）"
+    should_be: "维持 model_metric。eGFR 下降比例虽是临床变量，但论文自陈其用途是 'to assess the discriminative ability of these three models'——两组分开的是预后可分性，不是模型介入后的结局改变（无干预臂、无前后对照），因此不构成 patient_outcome 类终点。卡的措辞'佐证性纵向分析'与原文自陈一致，未高估。"
+
+  - question: 7
+    fact: external_cohort（参考标准可核验性）
+    verdict: cannot_determine
+    field: "gating.evidence_basis.external_cohort / population.special"
+    quote: "The detailed diagnosis criteria of DKD, isolated diabetic nephropathy, and NDKD used in this study are in the appendix (p 6)."
+    card_says: "external_cohort: true；population.special: [\"biopsy-confirmed kidney disease\"]"
+    should_be: "判不出来。正文只对开发集写明活检（'267 patients with diabetes who had undergone kidney biopsies'），三个外部集（WHKDS/UKB/MeLODY）的 isolated diabetic nephropathy 与 NDKD 标签依据何种参考标准（是否同样为肾活检病理）全部落在 appendix p 6，而卡的 input_coverage 自陈 appendix 未获取。'external_cohort: true' 作为'存在独立外部数据集'这一事实成立，但'外部验证针对同一参考标准'这一层无法从已读材料核实——若外部集用的是非活检的临床判定，外部 AUC 0·733–0·844 的含义会与内部验证不同质。建议在 provenance 记下该未核项，不建议据此翻转 external_cohort。"

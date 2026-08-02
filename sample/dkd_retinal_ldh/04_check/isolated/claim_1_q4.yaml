@@ -1,0 +1,35 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:4   后端:claude-cli
+# 注:模型在正文里自报 context_isolated: true(已剥除)。它无从知道自己被怎么调起来,以上以程序判定为准。
+adversarial_check:
+  card: "<未在输入中给出路径；paper_id 10.1016/j.landig.2025.02.008, claim_1>"
+  findings:
+    - question: 4
+      verdict: pass
+      field: claimed_benefit
+      quote: "the integration of DeepDKD into clinical workflows of DKD screening could not only improve the screening sensitivity but also provide a fast point-of-care screening method for primary care or low-resource regions with limited laboratory resources"
+      card_says: "把 DeepDKD 并入 DKD 筛查流程可提高筛查敏感度，并在低资源基层优先挑出需做确证化验的患者"
+      should_be: "维持原样。该字段记的是论文设立的获益假设（§8 要求），不是实测结果；措辞与原文一一对应，未把 AUC/敏感度提升改写成患者结局改善。demonstrated_effect 亦全部为模型指标（AUC、敏感度），无 'reduced mortality' 式的越级动词；论文自己也在限制段承认结局未测：\"further randomised controlled trials are needed to evaluate the impact of real-time system integration in routine workflow on patient outcomes\"。"
+
+    - question: 4
+      verdict: issue
+      severity: low
+      field: demonstrated_effect
+      quote: "Using the high-sensitivity operating point selected from the internal validation dataset, the DeepDKD system could achieve both higher sensitivity (89⋅8% vs 66⋅3%, p<0⋅0001) and higher specificity (47⋅6% vs 38⋅8%, p=0⋅072) compared with the metadata model"
+      card_says: "前瞻研究中敏感度 89·8% vs 元数据模型 66·3%（p<0·0001）；内部验证 AUC 0·842，外部 0·791–0·826"
+      should_be: "claimed_benefit 有两半：①提高敏感度 ②在低资源基层**优先挑出**需做确证化验的患者。demonstrated_effect 只兑现了第一半。第二半（分流、省化验）对应的量是同一操作点上的特异度 47⋅6%，且与对照模型之差 p=0⋅072 不显著——即每 100 名非 DKD 者仍有约 52 人被推去做确证 ACR，'优先挑出'并未被证明。建议补：'同一高敏操作点特异度 47·6% vs 38·8%（p=0·072，不显著）'，使 demonstrated_effect 与 claimed_benefit 的两半一一对应，避免只读敏感度差值时把准确性提升读成流程获益。"
+
+    - question: 4
+      verdict: issue
+      severity: low
+      field: benefit_gap
+      quote: "Among two external validation datasets (NDSP and PUDM), the sensi tivity of DeepDKD (77⋅8% in both datasets) was substan tially higher than that of the urine dipstick protein test (19⋅8% vs 0%)."
+      card_says: "论文证明的是**筛查准确性**优于对照模型，未证明使用后患者肾功能结局改善或漏诊减少；'改善低资源可及性'为推论而非实测"
+      should_be: "'未证明……漏诊减少'与论文证据不符，方向是低估而非高估。论文在两个外部队列直接对比了**现行做法**（尿蛋白试纸）：DeepDKD 敏感度 77⋅8% vs 试纸 19⋅8%/0%；前瞻研究中在试纸阴性且 eGFR≥60 的人群里，\"98 patients could be diagnosed with DKD, supported by elevated ACR in further examinations\"，DeepDKD 检出其中 89⋅8%。即**检出层面的漏诊减少是被证明了的**，未被证明的是漏诊减少之后患者结局（肾功能、进展、死亡）是否改善。建议改为：'论文证明了相对现行试纸/元数据模型的检出率提升（含试纸阴性人群中的增量检出），未证明由此带来的患者肾功能结局改善；改善低资源可及性、节省确证化验为推论而非实测'。"
+
+  summary:
+    issues_high: 0
+    issues_medium: 0
+    issues_low: 2
+    cannot_determine: 0

@@ -1,0 +1,142 @@
+paper_overview:
+  paper_id: "A REINFORCEMENT LEARNING APPROACH TO EFFECTIVE FORECASTING OF PEDIATRIC HYPOGLYCEMIA IN DIABETES I PATIENTS: AN EXTENDED DE BRUIJN GRAPH（匿名双盲送审稿，材料中无 DOI、无期刊/会议名、无文件名）"
+  article_type: original_research
+  article_type_evidence:
+    quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+
+  submission_date:
+    value: null
+    basis: unavailable
+    quote: ""
+    note: "全文无 Received / Accepted 日期，也无文献检索截止日（本文无系统检索章节）。仅有 “Anonymous authors Paper under double-blind review”，不含日期。按阶梯第 4 档，不得用参考文献中最新年份（2023）反推投稿时间。"
+
+  cohorts:
+    - cohort_id: dbg_all_patients
+      purpose: model_development
+      source: "data from 15 pediatric diabetes patients（论文未给出机构名、地区、数据集名称、采集设备名）"
+      n: "15 patients / 22,291 BG level measurements（Table 1 逐患者 datapoints 求和恰为 22,291）"
+      retrospective: unknown
+      different_site_from_development: false
+      selection_basis: "论文未说明。正文对来源的全部交代只有 “This research employs data from 15 pediatric diabetes patients”：无招募机构、无连续入组说明、无纳入/排除标准、无伦理审批、无采集设备名。⚠️ 论文在 Background 中讨论 CGM 文献，但**从未说明本研究自己的数据是否来自 CGM**，Methods 只写 “patient temporal BG sensor readings” 与 “a general 15-minute sample rate”。阶段二不得把 CGM 写成本研究的输入。"
+      subgroup_restrictions: "Table 1 的 P1 在 Years With T1D 列写 “3 (T2D)”，表注写 “T2D stands for type 2 diabetes.”——即这批被称作 pediatric T1D 的 15 人中至少 1 人是 2 型糖尿病；该患者同时是低血糖占比 63.7%、BMI 50.3 的极端离群者。另：Table 1 年龄跨度 8–16 岁，无学龄前儿童。"
+      characteristics_locator: main_text_table
+      quote: "Comprehensive patient information is tabulated in Table 1."
+      status: explicit
+
+    - cohort_id: loocv_15
+      purpose: internal_validation
+      source: "同 dbg_all_patients 的同一批 15 名患者（留一交叉验证，无外部数据）"
+      n: "15 patients（每人轮流留出一次）；主结果参数为 k = 6, ρ = 0.2, x = 6，采用 adaptive pruning"
+      retrospective: unknown
+      different_site_from_development: false
+      selection_basis: "与 dbg_all_patients 同一批人，论文未说明来源。"
+      subgroup_restrictions: "评估并非覆盖全部数据点：图注写 “Gray data points are not used for evaluation, possibly due to the patient already being in a hypoglycemic state or gaps in the timeline.”；建模阶段另有 “Gaps exceeding 20 minutes are processed as separate sequences during modeling.” 阶段二引用本队列性能数字时必须一并带上「已处于低血糖状态者与断点被排除」。"
+      characteristics_locator: main_text_table
+      quote: "Our evaluation leveraged a leave-one-out cross-validation, with each patient’s data processed separately."
+      status: explicit
+
+    - cohort_id: ksweep_nopruning_15
+      purpose: internal_validation
+      source: "同一批 15 名患者，k 参数扫描分析（Table 3）"
+      n: "15 patients（同 loocv_15，但未剪枝）"
+      retrospective: unknown
+      different_site_from_development: false
+      selection_basis: "与 dbg_all_patients 同一批人。"
+      subgroup_restrictions: "“No pruning is performed on the graph.” 单列本条的唯一理由是：Table 3 与 Figure 2(right) 报告的是**同一批人上不同配置的两套数字**（例如 k=6 一行为 0.810/0.708/0.913/0.294，而图注给出的平均为 0.844/0.268/0.801/0.887），阶段二必须能指到唯一一条，不得混用。另注：Table 3 的最优 k=4 与主结果所用 k=6 不一致。"
+      characteristics_locator: main_text_table
+      quote: "We evaluated our model across various k parameters, which alter the model’s prediction window by modifying edge tuple length."
+      status: explicit
+
+    - cohort_id: graph_update_split
+      purpose: internal_validation
+      source: "同一批 15 名患者的重新划分：1 人扮演“新患者”，其余分三组建三张独立图"
+      n: "论文自相矛盾：方法句写单个患者（“A single patient was chosen”），结果句却写 “most patients”，无法确定实际评估了 1 人还是 15 人"
+      retrospective: unknown
+      different_site_from_development: false
+      selection_basis: "从同一批 15 人中划分而来；论文未说明“扮演新患者”的那一位是如何挑选的。"
+      subgroup_restrictions: "新患者数据被对半切开：前半当作 pre-treatment、后半当作 post-treatment，评估只在后半段上做。“pre-treatment / post-treatment” 是论文原词，但论文未说明这里发生了什么治疗——阶段二不得据此推断任何干预。人数矛盾见 n 字段：“Although most patients exhibited minor improvements and some major, a decline was noted in certain evaluation scores.”"
+      characteristics_locator: main_text_table
+      quote: "A single patient was chosen to represent a new patient, while the remaining dataset was divided into three groups to construct a database with three independent graphs."
+      status: explicit
+
+    - cohort_id: p21_case_demo
+      purpose: internal_validation
+      source: "单一患者 P21（来自同一批 15 人；Table 1 记 1014 datapoints, 9.27% Hypo., 20 study days, 14 岁, F）"
+      n: "1 patient"
+      retrospective: unknown
+      different_site_from_development: false
+      selection_basis: "论文未说明为何选 P21 作演示。"
+      subgroup_restrictions: "Figure 3 的时间线是单患者示例，不是群体结果；参数 k = 6, ρ = 0.2, x = 6。单列本条是因为 4.1 节关于“监督规则消除假警报”的全部直观证据只来自这一位患者。"
+      characteristics_locator: main_text_table
+      quote: "Our preliminary demonstration of the model on patient P21 is depicted in the upper timeline of Figure 3."
+      status: explicit
+
+  claim_candidates:
+    - claim_id: claim_1
+      summary: "扩展 de Bruijn 图模型可在儿童 1 型糖尿病患者发生低血糖前约 30 分钟发出预警（15 人留一交叉验证，272/282 次低血糖事件被预警，warning rate 96.45%）。模型监督规则、剪枝方式、k 取值均为同一主张下的消融，不另立主张。⚠️ 本文的全部对照都是自身变体（有/无监督、有/无剪枝、不同 k；k=2 被论文自称等价于 Markov chain），未与任何已发表方法或临床现行做法比较。"
+      importance: primary
+      condition: "hypoglycemia in pediatric type 1 diabetes (T1D)"
+      population: "children with type 1 diabetes (T1D)"
+      task: "forecast when a hypoglycemic episode will subsequently occur within 30 minutes from patient temporal BG sensor readings"
+      separate_claim_evidence:
+        quote: "In total, our model preemptively issued warnings for 272 hypoglycemia instances and missed 10, achieving a 96.45% warning rate."
+      uses_cohorts: [dbg_all_patients, loocv_15, ksweep_nopruning_15, p21_case_demo]
+
+      reference_standard:
+        label: "真值来自**与模型输入同一路** BG 传感器读数：读数低于 70 mg/dL 即判为低血糖事件，评估时以“未来最近一次低血糖发生时刻 h”为准，h−t<1 小时且发出警报即计为正确。论文未使用任何独立参考标准（无静脉血浆血糖、无症状记录、无临床判读、无登记库编码）。“真值与输入同源”这一判断是我们的归纳，故标 inferred。"
+        quote: "The hypoglycemia threshold is set at 70 mg/dL."
+        status: inferred
+      current_practice:
+        label: "论文自陈的现行做法：低血糖自我监测 + 碳水计数 + 胰岛素剂量调整；引言另提及葡萄糖传感器与自动胰岛素输注系统（automated insulin delivery systems）内置的预测算法。"
+        head_to_head: false
+        quote: "Self-Monitoring of hypoglycemia is a key component of diabetes care, along with carbohydrate counting and adjusting insulin dose."
+        status: explicit
+
+    - claim_id: claim_2
+      summary: "同一张图数据库可低成本更新以适配新患者：为数据有限的新患者从既有图库中选出最匹配的图并增量更新，可提升其预测表现（O(n) 更新，无需重建图）。单列本主张的理由是它有自己的队列划分、自己的对照（有更新 vs 无更新）与自己的终点（balanced accuracy 差值）。⚠️ 其图数据库由 claim_1 同一批 15 人构建；若下游认为两者不可分，应合并进 claim_1，但合并时必须保留 Figure 6 与 Figure 2(right) 的数字归属区分。"
+      importance: secondary
+      condition: "hypoglycemia in pediatric type 1 diabetes (T1D)"
+      population: "a new patient with limited data"
+      task: "graph update — integrating new patient data into a pre-built graph database and fine-tuning the best-fit model to that patient"
+      separate_claim_evidence:
+        quote: "Beyond standard leave-one-out testing, we explored graph updated evaluations to demonstrate the potential of dBGs."
+      uses_cohorts: [graph_update_split]
+
+      reference_standard:
+        label: "与 claim_1 相同：同一路 BG 传感器读数低于 70 mg/dL 为真值。本节未单独定义参考标准，此处为沿用，故标 inferred。"
+        quote: "Let h be the start of the closest hypoglycemia instance in the future. If $h - t < 1$ hour and an alert is issued at instance t, then it’s deemed a correct prediction."
+        status: inferred
+      current_practice:
+        label: null
+        head_to_head: false
+        quote: ""
+        status: absent
+
+  input_coverage:
+    - {part: main_text,     included: true,  note: "正文、Table 1/2/3、全部图注均已给到。但正文中的公式与算法伪代码被 MinerU 解析为 LaTeX 片段并有交错（Algorithm 1/2 两栏被逐行交织），引用这些位置时无法给出连续片段，按硬约束 3 只能标 not_extracted 或 inferred。"}
+    - {part: appendix,      included: false, note: "论文全文未出现附录，也未出现任何指向附录的指路句。此处的 false 是**不适用**，不是材料缺失。"}
+    - {part: supplementary, included: false, note: "论文全文未提及补充材料。此处的 false 是**不适用**，不是材料缺失。"}
+
+  unavailable_content:
+    # 本文没有附录/补充材料，但有四处**结果只存在于图像文件中**、纯文本里取不到数值。
+    # 对阶段二而言效果等同于「材料未给全」：以下内容只能标 not_extracted，不得用别处数字代填。
+    - part: figure_2_right_per_patient_metrics
+      pages: null
+      contains: "15 名患者逐人的 Balanced Accuracy / Precision / Sensitivity / Specificity 条形图。纯文本中只有图注给出的四项**平均值**（0.844, 0.268, 0.801, 0.887），逐患者数值、离散程度、置信区间均不可得。"
+      affects_claims: [claim_1]
+      quote: "The cross-validation results for each patient are detailed in Figure 2 (right)."
+    - part: figure_4_lead_time_distribution
+      pages: null
+      contains: "全部患者每次低血糖事件的提前预警时长分布。30 分钟这一核心时效声明的量化依据全在此图内；纯文本只有“majority”一词，无中位数、无分布、无区间。"
+      affects_claims: [claim_1]
+      quote: "An examination of each hypoglycemia onset in our dataset reveals the majority of alerts were generated 30 minutes prior, as depicted in Figure 4."
+    - part: figure_5_supervision_and_pruning_ablation
+      pages: null
+      contains: "有/无监督规则、以及不同剪枝方式下的评估分数对比。正文只给了方向性描述（敏感性略降、特异性与精确度上升），无任何数值。"
+      affects_claims: [claim_1]
+      quote: "Figure 5 highlights the impact of supervision and the pruning method on our final evaluation score."
+    - part: figure_6_graph_update_results
+      pages: null
+      contains: "图更新前后的 Balanced accuracy 及百分比差值。claim_2 的全部量化证据都在此图内，纯文本无任何数值。"
+      affects_claims: [claim_2]
+      quote: "Figure 6 enumerates the outcomes with and without partial updates."

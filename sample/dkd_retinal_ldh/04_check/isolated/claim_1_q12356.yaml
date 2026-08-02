@@ -1,0 +1,87 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:1,2,3,5,6   后端:claude-cli
+# 注:模型在正文里自报 context_isolated: false(已剥除)。它无从知道自己被怎么调起来,以上以程序判定为准。
+adversarial_check:
+  card: "sample/dkd_retinal_ldh/claim_card_claim_1.yaml"
+  findings:
+    - question: 1
+      verdict: pass
+      field: "care_setting / future_intent / deployment_claim_level"
+      quote: "from a primary care centre in Shanghai, China (without ACR tests) to evaluate the effectiveness of integrating DeepDKD into the routine clinical practice for screening and detecting DKD"
+      card_says: "care_setting: primary_care；future_intent 单列'随更便宜的手机眼底相机普及…可作为同时筛查眼病与肾病的简易实时工具'；deployment_claim_level: 'proof-of-concept 前瞻真实世界研究（3 个月随访），非部署'"
+      should_be: "无需改。作者的未来设想（'the future development of potentially even cheaper mobile phone-based fundus cameras, our DeepDKD system could be adopted…'）被正确隔离在 future_intent，未混进 care_setting / intended_use；primary_care 有已完成的前瞻子研究实地支持，不是愿景。deployment_claim_level 也如实写了'非部署'。"
+
+    - question: 2
+      verdict: pass
+      field: "care_setting"
+      quote: "First, we conducted a prospective real-world study on patients with type 2 diabetes"
+      card_says: "care_setting: primary_care"
+      should_be: "无需改。本卡的 primary_care 不是从数据采集地推出来的：开发/内部数据来自上海糖尿病预防与诊治整合系统、外部十个数据集含 UK Biobank/SEED/NICOLA 等流行病学队列，但卡填 primary_care 的依据是论文**实际在基层医疗中心跑了一个前瞻使用研究**（'from a primary care centre in Shanghai, China'），属实际使用场景而非数据来源场景。注意反向风险：卡未把 UK Biobank 等研究队列的'人群健康筛查'场景写进 care_setting，处理正确。"
+
+    - question: 3
+      verdict: pass
+      field: "comparator"
+      quote: "Among two external validation datasets (NDSP and PUDM), the sensi tivity of DeepDKD (77⋅8% in both datasets) was substan tially higher than that of the urine dipstick protein test (19⋅8% vs 0%)."
+      card_says: "comparator: 'metadata model（XGBoost 临床元数据模型）、尿蛋白试纸'"
+      should_be: "无需改。除算法对照（metadata model）外，论文确实与**现行低资源基层临床做法**——尿蛋白试纸——做过头对头比较，卡已把它写进 comparator，没有用算法对照掩盖临床对照缺失。可补强（非缺陷）：demonstrated_effect 只引了 vs metadata model 的 89⋅8%/66⋅3%，未引 vs 试纸的 77⋅8% vs 19⋅8%/0%，而后者才是临床对照的实测值；且试纸对照只在 2/10 个回顾性外部数据集里做过，前瞻研究纳入的全是试纸阴性者，无法构成前瞻头对头。"
+
+    - question: 5
+      verdict: issue
+      severity: medium
+      field: "care_setting + evidence_stage / evidence_basis.external_cohort"
+      quote: "Ten external validation cohorts (the China National Diabetic Chronic Complications Study cohort, the Nicheng Diabetes Screening Project [NDSP] cohort, the Peking Union Diabetes Management [PUDM] cohort, the Eastern China Health Management cohort, the Chinese University of Hong Kong-Sight-Threatening Diabetic Retinopathy cohort, the Singapore Epidemiology of Eye Diseases study cohort, the UK Biobank [UKB] cohort, the Multiethnic Lifestyle, Obesity, and Diabetes Registry in Malaysia [MeLODY] cohort, the Longitudinal Study of Ageing cohort, and the Australian Eye and Heart Study cohort) were collected (65 406 participants)."
+      card_says: "gating 同时给出 care_setting: primary_care 与 evidence_stage: C2（引文为十个多族裔外部验证数据集），evidence_basis.different_site: true 注释'中国/新加坡/马来西亚/澳大利亚/英国十个数据集'"
+      should_be: "这是 Q5 点名的典型混合：**场景取自 325 人的单中心前瞻子研究，性能与外部性取自十个非基层队列**（UKB / SEED / NICOLA 是人群流行病学或老龄队列，ECHM 是健康管理体检队列，CUHK-STDR 是三级眼科威胁视力 DR 队列）。合起来读会得到'一个在基层场景下经十国队列外部验证的筛查系统'——论文里不存在这个研究。建议在 gating 注释或 provenance 里显式写明：外部验证队列**均非基层医疗场景**，基层证据仅来自 n=325 的单中心前瞻子研究。"
+
+    - question: 5
+      verdict: issue
+      severity: low
+      field: "demonstrated_effect / target_population"
+      quote: "In the first real-world prospective study (figure 4), among 325 patients with eGFR of60 mL/min per 1⋅73m<sup>2</sup> or more and negative urine dipstick protein at baseline, 98 patients could be diagnosed with DKD, supported by elevated ACR in further examinations."
+      card_says: "demonstrated_effect: '前瞻研究中敏感度 89·8% vs 元数据模型 66·3%（p<0·0001）；内部验证 AUC 0·842，外部 0·791–0·826'；target_population: '糖尿病患者；前瞻研究为 2 型糖尿病人群'"
+      should_be: "89⋅8% 这个敏感度不是在'糖尿病患者'里测的，而是在**eGFR≥60 且试纸阴性的高度受限亚群**（325 人，患病率 98/325）里测的，与 AUC 0⋅842 / 0⋅791–0⋅826 所在的队列不可比。三个数字并列一行会读成同一人群的连续证据。限制条件目前只写在不参与门控的 clinical_context 里，建议在 demonstrated_effect 里就地标注人群限制；target_population 也应写明前瞻子研究额外排除了 eGFR<60 与试纸阳性者。"
+
+    - question: 6
+      verdict: issue
+      severity: medium
+      field: "care_setting (status: explicit)"
+      quote: "Thus, substantial efforts are devoted to developing rapid, simple, point-of-care tests to improve DKD screening in primary care settings."
+      card_says: "status: explicit，quote 为 'substantial efforts are devoted to developing rapid, simple, point-of-care tests to improve DKD screening in primary care settings'，locator: introduction"
+      should_be: "该引文是 Introduction 里对**整个领域现状**的陈述（'领域正在努力开发基层可用的即时检测'），既不是 DeepDKD 的场景，也不是本研究的场景，支撑不了 status: explicit。字段取值 primary_care 本身没错，但必须换成直接指向本系统的原文，例如 'from a primary care centre in Shanghai, China (without ACR tests) to evaluate the effectiveness of integrating DeepDKD into the routine clinical practice for screening and detecting DKD'（Methods，proof-of-concept clinical studies 段）。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "comparator (status: explicit)"
+      quote: "In the prospective study, compared with the metadata model, DeepDKD could detect DKD with higher sensitivity (89⋅8% vs 66⋅3%, p<0⋅0001)."
+      card_says: "comparator 值含两项（metadata model、尿蛋白试纸），但只给了一条 quote，且该 quote 只覆盖 metadata model"
+      should_be: "多值字段必须每一项都有可定位原文。'尿蛋白试纸'这一项目前无引文支撑（虽然论文确实有：'the sensi tivity of DeepDKD (77⋅8% in both datasets) was substan tially higher than that of the urine dipstick protein test (19⋅8% vs 0%)'，Results）。补第二条引文，或把 quote 字段改成列表。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "population.age_group (status: inferred, note)"
+      quote: "51.53 (11·07)"
+      card_says: "note: '论文无显式年龄纳入标准；主文表 1 各数据集平均年龄 57.11–66.19 岁（SD 8–10），据此推断成人'"
+      should_be: "note 陈述的依据与表 1 不符：PUDM 列的平均年龄为 51.53（SD 11.07），SD 最大到 13.43，故真实范围是约 51.5–66.2 岁、SD 8–13，而非 note 写的 57.11–66.19 / SD 8–10。推断结论（adult）不受影响，但 inferred 的价值全在 note 的可核查性上，写错依据等于没有依据。另外论文有一句可直接引用的、支持'无年龄纳入标准'的原文：'We did not apply any other inclusion or exclusion criteria to the participants or images included in the present study.'，应补进 note 或作为 quote。"
+
+    - question: 6
+      verdict: issue
+      severity: low
+      field: "condition.primary.quote / clinical_task.quote（逐字保真）"
+      quote: "We aimed to develop and validate an artificial intelligence (AI) deep learning system to detect DKD and isolated diabetic nephropathy from retinal fundus images."
+      card_says: "condition.primary.quote 写作 'an artiﬁcial intelligence (AI) deep learning system…'（ﬁ 连字）；clinical_task.quote 写作 'a prospective real-world study with 3 months follow-up…'"
+      should_be: "两处引文在 provenance.source 指定的 MinerU 解析产物里都不能逐字定位：该产物此处是 'artificial'（无 ﬁ 连字，同一产物在别处确实保留了 'fltration'、'ofless' 等伪影，故此处差异不是伪影保留），且摘要原文是 '3 months’ follow-up'（有所有格撇号），卡里丢了撇号。按硬约束 3，引文必须与所引解析产物逐字一致，请照抄或改标所引产物。"
+
+    - question: 6
+      verdict: cannot_determine
+      field: "intended_user"
+      quote: "ACR=albumin-to-creatine ratio. DKD=diabetic kidney disease eGFR=estimated glomerular filtration rate. PCP=primary care physician."
+      card_says: "intended_user: '基层医生（PCP）'，无 provenance 条目、无 status、无 locator"
+      should_be: "判不出。主文里 'PCP' 只出现在图 4 的缩写表中，其展开为 'primary care physician' 说明流程图里确有 PCP 角色，但流程图本身是图片、在本次解析产物中不可读；前瞻研究的方法学在 appendix pp 11–12，而 input_coverage 已声明 appendix 未获取。因此无法判断'由基层医生使用'是论文明写、还是抽卡器从场景推出来的。取到 appendix 或图 4 的可读版本前，建议至少补 status: inferred + note 说明依据仅为图注缩写；不要按 explicit 处理。"
+  summary:
+    issues_high: 0
+    issues_medium: 2
+    issues_low: 4
+    cannot_determine: 1

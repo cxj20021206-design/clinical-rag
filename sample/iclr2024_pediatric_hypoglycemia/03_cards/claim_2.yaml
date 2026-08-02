@@ -1,0 +1,258 @@
+claim_card:
+  paper_id: "A REINFORCEMENT LEARNING APPROACH TO EFFECTIVE FORECASTING OF PEDIATRIC HYPOGLYCEMIA IN DIABETES I PATIENTS: AN EXTENDED DE BRUIJN GRAPH（匿名双盲送审稿，材料中无 DOI、无期刊/会议名、无文件名）"
+  claim_id: claim_2
+  # submission_date：论文全文无 Received / Accepted 日期，也无文献检索截止日；
+  # 仅有 "Anonymous authors Paper under double-blind review"，不含日期。
+  # 不得用参考文献中最新年份反推投稿时间，故为 null。
+  # ↓ 以下三项由 `extract.py stamp-date` 机械补入，不是抽卡产物。
+  #   论文自身无 Received/Accepted/检索截止日（阶段一正确停在第 4 档），
+  #   日期来自 venue_deadlines.yaml 这一**论文之外**的运维元数据。
+  #   校验时会拿它与该表逐字比对，手工改这里会直接报错。
+  #   上方抽卡时写的「这会让 validate_card 硬报错」一段保留作历史——
+  #   那时第 5 档还不存在，其描述在当时是对的。
+  # ↓ 由 `extract.py stamp-date` 依 venue_deadlines.yaml 订正：
+  #   2023-09-22 → 2023-09-23（iclr 2024 的 abstract_deadline）。
+  #   旧值同样取自该表而非论文，故随表更新，不算改动抽卡产物。
+  submission_date: "2023-09-23"
+  submission_date_source:
+    basis: venue_deadline
+    venue: ICLR
+    year: 2024
+    note: >-
+      iclr 2024 的 abstract_deadline。取更早的一档作保守下界：日期越早，被判 predates=true 的
+      指南越少，越不会拿作者当时看不到的标准要求他。
+      粗糙之处：这是全会议一个常数，不是本篇各自的投稿时刻。
+  region: null                      # 全文无国家、地区、机构、数据集名称
+
+  cohorts:
+    - cohort_id: graph_update_split
+      purpose: internal_validation
+      n: "论文自相矛盾：方法句写单个患者（“A single patient was chosen”），结果句却写 “most patients”，无法确定实际评估了 1 人还是 15 人"
+      subgroup_restrictions: "新患者数据被对半切开：前半当作 pre-treatment、后半当作 post-treatment，评估只在后半段上做。“pre-treatment / post-treatment” 是论文原词，但论文未说明这里发生了什么治疗——本卡不据此推断任何干预。"
+      characteristics_locator: main_text_table
+
+  gating:
+    condition:
+      primary: {label: "hypoglycemia in type 1 diabetes", codes: {}}
+      breadth: narrow
+      scope_type: disease
+      qualifiers: {}
+      comorbid_context: []
+      excluded: []
+    population:
+      age_group: child
+      age_range_text: null            # 论文正文没有任何年龄区间表述，也无年龄纳入标准；
+                                      # 唯一的年龄信息在 Table 1 的 Age 列（见 provenance note）
+      special: ["new_patient_with_limited_data"]
+    care_setting: null                # 论文从未说明模型将被用在哪个照护场所（见 provenance）
+    clinical_task: prognostication
+    evidence_stage: null              # 不由本层填，交程序按 evidence_basis 映射
+    evidence_basis:
+      clinical_claim_made: true
+      external_cohort: false
+      different_site: false
+      prospective: false
+      randomised: false
+      deployed_in_care: false
+      endpoint_type: model_metric
+    study_design: []
+    intended_context: clinical_care
+    finding_direction: mixed
+
+  descriptive:
+    intended_use: "Update a pre-built graph database of prior patients with a new patient's data: identify the best-fit model in the database and incrementally update it (new edges added for non-existent tuples, existing edge weights incremented) to fine-tune hypoglycemia forecasting for that patient, without total graph reconstruction."
+    target_population: "A new patient with limited data whose blood glucose sensor readings are added to a graph database built from prior pediatric diabetes patients; in this study a single patient drawn from the same 15-patient dataset was chosen to represent such a new patient."
+    intended_user: null               # 论文全文未说明由谁使用、警报交给谁
+    model_input: "Patient temporal BG sensor readings discretized into a 15-character alphabet (12 characters for normoglycemia, two for hypoglycemia, one for hyperglycemia); for the update, the first half ('pre-treatment') of the new patient's readings."
+    model_output: "A binary alert for an imminent hypoglycemic episode, issued when the graph-derived probability of reaching a hypoglycemia node exceeds the threshold parameter; for this claim the deliverable is the updated best-fit graph that issues those alerts for the new patient."
+    clinical_decision_affected: null   # 论文未描述警报触发什么处置
+    comparator: "同一批评估数据（被选患者数据的后半段）上『不做图更新』的同一模型 —— Figure 6 的 with / without partial updates 两栏。这是本卡唯一一个报告过并列数字的对照；论文未与任何已发表方法、也未与任何临床现行做法比较。"
+    reference_standard: "与模型输入同一路 BG 传感器读数：读数低于 70 mg/dL 判为低血糖事件；评估以未来最近一次低血糖发生时刻 h 为准，h−t<1 小时且发出警报即计为正确。论文未使用任何独立参考标准（无静脉血浆血糖、无症状记录、无临床判读）。"
+    current_practice: null
+    secondary_tasks: []
+    claimed_benefit: "The dBG model excels in its ease of update, eliminating the need for total graph reconstruction: a graph database constructed from prior patients facilitates the seamless integration of new patient data, which aids in the pinpointing and enhancement of the most compatible model from the database, further fine-tuning its applicability to subsequent patients, all accomplished with an O(n) time complexity."
+    demonstrated_effect: "效应量**未取到**：Figure 6 是本主张唯一的量化证据（图更新前后的 balanced accuracy 与百分比差值），该图在本次材料里只有图像、纯文本无任何数值，故提升幅度、下降幅度、涉及多少人均不可得（not_extracted，非『论文没写』）。纯文本可取到的只有方向性描述：多数出现小幅提升、部分出现较大提升，同时有部分评估分数下降。评估只在被选患者数据的后半段上进行（前半段用于更新本身）。主张的另一半『O(n) 低更新成本』只有复杂度论断，全文无任何运行时间或内存实测。"
+    benefit_gap: |
+      ① 『低更新成本 / O(n)』只有复杂度论断，全文无任何运行时间、内存或与重建整图的对比实测；
+      ② 『提升新患者的预测表现』的量化证据全部落在 Figure 6 图像内，数值不可得，且论文自陈
+         "a decline was noted in certain evaluation scores" —— 受益侧与代价侧都没有可核对的量；
+      ③ 方法句写单一患者、结果句写 most patients，被评估的人数无法确定，"most patients" 这一
+         措辞缺少可核实的分母；
+      ④ 主张里的 "enhancing patient care"、"suitable for dynamic environments like hospitals"
+         没有任何与照护相关的测量：无临床流程终点、无患者结局、无使用者研究；
+      ⑤ 更新与评估同出一位患者的两半数据，无独立测试集、无外部数据、无跨机构验证。
+    future_intent: "扩大数据集、纳入更多样的患者群体与更长的血糖监测后，作者预期 dBG 的临床适用性会提升，并预期在多种临床场景中的部署会『越来越可行』（will become increasingly viable）——这是设想，不是本文做到的。"
+    deployment_claim_level: "Retrospective offline demonstration of potential on a re-split of a single 15-patient dataset; no prospective evaluation, no silent deployment, no clinical use."
+    clinical_context: |
+      - 图数据库由与"新患者"同一批 15 名患者中其余人的数据构成（分三组建三张独立图），
+        不是独立来源；"新患者"本人也来自这 15 人，论文未说明如何挑选。
+      - "pre-treatment / post-treatment" 是论文原词，但论文从未说明这中间发生了什么治疗；
+        本卡不据此推断任何干预。
+      - 人数矛盾：4.4 的方法句写 "A single patient was chosen"，同段结果句却写 "most patients"，
+        实际被评估的人数无法从材料确定。
+      - Table 1 中 P1 的 Years With T1D 列写作 "3 (T2D)"，表注写明 T2D 指 2 型糖尿病 ——
+        构成本卡图数据库与"新患者"来源的这 15 人中至少 1 人被标为 2 型糖尿病；
+        论文未说明该患者在本节实验中扮演什么角色。
+      - 论文未说明数据来自哪个机构、地区或采集设备，也从未说明本研究自己的数据是否来自 CGM
+        （Background 讨论的 CGM 文献是他人工作，Methods 只写 "patient temporal BG sensor readings"）。
+      - 本字段不参与任何门控。
+
+  provenance:
+    source: "sample/iclr2024_pediatric_hypoglycemia/01_parse/kP6X9QBF1t/auto/kP6X9QBF1t_content_list.json"
+    extraction: claude_llm_pipeline_v0
+    input_coverage:
+      - {part: main_text, included: true, note: "正文、Table 1/2/3、全部图注均已给到。正文中的公式与算法伪代码被解析为 LaTeX 片段并有交错（Algorithm 1/2 两栏被逐行交织），引用这些位置时无法给出连续片段。"}
+      - {part: appendix, included: false, note: "论文全文未出现附录，也无指向附录的指路句。此处的 false 是**不适用**，不是材料缺失。"}
+      - {part: supplementary, included: false, note: "论文全文未提及补充材料。此处的 false 是**不适用**，不是材料缺失。"}
+    unavailable_content:
+      - part: figure_6_graph_update_results
+        pages: null
+        contains: "图更新前后的 Balanced accuracy 及百分比差值。本主张的全部量化证据都在此图内，纯文本无任何数值。"
+        affects_claims: [claim_2]
+
+    fields:
+      condition.primary:
+        status: inferred
+        quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+        locator: "3.1 DATA, TRANSFORMATION, AND DISCRETIZATION 第 1 句"
+        cohort_id: graph_update_split
+        note: "正文对本研究人群的唯一交代只写 “pediatric diabetes patients”，未在正文句子里写 type 1；T1D 的限定来自 Table 1 的列头 “Years With T1D”（该表同时是本队列的 characteristics_locator）。低血糖是被预测的目标事件（见 clinical_task 与 reference_standard 条目）。label 用 “hypoglycemia in type 1 diabetes” 而不带 pediatric，是因为儿科限定已由 population.age_group 承担。"
+      condition.breadth:
+        status: inferred
+        locator: "全文"
+        note: "本文只针对低血糖这一个事件建模与评估，无多标签、无跨病种评测，故 narrow。判据即 condition.primary 条目的引文与 §3/§4 的全部评估内容，不重复引用。"
+      condition.scope_type:
+        status: inferred
+        locator: "全文"
+        note: "主张针对一个具体病种下的具体事件（T1D 患者的低血糖），不是跨专科的流程改造，也不是人群健康指标，故 disease。"
+      population.age_group:
+        status: inferred
+        locator: "Table 1，Age 列"
+        cohort_id: graph_update_split
+        note: "论文无任何年龄纳入标准，正文亦无年龄区间表述。Table 1 的 Age 列取值为 8、11、11、13、13、14、14、14、14、14、15、15、16、16、16，最小 8、最大 16，全部落在儿科段内（跨 child 与 adolescent），按 SPEC §5 取更宽的 child。本队列的“新患者”是从这 15 人中选出的，论文未说明是哪一位，故无法给出被评估者本人的年龄。表格在解析产物中是 HTML 行列，取不到连续片段，按硬约束 3 不拼接，故本条不给 quote。"
+      population.special:
+        status: explicit
+        quote: "Further, since this is a lazy structure, a new patient with limited data find the best set of graphs and then modify them to suit her needs."
+        locator: "1 INTRODUCTION，contributions 段末"
+        cohort_id: null
+        note: "该句描述的是**意向使用人群**（数据有限的新患者），不是任何队列的实测特征，故 cohort_id 为 null。取值用的是论文原词的下划线形式，未加入论文没有的限定。"
+      care_setting:
+        status: absent
+        locator: "已查 ABSTRACT / 1 INTRODUCTION / 3 METHODS（含 3.3 GRAPH UPDATE）/ 4 RESULTS（含 4.4）/ 5 SUMMARY AND FUTURE WORK"
+        note: "全文没有一句说明模型将被用在哪个照护场所：无门诊、无病房、无家庭、无院前的描述，数据来源场所也未交代。唯一出现场所词的是 5 SUMMARY 里 “dynamic environments like hospitals” 与 “deployment of dBG across diverse clinical settings will become increasingly viable” —— 前者是对更新成本的适用性断言、后者是将来时，两句均已记入 descriptive.future_intent 与 evidence_basis.clinical_claim_made，按规则⑬不作为 care_setting 的依据。"
+      clinical_task:
+        status: inferred
+        quote: "At a given moment t, we assess the possible future hypoglycemic values."
+        locator: "4 RESULTS 第 1 段"
+        note: "论文的任务是在当前时刻判断未来是否会发生低血糖事件，映射到本项目词表即 prognostication；prognostication 是我们的枚举词，论文里不存在，故标 inferred。本卡（图更新）沿用同一评估定义，4.4 未另立终点。"
+      intended_context:
+        status: inferred
+        locator: "1 INTRODUCTION / 5 SUMMARY AND FUTURE WORK"
+        note: "论文未声明用途限于研究或临床试验，也没有任何试验富集的表述；其目标始终按临床照护框定（改善临床预测、增强 patient care），故填 clinical_care。依据句已用于 evidence_basis.clinical_claim_made 条目，不重复引用。需提请注意：这是**意图**层面的判断，本文没有任何已完成的临床使用（见 deployed_in_care）。"
+      finding_direction:
+        status: explicit
+        quote: "a decline was noted in certain evaluation scores."
+        locator: "4.4 GRAPH UPDATE EVALUATION"
+        cohort_id: graph_update_split
+        note: "同一句的受益侧片段（“Although most patients exhibited minor improvements and some major,”）单独作为 descriptive.demonstrated_effect.qualitative 的出处。两侧并存 → mixed。"
+      evidence_basis.clinical_claim_made:
+        status: explicit
+        quote: "Unlike traditional machine learning techniques, dBG’s low update cost makes it particularly suitable for dynamic environments like hospitals, enhancing patient care by enabling timely and precise updates."
+        locator: "5 SUMMARY AND FUTURE WORK"
+        note: "该句正是围绕本卡主张（低更新成本）作出的临床效用断言：suitable for hospitals + enhancing patient care，故 clinical_claim_made=true。注意该断言在本文没有任何对应测量（见 benefit_gap ④）。"
+      evidence_basis.external_cohort:
+        status: inferred
+        quote: "while the remaining dataset was divided into three groups to construct a database with three independent graphs."
+        locator: "4.4 GRAPH UPDATE EVALUATION"
+        cohort_id: graph_update_split
+        note: "图数据库来自**同一个数据集里其余患者**的数据，被更新与被评估的“新患者”也来自同一数据集。同一数据集的另一次划分不算外部队列，故 false。全文没有出现第二个数据来源。"
+      evidence_basis.different_site:
+        status: inferred
+        locator: "已查全文（3.1 数据段、4 RESULTS、5 SUMMARY）"
+        note: "论文没有任何机构名、地区、数据集名称或采集设备名，因此不存在“来自不同机构/地区”的原文说明；按规则⑨从严，false。3.1 对数据来源的全部交代那一句已用于 condition.primary 条目，不重复引用。"
+      evidence_basis.prospective:
+        status: inferred
+        quote: "The selected patient’s data was bifurcated; the initial half symbolized pre-treatment data, and the latter half, post-treatment data."
+        locator: "4.4 GRAPH UPDATE EVALUATION"
+        cohort_id: graph_update_split
+        note: "评估方式是把**已经采集好的**记录对半切开、在后半段上离线重放，不是按预定方案前瞻采集，故 false。论文全文未出现任何前瞻性数据采集、预注册或预设分析计划的描述；论文也未自称回顾性（研究设计属性在本文是缺失的）。"
+      evidence_basis.randomised:
+        status: inferred
+        locator: "已查全文"
+        note: "全文无随机分配、无对照组、无试验注册号。本卡的对照是同一批评估数据上『有更新 / 无更新』两次运行（见 descriptive.comparator 条目），属算法自身消融，不构成随机对照，故 false。"
+      evidence_basis.deployed_in_care:
+        status: inferred
+        locator: "已查全文"
+        note: "没有任何证据表明模型输出被交给医生、患者或护理流程：无警报下发对象、无处置记录、无使用者、无现场部署描述；全部评估都是对既有数据的离线计算，故 false。"
+      evidence_basis.endpoint_type:
+        status: explicit
+        quote: 'If $h - t < 1$ hour and an alert is issued at instance t, then it’s deemed a correct prediction.'
+        locator: "4 RESULTS 第 1 段（LaTeX 片段为解析产物原样）"
+        cohort_id: graph_update_split
+        note: "终点是“预测是否正确”的分类指标（本卡具体为 balanced accuracy 及其百分比差值），既非临床流程终点也非患者结局，故 model_metric。"
+      descriptive.intended_use:
+        status: explicit
+        quote: "A graph database, constructed from prior patients exhibiting diverse BG traits, facilitates the seamless integration of new patient data."
+        locator: "3.3 GRAPH UPDATE"
+      descriptive.target_population:
+        status: explicit
+        quote: "A single patient was chosen to represent a new patient"
+        locator: "4.4 GRAPH UPDATE EVALUATION"
+        cohort_id: graph_update_split
+        note: "同句后半段（数据库如何构成）单独作为 evidence_basis.external_cohort 的出处。"
+      descriptive.model_input:
+        status: explicit
+        quote: "We begin with the de Bruijn graph (dBG) (extending the definition of Markov Decision Processes) by creating an alphabet over patient temporal BG sensor readings and integrate an input window reflecting numerical intervals, rather than using a single state context to make a prediction as has been traditionally done."
+        locator: "1 INTRODUCTION，contributions 段"
+        note: "论文对输入的唯一定性表述是 “patient temporal BG sensor readings”；**论文从未说明本研究的数据是否来自 CGM**，故字段里不写 CGM。字母表构成（12/2/1，共 15 个字符）见 3.1 末段，属模型设计而非队列特征。"
+      descriptive.model_output:
+        status: explicit
+        quote: "Our focus is on predicting a hypoglycemic episode for the patient."
+        locator: "3.2.2 MAKING PREDICTIONS"
+        note: "输出的具体形式是式 (1) 的二值警报 F_alert（概率超过阈值 ρ 时为 True）；该式在解析产物里是 LaTeX 图块，取不到连续片段，故不引用，仅在字段文本里描述。"
+      descriptive.comparator:
+        status: explicit
+        quote: "Figure 6 enumerates the outcomes with and without partial updates."
+        locator: "4.4 GRAPH UPDATE EVALUATION"
+        cohort_id: graph_update_split
+        note: "这是全文唯一一处对本主张给出并列数字的对照（同一批评估数据上有更新 vs 无更新）。论文没有与任何已发表方法或临床现行做法的并列数字，故 comparator 不写它们。"
+      descriptive.reference_standard:
+        status: inferred
+        quote: "The hypoglycemia threshold is set at 70 mg/dL."
+        locator: "3.1 DATA, TRANSFORMATION, AND DISCRETIZATION 第 2 句"
+        note: "4.4 未单独定义参考标准，此处为沿用全文定义，故 inferred。真值与模型输入**同源**（同一路 BG 传感器读数），这一判断是我们的归纳：论文只写了阈值与正确性判定规则（后者见 evidence_basis.endpoint_type 条目的引文），没有任何独立参考标准。"
+      descriptive.current_practice:
+        status: absent
+        locator: "已查 1 INTRODUCTION / 3.3 / 4.4 / 5"
+        note: "论文没有为“把新患者数据并入模型”这一操作指出任何现行替代做法（例如重建整图、重新训练、或临床上现有的个体化流程）。Introduction 里的自我监测、碳水计数、胰岛素剂量调整是低血糖管理的一般背景，主语不是本卡这个操作，按硬约束 4 不能拿来充数，故 absent。"
+      descriptive.claimed_benefit:
+        status: explicit
+        quote: "The dBG model excels in its ease of update, eliminating the need for total graph reconstruction."
+        locator: "3.3 GRAPH UPDATE 第 1 句"
+        note: "字段值逐句贴合作者原话，未添加论文没有的限定词。主张的第二半（O(n) 更新成本）另见下一条。"
+      descriptive.claimed_benefit.efficiency:
+        status: explicit
+        quote: 'The update process is efficient: new edges are added for non-existent tuples, and existing edge weights are incremented, all accomplished with an ${ \mathcal { O } } ( n )$ time complexity.'
+        locator: "3.3 GRAPH UPDATE 末句（LaTeX 片段为解析产物原样，未做归一化）"
+        note: "主张的动作词是“低成本更新 / 更快”，代价侧本应给出运行时间或与重建整图的对比——全文没有，已写入 benefit_gap ①。"
+      descriptive.demonstrated_effect:
+        status: not_extracted
+        locator: "Figure 6（图像；纯文本无数值）"
+        cohort_id: graph_update_split
+        note: "本主张的全部量化证据（图更新前后的 balanced accuracy 与百分比差值）只存在于 Figure 6 的图像里，本次材料的纯文本中取不到任何数值，故按纪律二标 not_extracted（材料未给全的故障），**不得**用主文其他队列的数字（例如 Figure 2(right) 的平均分或 Table 3 的 k 扫描）代填。方向性描述另见下一条。"
+      descriptive.demonstrated_effect.qualitative:
+        status: explicit
+        quote: "Although most patients exhibited minor improvements and some major,"
+        locator: "4.4 GRAPH UPDATE EVALUATION"
+        cohort_id: graph_update_split
+        note: "同句的下降侧片段单独作为 finding_direction 的出处。该句写 “most patients”，与同段方法句 “A single patient was chosen” 在人数上矛盾，故本条只能证明“论文声称多数出现提升”，不能确定分母。"
+      descriptive.future_intent:
+        status: explicit
+        quote: "With a broader and more varied dataset, the deployment of dBG across diverse clinical settings will become increasingly viable."
+        locator: "5 SUMMARY AND FUTURE WORK 末句"
+        note: "将来时的设想，按规则⑬只进 future_intent，不作为 care_setting / intended_context / clinical_task 的依据。"
+      descriptive.deployment_claim_level:
+        status: explicit
+        quote: "Beyond standard leave-one-out testing, we explored graph updated evaluations to demonstrate the potential of dBGs."
+        locator: "4.4 GRAPH UPDATE EVALUATION 第 1 句"
+        note: "作者自陈这一节是“展示潜力”的探索性评估（demonstrate the potential），同段并自陈 “This experiment, although constrained by a limited dataset, showcased prospective enhancements.”，故声明层级填到离线演示为止，不写验证、不写部署。"

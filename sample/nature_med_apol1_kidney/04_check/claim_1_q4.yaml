@@ -1,0 +1,49 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:4   后端:claude-cli
+findings:
+  - question: 4
+    verdict: issue
+    severity: medium
+    field: "descriptive.claimed_benefit / descriptive.benefit_gap ③"
+    quote: "APRS (≥95th percentile) nearly halved the number needed to treat (NNT; 4.9 with APRS versus 8.4 with KFRE and 23.9 with CKD PRS), underscoring its potential clinical utility (Extended Data Fig. 6a)."
+    card_says: "claimed_benefit 末段写 \"nearly halved the number needed to treat\"；benefit_gap ③ 只记了 \"假设某疗法使复合终点风险降低 27%\" 这一前提。"
+    should_be: >-
+      原文的 NNT 只在评分分布的 ≥95th percentile 这一小段人群里成立，且是相对 KFRE 而言。
+      卡里两处都丢了 \"≥95th percentile\" 这个限制条件，等于把一个极端亚组的推演数字读成整张卡人群的获益。
+      按\"限制条件必须跟数字写在一起\"，benefit_gap ③ 应写成\"在 APRS ≥95 百分位者中、且假设疗法使复合终点风险下降 27% 时，
+      推演 NNT 4.9 vs KFRE 8.4\"，claimed_benefit 里保留作者原话时也应带上该限制。
+
+  - question: 4
+    verdict: issue
+    severity: medium
+    field: "descriptive.claimed_benefit / descriptive.benefit_gap ①"
+    quote: "In conclusion, a plasma proteomic risk score enables accurate and early prediction of adverse events in APOL1 high-risk individuals, before CKD is clinically evident."
+    card_says: "benefit_gap ① 写\"兑现的是'准确且更早的预测'（判别指标）\"，即把\"更早\"当作已兑现的那一半。"
+    should_be: >-
+      \"更早\"是一个比较级主张（比现行做法更早识别），但全文没有任何提前量的量：
+      没有 APRS 与 KFRE / 常规做法在\"识别时点\"上的对比，没有 lead time 指标，也没有报告随访完整性
+      （Methods 只写\"censored at the time of death, loss to follow-up or the end of a 10-year follow-up period\"，
+      未给失访比例）。论文对\"早\"的全部支撑是队列限定在 eGFR>=60，即判别指标是在\"CKD 尚不明显\"的人群里测的，
+      这只能说明\"在早期人群里判别力好\"，不等于\"比现有工具更早识别\"。
+      benefit_gap 应增列一条：\"更早\"这一半同样未被直接测量，代价侧（提前量、失访完整性）无量化。
+
+  - question: 4
+    verdict: issue
+    severity: low
+    field: "descriptive.benefit_gap ②"
+    quote: "At 5 years, APRS showed a sensitivity of 76.3% and a specificity of 86.7%, with concordance indexes (C-indexes) of 82.0% for the composite outcome, 84.4% for kidney outcomes and 78.5% for mortality (Fig. 3c)."
+    card_says: "benefit_gap ② 写\"代价侧（被多标出来的人多做的检查与治疗、低分者被减少随访带来的漏诊）全文无量化……没有给漏诊侧的数字\"。"
+    should_be: >-
+      \"没有给漏诊侧的数字\"过头了，且与本卡 demonstrated_effect 自己列的\"5 年敏感度 76.3% / 特异度 86.7%\"矛盾：
+      敏感度 76.3% 即在该阈值下约四分之一事件被漏掉，特异度 86.7% 即假阳性率 13.3%，这就是代价侧的量；
+      Methods 另写 \"Net benefits from decision curve analysis were calculated by weighting false positives and false negatives under the assumption of equal misclassification costs\"，
+      即 FP/FN 已被显式加权。应改写为：判别层面的代价侧数字（Sens/Spec、DCA）论文给了，
+      缺的是把这些错分换算成实际后果的量——被多标者多做的检查与治疗、低分者减少随访导致的漏诊，
+      这一层全文无量化，也没有对代价侧做任何敏感性分析。
+
+summary:
+  issues_high: 0
+  issues_medium: 2
+  issues_low: 1
+  cannot_determine: 0

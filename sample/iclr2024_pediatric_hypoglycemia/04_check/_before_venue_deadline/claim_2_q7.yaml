@@ -1,0 +1,52 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:7   后端:claude-cli
+findings:
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.external_cohort"
+    quote: "A single patient was chosen to represent a new patient, while the remaining dataset was divided into three groups to construct a database with three independent graphs."
+    card_says: "external_cohort: false（inferred，note：图数据库来自同一个数据集里其余患者的数据，被更新与被评估的『新患者』也来自同一数据集）"
+    should_be: "维持 false。全文只有一个数据来源（3.1 的 15 名患者、22,291 条测量），4.4 的『数据库』与『新患者』都是这同一批人的再划分，属于同一数据集的另一次切分，不构成外部队列。卡未高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.different_site"
+    quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+    card_says: "different_site: false（inferred，note：论文没有任何机构名、地区、数据集名称或采集设备名）"
+    should_be: "维持 false。这是全文对数据来源的唯一交代，不含机构、地区、数据集名或设备名；Table 1 只有人口学与佩戴天数，也无站点列。没有任何原文支持『不同机构/地区』，卡未从数据集名字猜测，未高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.prospective"
+    quote: "This experiment, although constrained by a limited dataset, showcased prospective enhancements."
+    card_says: "prospective: false（inferred，引 “The selected patient’s data was bifurcated; the initial half symbolized pre-treatment data, and the latter half, post-treatment data.”）"
+    should_be: "维持 false。4.4 出现的 “prospective” 一词是『可期待的改进』之意，不是研究设计；卡没有把它当成前瞻性证据。实际做法是把已采集好的记录对半切开、在后半段离线重放，全文无任何前瞻采集、预注册或预设分析计划的描述。卡未高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.randomised"
+    quote: "Figure 6 enumerates the outcomes with and without partial updates."
+    card_says: "randomised: false（inferred，note：本卡的对照是同一批评估数据上『有更新 / 无更新』两次运行，属算法自身消融）"
+    should_be: "维持 false。Figure 6 的两栏是在同一批评估数据上跑两次的算法消融，没有分组、没有分配、没有试验注册；全文无 randomi(z/s)ed、无 control group、无 trial registration。卡未把消融当成随机对照，未高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.deployed_in_care"
+    quote: "Unlike traditional machine learning techniques, dBG’s low update cost makes it particularly suitable for dynamic environments like hospitals, enhancing patient care by enabling timely and precise updates."
+    card_says: "deployed_in_care: false（inferred，note：没有任何证据表明模型输出被交给医生、患者或护理流程）"
+    should_be: "维持 false。这句是『适合医院 / 增强照护』的适用性断言，不是模型输出改变了照护的证据；全文所有评估（4.1–4.4）都是对既有记录的离线计算，无警报下发对象、无处置记录、无使用者。卡正确地把这句只用作 clinical_claim_made 而未据此抬高 deployed_in_care，未高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.clinical_claim_made"
+    quote: "Then, as sensor data is given, the graph can forecast when a hypoglycemic episode will subsequently occur within 30 minutes with acceptable clinical accuracy."
+    card_says: "clinical_claim_made: true（explicit，引 5 SUMMARY 的 “suitable for dynamic environments like hospitals, enhancing patient care”）"
+    should_be: "维持 true。除卡所引的 5 SUMMARY 一句外，Introduction 亦以现在时作出临床效用断言（acceptable clinical accuracy、a solution could exist in real clinical settings 之外的这一句为陈述式），故本文不是纯基准/纯研究论文，true 有原文支持，不属高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.endpoint_type"
+    quote: "Balanced accuracy results, and percentage accuracy differences with and without applying graph updates."
+    card_says: "endpoint_type: model_metric（explicit，引 “If $h - t < 1$ hour and an alert is issued at instance t, then it’s deemed a correct prediction.”）"
+    should_be: "维持 model_metric。本主张的终点是 Figure 6 的 balanced accuracy 及百分比差值，即预测正确与否的分类指标；全文（含 4.2 的 96.45% warning rate 与 Figure 4 的 30 分钟提前量）也只有模型侧指标，无临床流程终点、无患者结局。卡未高估。"

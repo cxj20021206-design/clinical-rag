@@ -1,0 +1,90 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:7   后端:claude-cli
+#
+# ⚠️ 下面 card: 一行是**模型自填**的 —— bundle 只给卡的内容、不给卡的路径,所以这个值是编的:
+#    `corpus/extracted/` 下从来没有过这个文件(2026-08-02 核对)。实际卡为 03_cards/claim_1.yaml。
+adversarial_check:
+  card: "corpus/extracted/10.1038_s41591-026-04337-2.yaml"
+  findings:
+    - question: 7
+      verdict: pass
+      severity: null
+      field: "gating.evidence_basis.clinical_claim_made"
+      quote: "The clinical implications of APRS are substantial. First, APRS may enable earlier identification of high-risk individuals for intensified surveillance long before CKD is detected by standard measures."
+      card_says: "true"
+      should_be: "true。论文以非情态语句主张 APRS 是 clinically usable prediction tool、并给出决策曲线与 NNT 推演，不是纯基准论文。填 true 未高估。"
+
+    - question: 7
+      verdict: pass
+      severity: null
+      field: "gating.evidence_basis.external_cohort"
+      quote: "The ARIC study enrolled 15,792 participants (aged 45–65 years) from four US communities (Washington County, Maryland; Forsyth County, North Carolina; Jackson, Mississippi; and Minneapolis, Minnesota) between 1987 and 1989, with follow-up visits every 3 years initially and subsequently at varying intervals"
+      card_says: "true（ARIC 与 UKBB 是独立人群队列，PMBB 的 20% 留出集不计入）"
+      should_be: "true。ARIC 是与 PMBB 无关的独立人群队列、独立机构、独立招募，不是同院另一批数据、也不是同一数据集的另一次切分；卡把 PMBB 20% 留出集排除在本字段之外的做法正确。此事实未被高估。"
+
+    - question: 7
+      verdict: issue
+      severity: medium
+      field: "provenance.fields.evidence_basis.external_cohort.note"
+      quote: "Missing proteins in Olink were imputed by mapping overlapping proteins to the SomaScan scale and predicting absent targets with a multi-output penalized regression trained on SomaScan data (statistical analysis protocol)."
+      card_says: "ARIC 与 UKBB 是与开发数据完全独立的两个人群队列，不是同院另一批数据、也不是同一数据集的另一次切分。"
+      should_be: >-
+        字段值 true 可保留（ARIC 单独即可支撑），但 note 里的\"与开发数据完全独立\"对 ukbb_hr 是原文没有的加强。
+        UKBB 侧缺失蛋白由一个\"trained on SomaScan data\"的跨平台回归预测补齐，论文从未说明该回归的训练数据
+        与 PMBB 开发数据是否不相交；在论文未交代的情况下断言\"完全独立\"，会让下游读出一个论文没有声明的
+        独立性等级。应改为：ARIC 为完全独立的外部队列；UKBB 的蛋白输入经跨平台模型重建，其训练来源论文未说明，
+        独立性只能算部分成立。
+
+    - question: 7
+      verdict: pass
+      severity: null
+      field: "gating.evidence_basis.different_site"
+      quote: "Despite differences in recruitment era, geographic location and healthcare systems across cohorts, APRS showed consistent performance beyond the academic medical center setting of PMBB."
+      card_says: "true"
+      should_be: "true。跨地点是原文明写（recruitment era / geographic location / healthcare systems），不是由数据集名字推断；ARIC 的四个美国社区与 UKBB 的 22 个英国评估中心在 Methods 里另有独立支持。未高估。"
+
+    - question: 7
+      verdict: pass
+      severity: null
+      field: "gating.evidence_basis.prospective"
+      quote: "We included 314 African American participants with APOL1 high-risk genotyping (performed using TaqMan assays for G1 and G2)8,53 who attended visit 2 (approximately 3 years after baseline) with eGFR≥60 ml min−1 1.73 m−2; proteomic profiling on these visit 2 biospecimens was performed using the SomaScan 5K assay."
+      card_says: "false"
+      should_be: >-
+        false。ARIC / UKBB 虽是前瞻随访的人群队列，但 APRS 的评估是在已存生物样本上回顾完成的；PMBB 侧是基于 EHR 的
+        回顾性队列（\"Because this was an observational study, residual confounding cannot be excluded\"），
+        论文自陈 \"Independent validation in prospective cohorts represents an important next phase\"。
+        卡在此处取的是保守侧，无高估。
+
+    - question: 7
+      verdict: pass
+      severity: null
+      field: "gating.evidence_basis.randomised"
+      quote: "Because this was an observational study, residual confounding cannot be excluded"
+      card_says: "false"
+      should_be: "false。全文无任何把人随机分配到干预的设计；80%/20% 划分是数据切分（\"divided into an 80% training set and a 20% test set using stratified sampling\"），Reporting Summary 的 Randomization 一栏也写明不适用。未高估。"
+
+    - question: 7
+      verdict: pass
+      severity: null
+      field: "gating.evidence_basis.deployed_in_care"
+      quote: "Furthermore, prospective decision impact studies will be required to determine whether APRS-guided strategies meaningfully improve clinical outcomes before routine clinical implementation."
+      card_says: "false"
+      should_be: "false。全文没有任何证据表明 APRS 的输出改变了任何一位参与者的照护；论文自陈常规临床落地前尚需前瞻决策影响研究，并在限制里承认 \"technical complexity may limit near-term clinical deployment\"。未高估。"
+
+    - question: 7
+      verdict: pass
+      severity: null
+      field: "gating.evidence_basis.endpoint_type"
+      quote: "Decision curve analysis demonstrated greater net clinical benefit than either a treat-all or a treat-none strategy across a range of thresholds (Fig. 3d)."
+      card_says: "model_metric"
+      should_be: >-
+        model_metric。此句里的 net clinical benefit 是决策曲线由预测值推演出的量，NNT 同样是在假设某疗法降低 27% 风险
+        的前提下算出的，两者都不是被干预改变的实测结局；复合终点里的死亡 / ESKD 是被预测的结局。
+        论文全部报告 \"AUC, C-index, specificity, sensitivity, F1 score, precision, recall, accuracy, FPR, FNR, MCC, PPV and NPV\"。
+        填 model_metric 未高估。
+  summary:
+    issues_high: 0
+    issues_medium: 1
+    issues_low: 0
+    cannot_determine: 0

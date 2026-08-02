@@ -1,0 +1,47 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:4   后端:claude-cli
+findings:
+  - question: 4
+    verdict: issue
+    severity: medium
+    field: "descriptive.demonstrated_effect / descriptive.benefit_gap"
+    quote: "If $h - t < 1$ hour and an alert is issued at instance t, then it’s deemed a correct prediction."
+    card_says: >-
+      demonstrated_effect：「272 次低血糖事件被预先预警、10 次漏报，warning rate 96.45%；全患者平均
+      Balanced Accuracy 0.844、Precision 0.268、Sensitivity 0.801、Specificity 0.887。提前量方面正文
+      只给出「多数警报提前 30 分钟」这一定性表述。」benefit_gap ② 只写「30 分钟未被量化」。
+    should_be: >-
+      收益侧的全部数字（96.45% warning rate、272/10、Sensitivity 0.801）都是在「提前量 < 1 小时即算正确」
+      这一判正准则下算出的，而 claimed_benefit 声称的是 "in advance of about 30 minutes"。卡把两者并列却
+      没写出评估窗口是 1 小时，下游会把 96.45% 读成「30 分钟提前量的达成率」，即用一个更宽松的准则去兑现
+      一个更紧的主张。demonstrated_effect 应在数字旁写明判正窗口为 h − t < 1 hour；benefit_gap ② 应改成
+      「30 分钟这一提前量既未量化，且主结果指标根本不是按 30 分钟阈值计算的」。
+  - question: 4
+    verdict: issue
+    severity: medium
+    field: "descriptive.demonstrated_effect / cohorts[ksweep_nopruning_15].subgroup_restrictions"
+    quote: "We assessed the Balanced Accuracy, Precision, Sensitivity, and Specificity for all patients employing the leave-one-out cross-validation method."
+    card_says: >-
+      「全患者平均 Balanced Accuracy 0.844、Precision 0.268、Sensitivity 0.801、Specificity 0.887 ……
+      未剪枝的 k 扫描（ksweep_nopruning_15，Table 3）在 k = 6 时为 0.810/0.708/0.913/0.294，最优 k = 4 时为
+      0.824/0.732/0.916/0.308 —— 与主结果是两套数字，不可混用。」
+    should_be: >-
+      两个四元组的指标顺序不同却被并列书写、且第二个未标指标名：主结果按 Balanced Accuracy / Precision /
+      Sensitivity / Specificity 排列（Figure 2 图注上引句给出的次序），而 Table 3 的表头次序是
+      Accuracy / Sensitivity / Specificity / Precision。因此 k=6 行里 0.708 是 Sensitivity、0.294 才是
+      Precision。照现在的写法顺读，会读出「Precision 从 0.268 升到 0.708」这个论文里不存在的结果——
+      恰好是本主张的代价侧指标被放大 2.6 倍。应逐项写出指标名（Accuracy 0.810 / Sensitivity 0.708 /
+      Specificity 0.913 / Precision 0.294），或统一成同一顺序。
+  - question: 4
+    verdict: pass
+    field: "descriptive.claimed_benefit"
+    quote: "We can then use paths in the graph to anticipate hypoglycemia in advance of about 30 minutes sufficient for a clinical setting and additionally find actionable rules that accurate and effective."
+    card_says: "anticipate hypoglycemia in advance of about 30 minutes sufficient for a clinical setting and additionally find actionable rules that accurate and effective"
+    should_be: >-
+      无需改动。卡里的主张是原文的连续子串，未加入任何原文没有的收窄限定词（没有添加人群、场所、
+      亚组或性能条件），也没有把 "sufficient for a clinical setting" 削弱成方法学表述；作者原文的语病
+      "that accurate and effective" 也照搬未修。主张的动作词是「提前预警」，代价落在假阳性侧，
+      benefit_gap ① 已给出 Precision 0.268 与「未报警报负担/漏报归属」的缺口，
+      ③④⑤ 也分别兑现了 "sufficient for a clinical setting"、"actionable rules ... accurate and effective"、
+      摘要 "run-time efficiency" 三处无对应分析的断言。本子项不构成 issue。

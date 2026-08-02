@@ -1,0 +1,11 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:4   后端:claude-cli
+findings:
+  - question: 4
+    verdict: issue
+    severity: medium
+    field: "descriptive.demonstrated_effect / descriptive.benefit_gap"
+    quote: "Balanced accuracy results, and percentage accuracy differences with and without applying graph updates."
+    card_says: "descriptive.demonstrated_effect: status not_extracted —「效应量**未取到**：Figure 6 是本主张唯一的量化证据（图更新前后的 balanced accuracy 与百分比差值），该图在本次材料里只有图像、纯文本无任何数值，故提升幅度、下降幅度、涉及多少人均不可得（not_extracted，非『论文没写』）」；benefit_gap ② 同样把量的缺失整体归因于图像不可取：「量化证据全部落在 Figure 6 图像内，数值不可得……受益侧与代价侧都没有可核对的量」。"
+    should_be: "把两类缺失分开。本主张的动作词是「更新后预测更准 / 更早发出警报」，代价落在假阳性与特异度侧；而论文为本实验报告的**唯一指标类别**就是 balanced accuracy 与其百分比差值（见上引图注），全文没有为图更新实验报告 precision、假阳性数或警报负担的任何变化。也就是说：即便 Figure 6 的数值被取到，得到的仍只有一个把假阳性代价掩盖掉的合并指标——同一篇论文在主实验里自陈 average precision 仅 0.268（Figure 2 右图注：“The average scores across all patients were 0.844, 0.268, 0.801, and 0.887 for these metrics, respectively.”），可见在该数据的不平衡程度下 balanced accuracy 与代价侧不是一回事。因此「图更新的假阳性代价未被测量」是论文层面的缺口，应在 benefit_gap 里单列并按 `absent`（审稿发现）记，而不能与 Figure 6 数值取不到这一材料故障（`not_extracted`）混在一起。现在的写法把一条本该进缺口报告的论文缺陷记成了本流程的抽取故障，读起来像是「补上图里的数就有代价侧的量了」，而事实并非如此。demonstrated_effect 本身标 not_extracted 是对的，不必改状态，需改的是它与 benefit_gap ② 对缺失原因的归因。"

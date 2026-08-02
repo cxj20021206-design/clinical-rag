@@ -1,0 +1,30 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:4   后端:claude-cli
+findings:
+  - question: 4
+    verdict: issue
+    severity: medium
+    field: "descriptive.claimed_benefit"
+    quote: "This new data aids in the pinpointing and enhancement of the most compatible model from the database, further fine-tuning its applicability to subsequent patients. The update process is efficient: new edges are added for non-existent tuples, and existing edge weights are incremented, all accomplished with an ${ \\mathcal { O } } ( n )$ time complexity."
+    card_says: "The dBG model excels in its ease of update, eliminating the need for total graph reconstruction: a graph database constructed from prior patients facilitates the seamless integration of new patient data, which aids in the pinpointing and enhancement of the most compatible model from the database, further fine-tuning its applicability to subsequent patients, all accomplished with an O(n) time complexity."
+    should_be: >-
+      卡把原文两句缝成一句，使 "all accomplished with an O(n) time complexity" 的辖域从
+      原文的**更新步骤**（加新边、加权重）扩到了整条链路，包括"从数据库里挑出最匹配模型"
+      这一步——论文从未给这一步任何复杂度、运行时间或内存数字。这是主张被放大：动作词是
+      "更省成本的更新"，代价侧本应给出"挑模型 + 更新"相对重建整图的实测开销，而全文只有一个
+      针对更新步骤的复杂度论断。建议 claimed_benefit 把 O(n) 明确限定回 "the update process
+      (new edges added / existing edge weights incremented)"，并把"跨三张图的最佳模型检索
+      无任何成本报告"补进 benefit_gap ①（现有 ① 只写了缺运行时间/内存/与重建整图的对比，
+      未点出检索步骤根本不在复杂度论断的覆盖范围内）。
+      另：卡在复述时删掉了作者给数据库加的限定 "exhibiting diverse BG traits"，
+      同方向（放宽）而非收窄，建议一并补回。
+  - question: 4
+    verdict: pass
+    field: "descriptive.demonstrated_effect / benefit_gap"
+    quote: "Unlike traditional machine learning techniques, dBG’s low update cost makes it particularly suitable for dynamic environments like hospitals, enhancing patient care by enabling timely and precise updates."
+    card_says: "benefit_gap ④『enhancing patient care』『suitable for dynamic environments like hospitals』没有任何与照护相关的测量：无临床流程终点、无患者结局、无使用者研究；demonstrated_effect 标 not_extracted，只保留方向性描述并同时记下『a decline was noted in certain evaluation scores』。"
+    should_be: >-
+      未发现把模型性能当患者获益的转写：论文这句省时/可及性质的临床效用断言在卡里没有被
+      当成已证实的获益，而是落在 benefit_gap ④；受益侧（多数小幅提升）与代价侧（部分评分下降、
+      缺运行时间实测）都写了，且效应量按 not_extracted 如实标注而未用其他队列数字代填。

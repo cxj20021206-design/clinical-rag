@@ -1,0 +1,58 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:7   后端:claude-cli
+findings:
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.external_cohort"
+    quote: "A single patient was chosen to represent a new patient, while the remaining dataset was divided into three groups to construct a database with three independent graphs."
+    card_says: "external_cohort: false（inferred）——图数据库来自同一数据集里其余患者，被更新与被评估的『新患者』也来自同一数据集"
+    should_be: "维持 false。全文只有一个数据来源（3.1 的 15 名患者、22,291 条读数），4.4 的『新患者 vs 其余患者建三张图』是同一数据集内部的又一次划分，属 §4.2 leave-one-out 之外的另一种切分方式，不是第二个队列。卡未把这次切分说成外部验证，无高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.different_site"
+    quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+    card_says: "different_site: false（inferred）——论文没有任何机构名、地区、数据集名称或采集设备名"
+    should_be: "维持 false。这句是全文对数据来源的唯一交代，没有机构、地区、采集中心或公开数据集名称；全文其余部分（Table 1、4 RESULTS、5 SUMMARY）也未出现任何地点信息。既无原文支持『不同机构』，false 是唯一可写的值，未从数据集名字猜测，无高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.prospective"
+    quote: "The selected patient’s data was bifurcated; the initial half symbolized pre-treatment data, and the latter half, post-treatment data."
+    card_says: "prospective: false（inferred）——把已采集好的记录对半切开、在后半段上离线重放，不是按预定方案前瞻采集"
+    should_be: "维持 false，且卡避开了本篇最容易导致高估的两处措辞：其一，4.4 的 “pre-treatment / post-treatment” 读起来像干预前后随访，实为对既有序列的机械对半切分，卡已在 cohorts.subgroup_restrictions 与 clinical_context 里明确拒绝据此推断任何干预；其二，同段出现 “This experiment, although constrained by a limited dataset, showcased prospective enhancements.”，这里的 prospective 意为『可期待的』改进，不是研究设计属性，卡未把它当作前瞻性证据。论文主体（§4.2 leave-one-out、§4.3 k 扫描、§4.4 图更新）全部是对既有记录的离线计算，前瞻成分为零。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.randomised"
+    quote: "Our evaluation leveraged a leave-one-out cross-validation, with each patient’s data processed separately."
+    card_says: "randomised: false（inferred）——全文无随机分配、无对照组、无试验注册号；本卡的对照是同一批评估数据上『有更新 / 无更新』两次运行，属算法自身消融"
+    should_be: "维持 false。全文唯一的『划分』动作是交叉验证与 4.4 的三组分图，均为算法评估切分而非受试者随机分配；Figure 6 的 with / without partial updates 是同一批数据跑两遍的消融，两臂不是两组人。卡已明确把它标为消融而非随机对照，无高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.deployed_in_care"
+    quote: "Unlike traditional machine learning techniques, dBG’s low update cost makes it particularly suitable for dynamic environments like hospitals, enhancing patient care by enabling timely and precise updates."
+    card_says: "deployed_in_care: false（inferred）——无警报下发对象、无处置记录、无使用者、无现场部署描述，全部评估都是对既有数据的离线计算"
+    should_be: "维持 false。这句是全文最接近『已用于照护』的表述，但它是对更新成本的适用性断言（suitable for / enabling），不是模型输出改变了照护的证据：论文没有任何一处写明警报被交给谁、触发了什么处置或改变了任何结局。4.2.1 提到 near-hypoglycemic events『often occur due to timely medication or food intake』，讲的是数据中原本存在的患者行为对指标的干扰，不是本模型的输出引发的处置。卡把该句只用作 clinical_claim_made 的依据而未用作 deployed_in_care，方向正确，无高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.clinical_claim_made"
+    quote: "Thus, a critical use of artificial intelligence (AI) would be to improve clinical forecasting of blood glucose (BG) levels in pediatric T1D, since children are particularly vulnerable to a disease endemic to the entire world."
+    card_says: "clinical_claim_made: true（explicit），依据 5 SUMMARY 的 “suitable for dynamic environments like hospitals, enhancing patient care”"
+    should_be: "维持 true。卡引的 §5 那句是现在时的临床效用断言（makes it particularly suitable / enhancing patient care），不是 could / would 类设想，够格支撑 true；本条另引 Introduction 一句作独立佐证，表明论文自始按临床用途框定（虽该句用 would，只作旁证不作主证）。同时卡已在 benefit_gap ④ 注明该断言在本文没有任何对应测量，未把『作了临床主张』读成『证明了临床获益』，无高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.endpoint_type"
+    quote: "If $h - t < 1$ hour and an alert is issued at instance t, then it’s deemed a correct prediction."
+    card_says: "endpoint_type: model_metric（explicit）——终点是『预测是否正确』的分类指标，本卡具体为 balanced accuracy 及其百分比差值"
+    should_be: "维持 model_metric。终点完全由『警报时刻与未来低血糖时刻之差』定义，真值取自与模型输入同一路 BG 读数；Figure 6 的报告量是 balanced accuracy 与百分比差值。全文无任何临床流程终点（如就诊、用药、住院）或患者结局。卡未把 §4.2 的 “96.45% warning rate” 或 30 分钟提前量说成结局指标，无高估。"
+
+summary:
+  issues_high: 0
+  issues_medium: 0
+  issues_low: 0
+  cannot_determine: 0

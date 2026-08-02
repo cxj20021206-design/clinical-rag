@@ -1,0 +1,60 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:7   后端:claude-cli
+findings:
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.clinical_claim_made"
+    quote: "We established a single, non-invasive retinal image-based DeepDKD system which could improve access to screening and detection of DKD, prioritising patients who will need confirmatory laboratory tests in low-resource primary care settings."
+    card_says: "clinical_claim_made: true"
+    should_be: "维持 true。论文在 Implications 与 Conclusion 两处均以第一人称做出临床用途主张（改善筛查可及性、在低资源基层优先挑出需确证化验者），不是纯技术性能陈述。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.external_cohort"
+    quote: "Ten external validation cohorts (the China National Diabetic Chronic Complications Study cohort, the Nicheng Diabetes Screening Project [NDSP] cohort, the Peking Union Diabetes Management [PUDM] cohort, the Eastern China Health Management cohort, the Chinese University of Hong Kong-Sight-Threatening Diabetic Retinopathy cohort, the Singapore Epidemiology of Eye Diseases study cohort, the UK Biobank [UKB] cohort, the Multiethnic Lifestyle, Obesity, and Diabetes Registry in Malaysia [MeLODY] cohort, the Longitudinal Study of Ageing cohort, and the Australian Eye and Heart Study cohort) were collected (65 406 participants)."
+    card_says: "external_cohort: true"
+    should_be: "维持 true。外部队列是十个具名的独立队列研究（含 UK Biobank、SEED、MeLODY、AHES 等非本国队列），不是同院另一批数据的切分。附带提示（不构成推翻理由）：其中体量最大的 NDSP（51 635 人）与开发队列同为中国、论文未说明其与上海整合系统在机构上是否独立；但仅凭境外四国队列即足以支撑 true。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.different_site"
+    quote: "First, the DeepDKD system was trained in a Chinese population followed by validation in multi-ethnic cohorts from Singapore, Malaysia, Australia, and the UK."
+    card_says: "different_site: true"
+    should_be: "维持 true。作者在 Limitations 中自述训练群体与验证群体分属不同国家/族裔，跨站点属原文明示而非抽卡器推断。"
+
+  - question: 7
+    verdict: issue
+    severity: low
+    field: "gating.evidence_basis.prospective"
+    quote: "Second, some potential biases cannot be eliminated in the present retrospective study such as data distribution, selection bias, and unknown confounders."
+    card_says: "prospective: true    # 有前瞻真实世界研究，但终点是筛查准确性"
+    should_be: "布尔值可维持 true（确有前瞻设计：2023 年 1 月起在基层中心招募、3 个月内追 ACR，是设计而非仅随访），但 note 现有措辞不足以防止下游把本文当作\"前瞻验证研究\"读。作者本人在 Limitations 中把本研究整体称为 \"the present retrospective study\"；前瞻成分只覆盖 325 名完成 ACR 的受试者（招募 628、符合入组 502），且是自称 proof-of-concept 的子研究，主体开发与十个外部队列验证全部为回顾性。note 应补一句：\"论文主体为回顾性；前瞻仅为 325 人的概念验证子研究，作者自称 the present retrospective study\"。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.randomised"
+    quote: "Fourth, although two proof-of-concept clinical studies were conducted to evaluate the effectiveness of DeepDKD, further randomised controlled trials are needed to evaluate the impact of real-time system integration in routine workflow on patient outcomes."
+    card_says: "randomised: false"
+    should_be: "维持 false。作者明写 RCT 尚待开展，全文无随机分组或对照分配的任何描述。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.deployed_in_care"
+    quote: "Fourth, although two proof-of-concept clinical studies were conducted to evaluate the effectiveness of DeepDKD, further randomised controlled trials are needed to evaluate the impact of real-time system integration in routine workflow on patient outcomes."
+    card_says: "deployed_in_care: false"
+    should_be: "维持 false，且这是本卡最该守住的一个 false。论文另有一句极易诱使填 true 的表述——\"We demonstrated that DeepDKD could be integrated into routine clinical workflow in the primary care setting, supporting its use for DKD screening\"——但作者同段自陈 real-time system integration 的影响仍需 RCT 评估；前瞻研究中 ACR 是对全部符合条件者取得的参考标准，无证据表明模型输出决定了谁去做 ACR 或改变了任何照护决策。卡的现有判断正确。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.endpoint_type"
+    quote: "The sensitivity and specificity ofthe metadata model, DeepDKD system, and combined model were compared using the high-sensitivity operating points (preset at 95%) selected from the internal validation dataset."
+    card_says: "endpoint_type: model_metric"
+    should_be: "维持 model_metric。claim_1（DKD 筛查）在前瞻研究中的终点是敏感度/特异度的模型间比较，非患者结局。纵向研究中的 eGFR 下降比例属 claim_2 的范畴，且用途是比较三个模型的判别力、而非证明使用系统后肾功能改善，故也不构成把 claim_1 升格为 patient_outcome 的理由。"
+
+  - question: 7
+    verdict: cannot_determine
+    field: "gating.evidence_basis.prospective / gating.evidence_basis.different_site"
+    quote: "from a primary care centre in Shanghai, China (without ACR tests) to evaluate the effectiveness of integrating DeepDKD into the routine clinical practice for screening and detecting DKD."
+    card_says: "prospective: true 与 different_site: true 同时成立，卡未区分二者各自由哪部分证据支撑"
+    should_be: "判不出来：唯一支撑\"基层筛查\"这一 care_setting 的前瞻证据来自上海的一家基层医疗中心，而开发队列是上海糖尿病预防与诊治整合系统；论文（正文层面）未说明该基层中心是否隶属同一系统、其人群是否与开发数据来源重叠——相关方法学细节被指向 appendix pp 11-12，而本次抽卡的 input_coverage 记录 appendix 未获取。因此\"前瞻证据是否在与开发数据独立的站点上取得\"无法判定。建议在 note 中显式记下该未知，而不是让 different_site: true（由境外队列支撑）顺带给人以前瞻子研究也在独立站点的印象。"

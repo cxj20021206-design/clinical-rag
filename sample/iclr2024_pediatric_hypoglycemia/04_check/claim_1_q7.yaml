@@ -1,0 +1,73 @@
+# 阶段三产物 —— 按 prompts/stage3_adversarial_check.md 执行。
+# context_isolated: true  ← 由 extract.py 写入,非执行者自报
+# 问题子集:7   后端:claude-cli
+findings:
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.clinical_claim_made"
+    quote: "We can then use paths in the graph to anticipate hypoglycemia in advance of about 30 minutes sufficient for a clinical setting and additionally find actionable rules that accurate and effective."
+    card_says: "true（引 §5 \"enhancing patient care by enabling timely and precise updates\"）"
+    should_be: "维持 true。摘要即以现在式断言提前量「sufficient for a clinical setting」，§1 另有 \"with acceptable clinical accuracy\"，均非情态/未来式，构成当下的临床效用主张，不属纯方法学基准。此项无高估。"
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.external_cohort"
+    quote: "Our evaluation leveraged a leave-one-out cross-validation, with each patient’s data processed separately."
+    card_says: "false（同一数据集的另一次切分不算外部队列）"
+    should_be: >-
+      维持 false。全文只有 §3.1 的一批 15 名患者数据，§4 的留一交叉验证、§4.3 的 k 扫描、§4.4 的图更新实验
+      全部在这批数据内重新划分，无第二批数据、无第二个数据来源。
+      附带一条不改变本字段取值的观察：Figure 2 (LEFT) 图注写 "A high-level visualization of a dBG with
+      97 nodes and 167 edges using all available patients."，而 §4 的留一法是否在建图时真的排除了被测患者，
+      正文未明写；这只影响内部验证的严谨性，不影响 external_cohort=false 的判定。
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.different_site"
+    quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+    card_says: "false（论文确实没写数据来自哪里）"
+    should_be: >-
+      维持 false。§3.1 是全文唯一的数据来源交代，只有人数与读数数，无机构名、国家/地区、数据集名称、
+      采集设备名或伦理审批；Table 1 也只有逐人的人口学与研究天数。没有任何原文可支持「不同机构/地区」，
+      从严取 false 正确，未高估。
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.prospective"
+    quote: "This experiment, although constrained by a limited dataset, showcased prospective enhancements."
+    card_says: "false（前瞻是研究设计而非「有一段时间的数据」；prospective 一词仅出现于 §4.4，义为「有前景的」）"
+    should_be: >-
+      维持 false，且卡对 prospective 一词唯一出处的定位与释义与原文一致。
+      Table 1 的 "Study Days"（14–21 天）与 §3.1 的采样率描述只说明数据覆盖了一段时间，
+      全文无招募、连续入组、纳入排除或随访方案的任何交代，不足以支持前瞻性设计。未高估。
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.randomised"
+    quote: "A single patient was chosen to represent a new patient, while the remaining dataset was divided into three groups to construct a database with three independent graphs."
+    card_says: "false（唯一的「对照」是同一批数据上的模型自身变体）"
+    should_be: >-
+      维持 false。全文唯一的「分组」是 §4.4 图更新实验里把剩余患者分成三组建三张图，
+      原文未说明分组方式，且这是模型内部实验的数据划分，不是受试者随机分配；
+      Table 3 的 k 扫描与 Figure 5 的有/无监督对比同样是同一批数据上的配置对比。未高估。
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.deployed_in_care"
+    quote: "To evaluate our proposed model, we methodically scrutinize every datapoint in our dataset."
+    card_says: "false（对既有数据集逐点回放打分，模型输出没有进入任何照护流程）"
+    should_be: >-
+      维持 false。§4 的评估是对既有数据集每个数据点的离线回放，正确性由「未来最近一次低血糖时刻 h 与 t 的
+      间隔」事后判定；全文无任何证据表明警报被任何人（患者、家长、临床人员）看到或改变了处置。
+      §5 关于 "the deployment of dBG across diverse clinical settings will become increasingly viable"
+      是未来式，不构成部署证据。未高估。
+
+  - question: 7
+    verdict: pass
+    field: "gating.evidence_basis.endpoint_type"
+    quote: "In total, our model preemptively issued warnings for 272 hypoglycemia instances and missed 10, achieving a 96.45% warning rate."
+    card_says: "model_metric"
+    should_be: >-
+      维持 model_metric。全部报告量（warning rate、Balanced Accuracy / Precision / Sensitivity /
+      Specificity、Figure 4 的提前量）都是模型警报与传感器读数自判真值之间的一致性度量，
+      既无患者结局（低血糖发生率、住院、HbA1c 等），也无流程终点（就诊、用药、转诊）。未高估。

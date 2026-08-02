@@ -1,0 +1,408 @@
+# 阶段二产物：claim_1 的 Claim Card。
+# 论文：A Reinforcement Learning Approach to Effective Forecasting of Pediatric
+#       Hypoglycemia in Diabetes I Patients: an Extended de Bruijn Graph
+claim_card:
+  # 材料中无 DOI、无期刊/会议名（"Anonymous authors Paper under double-blind review"），
+  # 故以题名作 paper_id。题名中的 "EFFEC-TIVE" 是解析产物里的跨行断字，此处已缝合——
+  # paper_id 不是引文字段，不受硬约束 3 约束。
+  paper_id: "A REINFORCEMENT LEARNING APPROACH TO EFFECTIVE FORECASTING OF PEDIATRIC HYPOGLYCEMIA IN DIABETES I PATIENTS: AN EXTENDED DE BRUIJN GRAPH"
+  claim_id: claim_1
+
+  # 抄阶段一：basis = unavailable。全文无 Received / Accepted 日期，本文无系统检索章节
+  # 因而也没有可作保守下界的文献检索截止日。**不用参考文献里的最新年份反推**——
+  # 那会造出一个论文没有的日期，而 predates 门控是全系统唯一的硬门控。
+  # ⚠️ 这会让 claim_card.validate_card() 硬报 "submission_date 缺失"。这是真实边界，
+  #    不是本卡可以就地修补的东西：填任何一个数字都是编造。
+  # ↓ 以下三项由 `extract.py stamp-date` 机械补入，不是抽卡产物。
+  #   论文自身无 Received/Accepted/检索截止日（阶段一正确停在第 4 档），
+  #   日期来自 venue_deadlines.yaml 这一**论文之外**的运维元数据。
+  #   校验时会拿它与该表逐字比对，手工改这里会直接报错。
+  #   上方抽卡时写的「这会让 validate_card 硬报错」一段保留作历史——
+  #   那时第 5 档还不存在，其描述在当时是对的。
+  # ↓ 由 `extract.py stamp-date` 依 venue_deadlines.yaml 订正：
+  #   2023-09-22 → 2023-09-23（iclr 2024 的 abstract_deadline）。
+  #   旧值同样取自该表而非论文，故随表更新，不算改动抽卡产物。
+  submission_date: "2023-09-23"
+  submission_date_source:
+    basis: venue_deadline
+    venue: ICLR
+    year: 2024
+    note: >-
+      iclr 2024 的 abstract_deadline。取更早的一档作保守下界：日期越早，被判 predates=true 的
+      指南越少，越不会拿作者当时看不到的标准要求他。
+      粗糙之处：这是全会议一个常数，不是本篇各自的投稿时刻。
+
+  # 论文未给出机构名、国家/地区、数据集名称或采集设备名，region 无从填起。
+  region: null
+
+  cohorts:                                    # 抄阶段一 uses_cohorts（白名单）
+    - cohort_id: dbg_all_patients
+      purpose: model_development
+      n: "15 patients / 22,291 BG level measurements（Table 1 逐患者 datapoints 求和恰为 22,291）"
+      subgroup_restrictions: >-
+        Table 1 的 P1 在 Years With T1D 列写 "3 (T2D)"，表注写 "T2D stands for type 2 diabetes."——
+        即这批被称作 pediatric T1D 的 15 人中至少 1 人是 2 型糖尿病；该患者同时是低血糖占比
+        63.7%、BMI 50.3 的极端离群者。另：Table 1 年龄跨度 8–16 岁，无学龄前儿童。
+      characteristics_locator: main_text_table
+
+    - cohort_id: loocv_15
+      purpose: internal_validation
+      n: "15 patients（每人轮流留出一次）；主结果参数为 k = 6, ρ = 0.2, x = 6，采用 adaptive pruning"
+      subgroup_restrictions: >-
+        评估并非覆盖全部数据点：Figure 3 图注写 "Gray data points are not used for evaluation,
+        possibly due to the patient already being in a hypoglycemic state or gaps in the timeline."；
+        建模阶段另有 "Gaps exceeding 20 minutes are processed as separate sequences during modeling."
+        引用本队列性能数字时必须一并带上「已处于低血糖状态者与断点被排除」。
+      characteristics_locator: main_text_table
+
+    - cohort_id: ksweep_nopruning_15
+      purpose: internal_validation
+      n: "15 patients（同 loocv_15，但未剪枝）"
+      subgroup_restrictions: >-
+        "No pruning is performed on the graph."——Table 3 与 Figure 2(right) 报告的是同一批人上
+        不同配置的两套数字（k=6 一行为 0.810/0.708/0.913/0.294，而 Figure 2 图注给出的平均为
+        0.844/0.268/0.801/0.887），不得混用。另注：Table 3 的最优 k=4 与主结果所用 k=6 不一致。
+      characteristics_locator: main_text_table
+
+    - cohort_id: p21_case_demo
+      purpose: internal_validation
+      n: "1 patient（P21；Table 1 记 1014 datapoints, 9.27% Hypo., 20 study days, 14 岁, F）"
+      subgroup_restrictions: >-
+        Figure 3 的时间线是单患者示例，不是群体结果；参数 k = 6, ρ = 0.2, x = 6。
+        4.1 节关于「监督规则消除假警报」的全部直观证据只来自这一位患者。
+      characteristics_locator: main_text_table
+
+  gating:
+    condition:
+      # 论文要预测的临床事件是**低血糖**；1 型糖尿病是它发生的疾病语境，按 comorbid_context
+      # 记（不参与准入）。病种字段里刻意不写 pediatric / forecasting / de Bruijn ——
+      # 人群词进 population，任务词进 clinical_task，方法词进 descriptive（规则①）。
+      primary: {label: "hypoglycemia", codes: {}}
+      breadth: narrow
+      scope_type: disease
+      qualifiers: {}
+      comorbid_context: ["type 1 diabetes"]
+      excluded: []
+    population:
+      age_group: child
+      age_range_text: null        # 论文无任何成文的年龄区间；8–16 岁是 Table 1 逐人 Age 列的极值，非原文表述
+      special: []
+    care_setting: null            # 见 provenance：全文未说明模型将被用在哪个场所（absent，非漏填）
+    clinical_task: prognostication
+    evidence_stage: null          # 留空，由 claim_card.stage_from_basis() 依下面七个事实映射
+    evidence_basis:
+      clinical_claim_made: true
+      external_cohort: false
+      different_site: false
+      prospective: false
+      randomised: false
+      deployed_in_care: false
+      endpoint_type: model_metric
+    study_design: []
+    intended_context: clinical_care
+    finding_direction: positive
+
+  descriptive:
+    intended_use: "forecast when a hypoglycemic episode will subsequently occur within 30 minutes from patient temporal BG sensor readings, and issue an alert in advance of the episode"
+    target_population: "children with type 1 diabetes (T1D)"
+    intended_user: null           # 论文从未说明警报交给谁（患者、家长、护士、医师均未提及）
+    model_input: "patient temporal BG sensor readings, discretized into a 15-character alphabet over 10-unit value ranges (12 characters for normoglycemia, two for hypoglycemia, one for hyperglycemia), at a general 15-minute sample rate"
+    model_output: "a binary alert for a potential hypoglycemic episode, issued at a (k-1)-tuple when the estimated probability of reaching a hypoglycemia node within x steps exceeds a threshold rho; optionally annulled by a supervision rule set"
+    clinical_decision_affected: >-
+      论文未说明警报触发何种处置。正文只给到「发出警报」这一步；Background 里提到的
+      proactive treatment 与 refined carbohydrate control 讲的是整个领域的算法，不是本系统
+      （硬约束 4：那句话的主语不是本系统）。
+    comparator: >-
+      **全部对照都是模型自身的变体，无任何外部对照**：① 不同 k 取值（Table 3，同一批 15 人上
+      给出并列数字；论文自称 k = 2 结构上等价于 Markov chain）；② 有/无监督规则、
+      不同剪枝方式（Figure 5，正文只有方向性描述，数值只存在于图像里）。
+      论文没有与任何已发表方法、也没有与任何临床现行做法给出并列数字。
+    reference_standard: >-
+      真值与模型输入**同源**：同一路 BG 传感器读数低于 70 mg/dL 即判为低血糖事件；评估时取
+      「未来最近一次低血糖发生时刻 h」，h−t < 1 小时且在 t 发出警报即计为正确。论文未使用任何
+      独立参考标准（无静脉血浆血糖、无症状记录、无临床判读、无登记库编码）。
+    current_practice: >-
+      论文自陈的现行做法：低血糖自我监测 + 碳水计数 + 胰岛素剂量调整；引言另提及葡萄糖传感器与
+      自动胰岛素输注系统内置的预测算法。**论文没有与其中任何一项做过比较。**
+    secondary_tasks:
+      - "从图中提取进入/退出低血糖区的路径规则（论文称 actionable rules / actionable patterns）"
+      - "监督规则集 R(S,i)：BG > 150 mg/dL 或较前一读数上升超过 15 mg/dL 时抑制警报"
+    claimed_benefit: "anticipate hypoglycemia in advance of about 30 minutes sufficient for a clinical setting and additionally find actionable rules that accurate and effective"
+    demonstrated_effect: >-
+      以下全部来自 loocv_15（同一批 15 名患者的留一交叉验证，adaptive pruning，k = 6, ρ = 0.2,
+      x = 6），且**已排除患者已处于低血糖状态的数据点与时间线断点**（Figure 3 图注）：
+      272 次低血糖事件被预先预警、10 次漏报，warning rate 96.45%；全患者平均 Balanced Accuracy
+      0.844、Precision 0.268、Sensitivity 0.801、Specificity 0.887。提前量方面正文只给出
+      「多数警报提前 30 分钟」这一定性表述。未剪枝的 k 扫描（ksweep_nopruning_15，Table 3）在
+      k = 6 时为 0.810/0.708/0.913/0.294，最优 k = 4 时为 0.824/0.732/0.916/0.308 ——
+      与主结果是两套数字，不可混用。
+    benefit_gap: >-
+      ① **代价侧只兑现了一半**：主张的是「多预警」，代价在假阳性侧。平均 Precision 0.268 意味着
+      约四分之三的警报是假阳性，论文报了这个数，但没有报每患者每日警报数或警报负担，也没有报
+      漏报的那 10 次分别发生在谁身上。§4.2.1 主张「近低血糖事件的假阳性其实是有价值的警告」，
+      **全文没有对这类事件做任何计数或界定**，因此这条辩解未经量化。
+      ② **「30 分钟」未被量化**：正文只有 "majority" 一词，提前量的分布、中位数、区间全在
+      Figure 4 里，本次材料取不到（见 provenance 的 not_extracted 条目）。
+      ③ **"sufficient for a clinical setting" 无对应证据**：全文无场所、无使用者、无与现行做法的
+      比较、无任何患者结局或流程终点，评估是对既有数据的离线逐点回放。
+      ④ **"actionable rules ... accurate and effective" 无对应评估**：论文给出了监督规则集与
+      ingress/egress 路径的定性描述，但没有对「规则」本身做任何准确性或有效性的测量。
+      ⑤ **摘要主张的 "run-time efficiency" 全文无测量**：§3.3 只给出 O(n) 的复杂度陈述，
+      没有任何运行时间、内存或更新耗时的实测数字。
+      ⑥ 15 人中至少 1 人（P1）按 Table 1 是 2 型糖尿病，且是低血糖占比 63.7% 的极端离群者，
+      论文未把该患者排除，也未报告排除后的结果。
+    future_intent: >-
+      论文对「真正用到临床」的表述**全部是情态或未来式**（规则⑬，因此不作为任何 gating 字段的依据）：
+      引言称本方案 "could exist in real clinical settings"、"a critical use of AI would be to improve
+      clinical forecasting"；结论称扩大数据集后 "the deployment of dBG across diverse clinical
+      settings will become increasingly viable"。
+    deployment_claim_level: "no deployment; retrospective offline evaluation replaying every datapoint of the development dataset under leave-one-out cross-validation, with clinical deployment stated only as future work"
+    clinical_context: >-
+      数据：15 名儿童糖尿病患者、22,291 次血糖读数，一般采样间隔 15 分钟，超过 20 分钟的断点被切成
+      独立序列建模。低血糖阈值 70 mg/dL。血糖值被离散成 15 个字符（正常区 12 个、低血糖 2 个、
+      高血糖 1 个）后建 de Bruijn 图，节点为 (k−1)-mer，边权为 k-mer 出现频次，按到低血糖节点的
+      距离做自适应剪枝（δ<2 时 θ=1，2≤δ<3 时 θ=4，δ>3 时 θ=10）。Table 1 逐人年龄为
+      8/11/11/13/13/14/14/14/14/14/15/15/16/16/16 岁，无学龄前儿童；P1 的 Years With T1D 列写
+      "3 (T2D)"。本字段不参与任何门控。
+
+  provenance:
+    source: "sample/iclr2024_pediatric_hypoglycemia/01_parse/kP6X9QBF1t/auto/kP6X9QBF1t_content_list.json"
+    extraction: claude_llm_pipeline_v0
+    input_coverage:
+      - {part: main_text, included: true, note: "正文、Table 1/2/3、全部图注均已给到。公式与算法伪代码被解析为交错的 LaTeX 片段（Algorithm 1/2 两栏逐行交织），无法给出连续片段，故不从那里取证。"}
+      - {part: appendix, included: false, note: "论文全文无附录，也无指向附录的指路句。此处 false 是**不适用**，不是材料缺失。"}
+      - {part: supplementary, included: false, note: "论文全文未提及补充材料。此处 false 是**不适用**，不是材料缺失。"}
+    unavailable_content:
+      - {part: figure_2_right_per_patient_metrics, contains: "15 名患者逐人的 Balanced Accuracy / Precision / Sensitivity / Specificity 条形图；纯文本只有图注给出的四项平均值"}
+      - {part: figure_4_lead_time_distribution, contains: "每次低血糖事件的提前预警时长分布；纯文本只有 majority 一词"}
+      - {part: figure_5_supervision_and_pruning_ablation, contains: "有/无监督、不同剪枝下的评估分数对比；正文只有方向性描述，无数值"}
+
+    fields:
+      # ---------- condition ----------
+      condition.primary:
+        status: explicit
+        quote: "Hypoglycemic events include all episodes of a plasma glucose concentration low enough to cause symptoms and/or signs, such as dizziness, fast heartbeat, shaking, sweating, hunger, etc."
+        locator: "1 INTRODUCTION"
+      condition.breadth:
+        status: inferred
+        note: "论文只对「低血糖」这一个事件作主张，没有多标签/多病种评测，也没有为任何其他病种单列结论 → narrow（SPEC §1/§2 的判据是「论文是否为该病种做了单独的临床声明」）。"
+        locator: "全文（Abstract / §1 / §4）"
+      condition.scope_type:
+        status: inferred
+        note: "主张针对一个具体临床事件（低血糖）而非跨专科流程或人群健康指标 → disease。因此病种门控若不命中，应读作「不匹配」（计入缺口），不是「不适用」。"
+        locator: "全文"
+      condition.comorbid_context:
+        status: inferred
+        note: >-
+          论文题名与摘要写 "diabetes I" / "Pediatric diabetes I"，Methods 写 "15 pediatric diabetes
+          patients"，Table 1 有 "Years With T1D" 列 —— 据此判疾病语境为 1 型糖尿病。
+          ⚠️ 同表 P1 该列写 "3 (T2D)"、表注写 "T2D stands for type 2 diabetes."，即样本中至少 1 人
+          不是 T1D；本字段填 type 1 diabetes 是按论文的自我界定，不是按样本核对结果。
+        locator: "Table 1 及其表注 / §3.1"
+        cohort_id: dbg_all_patients
+
+      # ---------- population ----------
+      population.age_group:
+        status: inferred
+        quote: "This research employs data from 15 pediatric diabetes patients, totaling 22,291 BG level measurements."
+        locator: "3.1 DATA, TRANSFORMATION, AND DISCRETIZATION"
+        cohort_id: dbg_all_patients
+        note: >-
+          论文没有任何年龄纳入排除标准，只自称 pediatric。Table 1 的 Age 列逐人取值为
+          8, 11, 11, 13, 13, 14, 14, 14, 14, 14, 15, 15, 16, 16, 16，即 8–16 岁，无学龄前儿童。
+          该区间横跨枚举里的 child 与 adolescent，但同属儿科，按 SPEC §5 填更宽的 child
+          （mixed 会让成人/儿科硬拦失效，本篇没有成人，不该走 mixed）。
+          age_group=child 这个标签是本项目的词汇，论文里不存在，故不标 explicit（规则⑩）。
+
+      # ---------- care_setting ----------
+      care_setting:
+        status: absent
+        locator: "已找过 Abstract / §1 / §2 / §3.1 / §4 / §4.2 / §5 与全部图表注"
+        note: >-
+          **论文确实没写模型将被用在哪个场所。**全文没有出现任何可落到受控枚举的场所词
+          （无 ICU / 急诊 / 病房 / 基层 / 门诊 / 社区 / 院前 / 家庭）。仅有的近似表述有三处，
+          都不构成依据：§1 的 "could exist in real clinical settings" 与 §5 的
+          "will become increasingly viable" 是情态与未来式（规则⑬）；§5 提到 "dynamic
+          environments like hospitals" 是在讲更新成本这一属性的举例，其主语是 dBG 的更新成本，
+          不是「本系统将部署在住院病房」（硬约束 4）。故按 absent 而非硬编一个场景（规则⑥）。
+
+      # ---------- clinical_task ----------
+      clinical_task:
+        status: inferred
+        quote: "Our focus is on predicting a hypoglycemic episode for the patient."
+        locator: "3.2.2 MAKING PREDICTIONS"
+        note: >-
+          主要终点检验的是「能否在低血糖发生前发出正确警报」（§4 的正确性定义、warning rate、
+          Balanced Accuracy 系列），即对未来临床事件的预测 → prognostication。
+          论文全文不使用 prognostication / prognosis 字样，该枚举值是本项目的词汇，故标 inferred（规则⑩）。
+          模型内部做的是图上路径概率计算，但按规则④主任务由主要终点定，不看模型在做什么。
+
+      # ---------- intended_context ----------
+      intended_context:
+        status: inferred
+        quote: "This evaluation provides a more comprehensive understanding of the model’s effectiveness in real-world settings."
+        locator: "4.2 EVALUATION RESULTS"
+        note: >-
+          论文既没有声称用于临床试验富集，也不是无临床用途主张的纯基准（后者应为 research_only，
+          见 SPEC §7）；其效用主张指向真实照护 → clinical_care。
+          ⚠️ 这填的是**用途语境**，不是已达到的证据层级：本卡 evidence_basis 显示没有任何前瞻、
+          外部或部署证据，两者不要混读。
+
+      # ---------- finding_direction ----------
+      finding_direction:
+        status: explicit
+        quote: "Our model notably outper formed in predicting hypoglycemia, showcasing its distinct efficiency."
+        locator: "5 SUMMARY AND FUTURE WORK"
+        note: "记录的是论文自陈的结论方向（正向），不是对结论是否成立的评价；主张与实测的差距见 descriptive.benefit_gap。引文里的 outper formed 是解析产物中的跨行断字伪影，原样保留。"
+
+      # ---------- evidence_basis：七个事实各一条，引文一律取自正文（硬约束 2） ----------
+      evidence_basis.clinical_claim_made:
+        status: explicit
+        quote: "dBG’s low update cost makes it particularly suitable for dynamic environments like hospitals, enhancing patient care by enabling timely and precise updates."
+        locator: "5 SUMMARY AND FUTURE WORK"
+        note: "论文明确主张改善照护（enhancing patient care），不是纯方法学基准 → true。"
+      evidence_basis.external_cohort:
+        status: inferred
+        quote: "Our evaluation leveraged a leave-one-out cross-validation, with each patient’s data processed separately."
+        locator: "4 RESULTS"
+        cohort_id: loocv_15
+        note: >-
+          全文只有一批数据（§3.1 的 15 名患者），所有评估都是这批数据的重新划分：留一交叉验证、
+          k 参数扫描。**同一数据集的另一次切分不算外部队列**（规则⑨）→ false。
+          论文没有明写「我们没有外部队列」，该否定结论是本卡的归纳，故标 inferred。
+      evidence_basis.different_site:
+        status: absent
+        locator: "已找过 §3.1 / Table 1 / 全文"
+        note: >-
+          **论文确实没写数据来自哪里**：无机构名、无国家/地区、无数据集名称、无采集设备名、
+          无伦理审批。没有任何原文说明数据来自不同机构或地区，按规则⑨从严 → false。
+      evidence_basis.prospective:
+        status: absent
+        locator: "已找过 §3.1 / §4 / 全文"
+        note: >-
+          **论文确实没写研究设计**：没有招募、连续入组、纳入排除、随访方案的任何交代，只有
+          Table 1 的 Study Days（14–21 天）。前瞻是研究设计而非「有一段时间的数据」（规则⑨），
+          无据可依 → false。附带说明：全文 prospective 一词只出现在 §4.4 的
+          "showcased prospective enhancements"，那里是「有前景的」之义，不是研究设计。
+      evidence_basis.randomised:
+        status: absent
+        locator: "已找过 §3.1 / §4 / 全文"
+        note: >-
+          **论文确实没有任何随机化或分组分配的描述。**唯一的「对照」是同一批数据上的模型自身变体
+          （不同 k、有/无监督、不同剪枝） → false。
+      evidence_basis.deployed_in_care:
+        status: inferred
+        quote: "To evaluate our proposed model, we methodically scrutinize every datapoint in our dataset."
+        locator: "4 RESULTS"
+        cohort_id: loocv_15
+        note: >-
+          评估方式是对既有数据集逐点回放打分，模型输出没有进入任何照护流程，也没有任何人看到过
+          这些警报 → false。「在临床环境里采集了数据」本身不算部署（规则⑨），何况本文连数据在哪
+          采集的都没写。
+      evidence_basis.endpoint_type:
+        status: inferred
+        quote: "If $h - t < 1$ hour and an alert is issued at instance t, then it’s deemed a correct prediction."
+        locator: "4 RESULTS"
+        note: >-
+          终点是模型警报的正确与否（由此得出 warning rate 与 Balanced Accuracy / Precision /
+          Sensitivity / Specificity），既不是诊断时间、转诊量这类流程终点，也不是任何患者结局
+          → model_metric。枚举值是本项目的词汇，故标 inferred。
+
+      # ---------- descriptive ----------
+      descriptive.intended_use:
+        status: explicit
+        quote: "Then, as sensor data is given, the graph can forecast when a hypoglycemic episode will subsequently occur within 30 minutes with acceptable clinical accuracy."
+        locator: "1 INTRODUCTION"
+      descriptive.target_population:
+        status: inferred
+        locator: "题名 / ABSTRACT / §3.1"
+        note: >-
+          论文从未单独陈述「模型将用在谁身上」，只在题名与摘要把问题界定为 pediatric diabetes I /
+          children，Methods 的样本是 15 名 pediatric diabetes patients。此处按论文的自我界定填
+          children with type 1 diabetes (T1D)。**不以样本入组来源代替使用人群**（§4 第 2 条）：
+          「需要 BG 传感器读数」是模型的输入前提，已写在 model_input，不写进人群。
+      descriptive.model_input:
+        status: explicit
+        quote: "by creating an alphabet over patient temporal BG sensor readings and integrate an input window reflecting numerical intervals"
+        locator: "1 INTRODUCTION"
+        note: >-
+          论文只写 "BG sensor readings" 与 "a general 15-minute sample rate"，**从未说明本研究的
+          数据是否来自 CGM**（§2 讨论 CGM 文献那段讲的是领域现状，主语不是本研究）。故此处不写 CGM。
+      descriptive.model_output:
+        status: explicit
+        quote: "Alerts for tuple v are issued as follows:"
+        locator: "3.2.2 MAKING PREDICTIONS（式 (1) 之前）"
+      descriptive.comparator:
+        status: explicit
+        quote: "Model performance using different k parameters. No pruning is performed on the graph. k = 2 is structurally equivalent to a Markov chain."
+        locator: "Table 3 表注"
+        cohort_id: ksweep_nopruning_15
+        note: >-
+          按 §4 第 3 条的判定动作（「论文有没有给出它与本方法的并列数字」）：只有模型自身变体给出了
+          并列数字。Figure 5 的有/无监督与剪枝对比也是自身变体，且数值不在本次材料里。
+          论文与已发表方法、与现行做法都**没有**并列数字，故 comparator 里不写它们
+          （现行做法另记在 descriptive.current_practice，参考标准另记在 reference_standard）。
+      descriptive.reference_standard:
+        status: inferred
+        quote: "The hypoglycemia threshold is set at 70 mg/dL."
+        locator: "3.1 DATA, TRANSFORMATION, AND DISCRETIZATION"
+        note: >-
+          阈值本身是明写的；「真值与模型输入同源、无独立参考标准」是本卡的归纳（全文找过：
+          无静脉血浆血糖、无症状记录、无临床判读、无登记库编码），故标 inferred。
+      descriptive.current_practice:
+        status: explicit
+        quote: "Self-Monitoring of hypoglycemia is a key component of diabetes care, along with carbohydrate counting and adjusting insulin dose."
+        locator: "1 INTRODUCTION"
+        note: "这是论文自陈的现行做法。**论文没有与它做过任何比较**（head-to-head = false）。"
+      descriptive.claimed_benefit:
+        status: explicit
+        quote: "We can then use paths in the graph to anticipate hypoglycemia in advance of about 30 minutes sufficient for a clinical setting and additionally find actionable rules that accurate and effective."
+        locator: "ABSTRACT"
+        note: >-
+          逐字取自作者原话，未加任何原文没有的限定词。取摘要版是因为它是这条主张最完整的表述：
+          §1 的正文版只有「30 分钟 + acceptable clinical accuracy」，不含 "sufficient for a clinical
+          setting" 与 "actionable rules" 这两半（那半已另作 descriptive.intended_use 的出处）。
+      descriptive.demonstrated_effect:
+        status: explicit
+        quote: "In total, our model preemptively issued warnings for 272 hypoglycemia instances and missed 10, achieving a 96.45% warning rate."
+        locator: "4.2 EVALUATION RESULTS"
+        cohort_id: loocv_15
+      # 主张有几半，实测就要给几半（规则⑦）。一个 provenance 条目只能带一条连续引文，
+      # 故按证据分列 —— 每条各自带 cohort_id 与限制条件。
+      descriptive.demonstrated_effect.lead_time:
+        status: explicit
+        quote: "An examination of each hypoglycemia onset in our dataset reveals the majority of alerts were generated 30 minutes prior, as depicted in Figure 4."
+        locator: "4.2 EVALUATION RESULTS"
+        cohort_id: loocv_15
+        note: "只有 majority 这一定性表述；量化分布见下一条 not_extracted。"
+      descriptive.demonstrated_effect.metrics:
+        status: explicit
+        quote: "The average scores across all patients were 0.844, 0.268, 0.801, and 0.887 for these metrics, respectively."
+        locator: "Figure 2 图注（RIGHT）"
+        cohort_id: loocv_15
+        note: >-
+          依次为 Balanced Accuracy / Precision / Sensitivity / Specificity，取自 adaptive pruning、
+          k = 6, ρ = 0.2, x = 6 的配置。**这组数字与 Table 3 的 k=6 行（0.810/0.708/0.913/0.294）
+          是同一批人上的两套不同配置，不可混用**（后者属 ksweep_nopruning_15）。
+      descriptive.demonstrated_effect.per_patient_metrics:
+        status: not_extracted
+        locator: "Figure 2（RIGHT）"
+        note: "逐患者的四项指标只存在于图像文件中，纯文本取不到；离散程度与置信区间同样不可得。**不得用 Table 3 的数字代替**（那是另一套配置）。"
+      descriptive.demonstrated_effect.lead_time_distribution:
+        status: not_extracted
+        locator: "Figure 4"
+        note: "「提前 30 分钟」这一核心时效声明的量化依据（分布、中位数、区间）全在该图内，纯文本取不到。"
+      descriptive.demonstrated_effect.supervision_pruning_ablation:
+        status: not_extracted
+        locator: "Figure 5"
+        note: "有/无监督规则与不同剪枝方式下的评估分数只存在于图像里；正文只有方向性描述（敏感性略降、特异性与精确度上升），无任何数值。"
+      descriptive.future_intent:
+        status: explicit
+        quote: "With a broader and more varied dataset, the deployment of dBG across diverse clinical settings will become increasingly viable."
+        locator: "5 SUMMARY AND FUTURE WORK"
+      descriptive.deployment_claim_level:
+        status: inferred
+        locator: "§4 / §5"
+        note: >-
+          论文没有自陈部署层级。评估是对既有数据集的离线逐点回放（§4），关于部署的表述全为
+          未来式（§5），据此判为「无部署」。依据同 evidence_basis.deployed_in_care，此处不重复引文。
