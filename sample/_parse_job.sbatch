@@ -8,7 +8,7 @@
 #SBATCH --mem=48g
 #SBATCH --gpus=1
 #SBATCH --time=01:30:00
-#SBATCH --output=/work/hdd/bgkq/xchen48/clinical-rag/sample/_parse_job_%j.log
+#SBATCH --output=/work/hdd/bgkq/Code/clinical-rag/sample/_parse_job_%j.log
 # ---------------------------------------------------------------------------
 # 01_parse —— 把两篇样例论文的 PDF 交给 MinerU 做版面解析。
 #
@@ -25,7 +25,7 @@
 set -u
 
 ENV=/work/hdd/bgkq/xchen48/conda_envs/mineru
-ROOT=/work/hdd/bgkq/xchen48/clinical-rag/sample
+ROOT=/work/hdd/bgkq/Code/clinical-rag/sample
 
 export PATH="$ENV/bin:$PATH"
 export MINERU_MODEL_SOURCE=huggingface

@@ -93,7 +93,7 @@ CONSORT-AI / SPIRIT-AI / DECIDE-AI 全部因"C2 套 C4 属越级要求"被拦并
 ## 复现
 
 ```bash
-cd /work/hdd/bgkq/xchen48/clinical-rag
+cd /work/hdd/bgkq/Code/clinical-rag
 
 # 引文核验（不联网）
 python3 evidence.py sample/dkd_retinal_ldh/03_cards/*.yaml

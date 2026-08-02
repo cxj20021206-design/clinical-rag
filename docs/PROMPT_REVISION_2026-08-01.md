@@ -197,7 +197,7 @@ grep -n  'def legacy' -A 40 claim_card.py            # 键 → 卡字段的映�
 ## 7. 回来怎么验（都不联网，秒级）
 
 ```bash
-cd /work/hdd/bgkq/xchen48/clinical-rag
+cd /work/hdd/bgkq/Code/clinical-rag
 
 python3 check_gates.py                                  # 门控回归，退出码 0
 python3 extract.py verify --run sample/dkd_retinal_ldh  # ③④ 硬门，零错零警告

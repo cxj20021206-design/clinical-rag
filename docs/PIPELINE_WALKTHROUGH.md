@@ -423,7 +423,7 @@ CONSORT-AI 清单        → 卡是 C2，它管 C4     → ⛔ 拦截，打印"�
 ## 10. 怎么跑
 
 ```bash
-cd /work/hdd/bgkq/xchen48/clinical-rag
+cd /work/hdd/bgkq/Code/clinical-rag
 
 # —— 下游：拿一张现成的卡去检索 ——
 python3 retrieve.py --claim examples/claim_card_lung_ct.yaml

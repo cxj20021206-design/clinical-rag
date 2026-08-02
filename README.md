@@ -21,7 +21,7 @@
 
 ## 快速开始
 ```bash
-cd /work/hdd/bgkq/xchen48/clinical-rag
+cd /work/hdd/bgkq/Code/clinical-rag
 # 首次使用：摄入指南语料（产物已入库，通常无需重跑）
 # python3 connectors/uspstf_ingest.py       # USPSTF，约 4 分钟 → curated/guidelines/uspstf.yaml
 # python3 connectors/guideline_ingest.py    # 学会/国家 CPG，按 manifest → curated/guidelines/cpg_*.yaml
