@@ -5,6 +5,12 @@
 >
 > 分工：本文讲**是什么、为什么**；[`DESIGN.md`](DESIGN.md) 讲**每个决策的完整依据**；
 > [`RELATED_WORK.md`](RELATED_WORK.md) 讲同类工作与许可调研；`README.md` 讲**怎么跑**。
+>
+> ⚠️ 本文写于 2026-07-25，只覆盖**下游（检索侧）**。2026-07-29 之后新建的
+> **上游（从 PDF 抽 Claim Card）** 不在本文范围内 ——
+> 端到端全流程的直白版见 [`PIPELINE_WALKTHROUGH.md`](PIPELINE_WALKTHROUGH.md)。
+> 另：本文第 2 节把卡讲成扁平结构，那是 2026-07-28 分层改造**之前**的形态；
+> 现行的三层卡与「准入 ≠ 检索」的区分同样见 `PIPELINE_WALKTHROUGH.md` §4/§6。
 
 ---
 

@@ -4,8 +4,12 @@
 从分层的权威临床源检索"现实医学世界的标准"，返回带完整 provenance 的 `external_standard` 记录，
 写入 Claim–Evidence Graph 的**外部侧**。
 
-> **第一次看这个项目？先读 [`docs/ARCHITECTURE_GUIDE.md`](docs/ARCHITECTURE_GUIDE.md)**——
-> 零基础入门导读，讲清"输入什么 → 中间发生了什么 → 输出什么 → 为什么这么设计"。
+> **第一次看这个项目？先读 [`docs/PIPELINE_WALKTHROUGH.md`](docs/PIPELINE_WALKTHROUGH.md)**——
+> 端到端全流程的直白版：从一篇 PDF 到一条审稿意见，每步说清"输入是什么、输出是什么、
+> 谁在做、为什么非要有这一步"。**含「准入 ≠ 检索」这一节**（最容易被误解的地方）。
+>
+> 只想看下游（检索侧）的源/角色/模块细节 → [`docs/ARCHITECTURE_GUIDE.md`](docs/ARCHITECTURE_GUIDE.md)
+> （零基础导读，但写于 2026-07-25，不含上游抽卡）。
 > 设计与决策的完整说明见 [`docs/DESIGN.md`](docs/DESIGN.md)。
 > 同类工作调研（NICE RAG / CPG-on-FHIR / LLM 评委局限）见 [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md)。
 
