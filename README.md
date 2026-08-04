@@ -31,6 +31,34 @@ python3 retrieve.py --claim examples/claim_card_lung_ct.yaml --per-source 3
 #       ② 按 8 个审查模块分组的外部标准 + 无连接器角色(待策展)提示
 #       结果写 store/retrieved.jsonl
 ```
+
+## 阶段四：外部标准 × 论文原文对齐（新增）
+
+`retrieve.py` 的正式输出是 `ExternalStandard[]`，不是审稿意见。要回答"论文是否满足
+某条适用的外部标准"，必须回到论文原文；Claim Card 只负责定位问题，不能替代原文。
+
+```bash
+# 默认只纳入有逐字条文、可作为要求、且投稿前已存在的外部记录
+python3 align.py build --claim sample/dkd_retinal_ldh/03_cards/claim_1_screening.yaml \
+  --retrieved sample/dkd_retinal_ldh/05_retrieval/claim_1_retrieved.jsonl --out /tmp/dkd-align
+# 将 request.md 交给模型，得到 response.yaml 后：
+python3 align.py verify --bundle /tmp/dkd-align
+python3 align.py render --bundle /tmp/dkd-align --out /tmp/review.md
+```
+
+详见 [`docs/ALIGNMENT_DESIGN.md`](docs/ALIGNMENT_DESIGN.md)。
+
+## 流程可视化演示
+
+[`web/`](web/README.md) 是一个**静态演示播放器**：把 `sample/` 下已经跑好的论文流程按
+PDF → 解析 → overview → Claim Card → 核查 → 外部检索 → 审稿输出逐步展示。它不需数据库、
+不重新调用模型，也不运行 GPU 解析。
+
+```bash
+python3 web/build_demo_data.py
+python3 -m http.server 8000
+# 打开 http://localhost:8000/web/
+```
 指定模块：`--modules comparator_baseline endpoint_utility`
 
 **Claim Card 是分层的**（`gating` / `descriptive` / `provenance`，见 DESIGN §2）——只有

@@ -5,6 +5,7 @@
 可用于"今天能否部署"评价，但不能用来指责作者违背当时尚不存在的标准。
 """
 from __future__ import annotations
+import hashlib
 import json, os, tempfile
 from dataclasses import dataclass, field, asdict
 from datetime import date
@@ -30,6 +31,11 @@ REVIEW_MODULES = {
     "comparator_baseline", "endpoint_utility", "generalization",
     "safety_harm_equity", "workflow_deployment",
 }
+ALIGNMENT_VERDICTS = {
+    "supported", "partial", "missing", "contradicted", "not_applicable",
+    "cannot_determine", "post_submission_only",
+}
+TEMPORAL_STATUSES = {"pre_submission", "post_submission_only"}
 
 
 @dataclass
@@ -96,6 +102,94 @@ class ExternalStandard:
         qc = d.get("query_context")
         if isinstance(qc, dict):
             d["query_context"] = {k: v for k, v in qc.items() if not k.startswith("_")}
+        return d
+
+
+def stable_external_standard_id(record: dict) -> str:
+    """外部条目的稳定身份，不依赖一次检索中的排序或截断标题。
+
+    同一来源文档的不同推荐条目必须不同，故 section_page_table 进入指纹；发布日期也进入，
+    让指南换版不会静默覆盖旧版。缺少字段仍生成稳定 id，但调用方应保留原始 URL 供人复核。
+    """
+    bits = [str(record.get(k) or "") for k in
+            ("source_id", "canonical_url", "section_page_table", "version_or_publication_date")]
+    digest = hashlib.sha256("\x1f".join(bits).encode("utf-8")).hexdigest()[:20]
+    return f"ext_{digest}"
+
+
+@dataclass
+class PaperEvidence:
+    """论文内的一条、可逐字定位的事实证据。
+
+    它不是模型的摘要；quote 必须来自解析产物，verification 记录定位层的匹配结果。
+    """
+    evidence_id: str
+    quote: str
+    source: str
+    section: Optional[str] = None
+    page: Optional[int] = None
+    match_tier: Optional[str] = None
+    input_part: Optional[str] = "main_text"
+
+    def validate(self) -> list[str]:
+        errs = []
+        for f in ("evidence_id", "quote", "source"):
+            if not getattr(self, f):
+                errs.append(f"PaperEvidence 缺必填字段 {f}")
+        if self.page is not None and (not isinstance(self.page, int) or self.page < 1):
+            errs.append("PaperEvidence.page 必须为正整数或 null")
+        if self.match_tier and self.match_tier not in {"exact", "normalized", "alnum"}:
+            errs.append("PaperEvidence.match_tier 非法")
+        return errs
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
+class Alignment:
+    """一条外部标准与一篇论文 claim 的可审计对齐结果。"""
+    alignment_id: str
+    claim_id: str
+    external_standard_id: str
+    external_standard_title: str
+    external_standard_url: str
+    verdict: str
+    reason: str
+    temporal_status: str
+    evidence_search_audit: dict
+    paper_evidence: list[PaperEvidence] = field(default_factory=list)
+    clinical_review: dict = field(default_factory=dict)
+    schema_version: int = 1
+
+    def validate(self) -> list[str]:
+        errs = []
+        for f in ("alignment_id", "claim_id", "external_standard_id", "external_standard_title",
+                  "external_standard_url", "reason"):
+            if not getattr(self, f):
+                errs.append(f"Alignment 缺必填字段 {f}")
+        if self.verdict not in ALIGNMENT_VERDICTS:
+            errs.append(f"Alignment.verdict={self.verdict!r} 非法")
+        if self.temporal_status not in TEMPORAL_STATUSES:
+            errs.append(f"Alignment.temporal_status={self.temporal_status!r} 非法")
+        if self.temporal_status == "post_submission_only" and self.verdict != "post_submission_only":
+            errs.append("投稿后标准只能使用 verdict=post_submission_only")
+        if self.verdict in {"supported", "partial", "contradicted"} and not self.paper_evidence:
+            errs.append(f"Alignment {self.verdict} 必须带论文证据")
+        if self.verdict == "missing" and not self.evidence_search_audit.get("missing_allowed"):
+            errs.append("材料覆盖不完整或搜索未穷尽时，不得使用 verdict=missing")
+        for ev in self.paper_evidence:
+            errs.extend(ev.validate())
+        if self.verdict != "not_applicable":
+            for key in ("dimension", "concern", "clinical_importance", "author_request",
+                        "acceptable_response"):
+                if not str(self.clinical_review.get(key) or "").strip():
+                    errs.append(f"Alignment.clinical_review 缺 {key}")
+        return errs
+
+    def to_dict(self) -> dict:
+        d = asdict(self)
+        d["paper_evidence"] = [x.to_dict() for x in self.paper_evidence]
         return d
 
 

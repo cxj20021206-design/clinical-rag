@@ -1,0 +1,14 @@
+# 最小阶段四响应示例：投稿后清单只能用于“当前部署”视角，不能指责作者投稿时未遵守。
+alignments:
+  - standard_id: ext_e0d67d478e51b514b165
+    verdict: post_submission_only
+    paper_evidence:
+      - quote: "In the prospective study, compared with the metadata model, DeepDKD could detect DKD with higher sensitivity"
+        section: "Abstract"
+    reason: "TRIPOD+AI 发布晚于论文投稿日期；该条只能作为当前报告/部署视角的参考。"
+    clinical_review:
+      dimension: clinical_question
+      concern: "当前稿件的模型定位、人群与预测结局需要按现行报告规范更清楚地对应。"
+      clinical_importance: "临床读者需要判断该模型服务于何种照护路径，以及研究结局能否支持其预期用途。"
+      author_request: "若将论文用于当前临床部署或后续版本，请按该条补充模型类型、目标人群和预测结局的报告。"
+      acceptable_response: "若不能补充新的分析，请明确该研究仅为回顾性性能验证，并限制临床部署主张。"

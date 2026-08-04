@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "id": "dkd_retinal_ldh",
+      "title": "Non-invasive biopsy diagnosis of diabetic kidney disease via deep learning applied to retinal images: a population-based study",
+      "citation": "The Lancet Digital Health · 2025 · 10.1016/j.landig.2025.02.008",
+      "pdf": "../sample/dkd_retinal_ldh/00_source/10.1016_j.landig.2025.02.008.pdf",
+      "metadata": "../sample/dkd_retinal_ldh/00_source/metadata.yaml",
+      "parse_notes": "../sample/dkd_retinal_ldh/01_parse/parse_notes.md",
+      "overview": {
+        "file": "../sample/dkd_retinal_ldh/02_overview/paper_overview.yaml",
+        "n_cohorts": 6,
+        "claims": [
+          {
+            "id": "claim_1",
+            "label": "以视网膜眼底照相筛查糖尿病肾病"
+          },
+          {
+            "id": "claim_2",
+            "label": "区分单纯糖尿病肾病与非糖尿病肾病"
+          }
+        ],
+        "study_type": "original_research"
+      },
+      "cards": [
+        {
+          "file": "../sample/dkd_retinal_ldh/03_cards/claim_1_screening.yaml",
+          "name": "claim_1_screening",
+          "claim_id": "claim_1",
+          "condition": "diabetic kidney disease",
+          "population": "adult",
+          "task": "screening",
+          "stage": "C2",
+          "care_setting": "primary_care",
+          "intended_use": "screening for diabetic kidney disease from retinal fundus images in primary care and low-resource settings, prioritising who needs confirmatory laboratory tests",
+          "claimed_benefit": "把 DeepDKD 并入 DKD 筛查流程可提高筛查敏感度，并在低资源基层优先挑出需做确证化验的患者",
+          "provenance_fields": 8
+        },
+        {
+          "file": "../sample/dkd_retinal_ldh/03_cards/claim_2_differential_dx.yaml",
+          "name": "claim_2_differential_dx",
+          "claim_id": "claim_2",
+          "condition": "diabetic nephropathy",
+          "population": "adult",
+          "task": "diagnosis",
+          "stage": "C2",
+          "care_setting": "outpatient_specialty",
+          "intended_use": "non-invasive differentiation of isolated diabetic nephropathy from non-diabetic kidney disease from retinal fundus images, as an ancillary tool to minimise invasive kidney biopsy",
+          "claimed_benefit": "作为辅助工具减少不必要的侵入性肾活检，帮助医师收窄鉴别诊断",
+          "provenance_fields": 7
+        }
+      ],
+      "checks": [
+        "../sample/dkd_retinal_ldh/04_check/adversarial_check.yaml"
+      ],
+      "retrieval": [
+        "../sample/dkd_retinal_ldh/05_retrieval/claim_1_retrieved.jsonl",
+        "../sample/dkd_retinal_ldh/05_retrieval/claim_2_retrieved.jsonl"
+      ],
+      "retrieval_summary": "../sample/dkd_retinal_ldh/05_retrieval/summary.md",
+      "review": "../sample/dkd_retinal_ldh/06_review_output/review_notes.md"
+    },
+    {
+      "id": "nature_med_apol1_kidney",
+      "title": "Proteomic risk score for early prediction of kidney disease progression in individuals with APOL1 high-risk genotypes",
+      "citation": "Nature Medicine · 2026 · 10.1038/s41591-026-04337-2",
+      "pdf": "../sample/nature_med_apol1_kidney/00_source/10.1038_s41591-026-04337-2.pdf",
+      "metadata": "../sample/nature_med_apol1_kidney/00_source/metadata.yaml",
+      "parse_notes": null,
+      "overview": {
+        "file": "../sample/nature_med_apol1_kidney/02_overview/paper_overview.yaml",
+        "n_cohorts": 13,
+        "claims": [
+          {
+            "id": "claim_1",
+            "label": "APRS（九个血浆蛋白 SPON1/SUMO2/EPHA10/REG3A/WFDC2/LYZ/MMP7/NPPB/CILP2 加年龄、性别、eGFR、UACR 的 elastic net Cox 评分）能在 APOL1 高危、eGFR 仍 >=60 的非裔人群中，于 CKD 临床显现之前预测 ≥40% eGFR 下降/肾衰竭/死亡的 10 年复合终点；全文只做了这一个独立临床声明——eGFR <60 组与 APOL1 低危各队列被论文自己定位为对照性/边界分析（论文明说临床落地最可行的是 APOL1 高危富集人群），故这些队列不进 uses_cohorts；kidney_tissue 进 uses_cohorts 仅为支撑生物学合理性，它是手术肾切除组织，不是目标人群；同批人内跑过的比较对象有三个，需在阶段二分开安放：KFRE（既是算法对照又是论文自陈的现行做法）、CRIC proteomic score 与 CKD PRS（纯算法对照）。"
+          }
+        ],
+        "study_type": "original_research"
+      },
+      "cards": [
+        {
+          "file": "../sample/nature_med_apol1_kidney/03_cards/claim_1.yaml",
+          "name": "claim_1",
+          "claim_id": "claim_1",
+          "condition": "chronic kidney disease",
+          "population": "adult",
+          "task": "prognostication",
+          "stage": "由程序映射",
+          "care_setting": null,
+          "intended_use": "early prediction of kidney disease progression in individuals carrying APOL1 high-risk genotypes, before chronic kidney disease is clinically evident; risk stratification to identify carriers for intensified surveillance and for APOL1-targeted therapy",
+          "claimed_benefit": "accurate and early prediction of adverse events in APOL1 high-risk individuals, before CKD is clinically evident; a precision medicine framework to support early intervention and to reduce longstanding racial disparities in kidney failure; nearly halved the number needed to treat",
+          "provenance_fields": 25
+        }
+      ],
+      "checks": [
+        "../sample/nature_med_apol1_kidney/04_check/claim_1_q12356.yaml",
+        "../sample/nature_med_apol1_kidney/04_check/claim_1_q4.yaml",
+        "../sample/nature_med_apol1_kidney/04_check/claim_1_q7.yaml"
+      ],
+      "retrieval": [
+        "../sample/nature_med_apol1_kidney/05_retrieval/claim_1_retrieved.jsonl"
+      ],
+      "retrieval_summary": null,
+      "review": "../sample/nature_med_apol1_kidney/06_review_output/review_notes.md"
+    },
+    {
+      "id": "iclr2024_pediatric_hypoglycemia",
+      "title": "A Reinforcement Learning Approach to Effective Forecasting of Pediatric Hypoglycemia in Diabetes I Patients: an extended de Bruijn Graph\n",
+      "citation": "2024",
+      "pdf": "../sample/iclr2024_pediatric_hypoglycemia/00_source/kP6X9QBF1t.pdf",
+      "metadata": "../sample/iclr2024_pediatric_hypoglycemia/00_source/metadata.yaml",
+      "parse_notes": null,
+      "overview": {
+        "file": "../sample/iclr2024_pediatric_hypoglycemia/02_overview/paper_overview.yaml",
+        "n_cohorts": 5,
+        "claims": [
+          {
+            "id": "claim_1",
+            "label": "扩展 de Bruijn 图模型可在儿童 1 型糖尿病患者发生低血糖前约 30 分钟发出预警（15 人留一交叉验证，272/282 次低血糖事件被预警，warning rate 96.45%）。模型监督规则、剪枝方式、k 取值均为同一主张下的消融，不另立主张。⚠️ 本文的全部对照都是自身变体（有/无监督、有/无剪枝、不同 k；k=2 被论文自称等价于 Markov chain），未与任何已发表方法或临床现行做法比较。"
+          },
+          {
+            "id": "claim_2",
+            "label": "同一张图数据库可低成本更新以适配新患者：为数据有限的新患者从既有图库中选出最匹配的图并增量更新，可提升其预测表现（O(n) 更新，无需重建图）。单列本主张的理由是它有自己的队列划分、自己的对照（有更新 vs 无更新）与自己的终点（balanced accuracy 差值）。⚠️ 其图数据库由 claim_1 同一批 15 人构建；若下游认为两者不可分，应合并进 claim_1，但合并时必须保留 Figure 6 与 Figure 2(right) 的数字归属区分。"
+          }
+        ],
+        "study_type": "original_research"
+      },
+      "cards": [
+        {
+          "file": "../sample/iclr2024_pediatric_hypoglycemia/03_cards/claim_1.yaml",
+          "name": "claim_1",
+          "claim_id": "claim_1",
+          "condition": "hypoglycemia",
+          "population": "child",
+          "task": "prognostication",
+          "stage": "由程序映射",
+          "care_setting": null,
+          "intended_use": "forecast when a hypoglycemic episode will subsequently occur within 30 minutes from patient temporal BG sensor readings, and issue an alert in advance of the episode",
+          "claimed_benefit": "anticipate hypoglycemia in advance of about 30 minutes sufficient for a clinical setting and additionally find actionable rules that accurate and effective",
+          "provenance_fields": 32
+        },
+        {
+          "file": "../sample/iclr2024_pediatric_hypoglycemia/03_cards/claim_2.yaml",
+          "name": "claim_2",
+          "claim_id": "claim_2",
+          "condition": "hypoglycemia in type 1 diabetes",
+          "population": "child",
+          "task": "prognostication",
+          "stage": "由程序映射",
+          "care_setting": null,
+          "intended_use": "Update a pre-built graph database of prior patients with a new patient's data: identify the best-fit model in the database and incrementally update it (new edges added for non-existent tuples, existing edge weights incremented) to fine-tune hypoglycemia forecasting for that patient, without total graph reconstruction.",
+          "claimed_benefit": "The dBG model excels in its ease of update, eliminating the need for total graph reconstruction: a graph database constructed from prior patients facilitates the seamless integration of new patient data, which aids in the pinpointing and enhancement of the most compatible model from the database, further fine-tuning its applicability to subsequent patients, all accomplished with an O(n) time complexity.",
+          "provenance_fields": 29
+        }
+      ],
+      "checks": [
+        "../sample/iclr2024_pediatric_hypoglycemia/04_check/claim_1_q12356.yaml",
+        "../sample/iclr2024_pediatric_hypoglycemia/04_check/claim_1_q4.yaml",
+        "../sample/iclr2024_pediatric_hypoglycemia/04_check/claim_1_q7.yaml",
+        "../sample/iclr2024_pediatric_hypoglycemia/04_check/claim_2_q12356.yaml",
+        "../sample/iclr2024_pediatric_hypoglycemia/04_check/claim_2_q4.yaml",
+        "../sample/iclr2024_pediatric_hypoglycemia/04_check/claim_2_q7.yaml"
+      ],
+      "retrieval": [
+        "../sample/iclr2024_pediatric_hypoglycemia/05_retrieval/claim_1_retrieved.jsonl",
+        "../sample/iclr2024_pediatric_hypoglycemia/05_retrieval/claim_2_retrieved.jsonl"
+      ],
+      "retrieval_summary": null,
+      "review": "../sample/iclr2024_pediatric_hypoglycemia/06_review_output/review_notes.md"
+    }
+  ]
+}

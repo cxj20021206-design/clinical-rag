@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>clinical-rag · 审稿证据流程</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="hero">
+      <p class="eyebrow">CLINICAL-RAG · WALKTHROUGH</p>
+      <h1>从一篇论文到可追溯的临床审稿建议</h1>
+      <p>这是已跑样例的可视化播放器：展示每一步输入、输出、程序硬门和证据边界；不会在网页中重新调用模型或检索外网。</p>
+      <label class="run-picker">选择演示论文 <select id="run-select"></select></label>
+    </header>
+
+    <main class="layout">
+      <aside class="steps" aria-label="流程步骤">
+        <div id="step-list"></div>
+        <div class="step-controls">
+          <button id="previous">← 上一步</button>
+          <button id="next">下一步 →</button>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <div class="run-title" id="run-title"></div>
+        <section class="pipeline" aria-label="流程总览">
+          <span>PDF</span><b>→</b><span>解析</span><b>→</b><span>Claim Card</span><b>→</b>
+          <span>外部标准</span><b>→</b><span>证据对齐</span><b>→</b><span>审稿建议</span>
+        </section>
+        <article id="content" class="content"></article>
+      </section>
+
+      <aside class="evidence">
+        <h2>原始产物</h2>
+        <p>每个结论都可回到实际落盘的 YAML、JSONL、Markdown 或 PDF。</p>
+        <div id="artifact-links"></div>
+        <details>
+          <summary>展示说明</summary>
+          <p>本页是静态演示层。文件夹 <code>sample/&lt;run&gt;/</code> 就是每次流程运行的证据档案，不需要数据库。</p>
+        </details>
+      </aside>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
